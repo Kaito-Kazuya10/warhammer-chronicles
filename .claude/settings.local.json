@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"node -v; npm -v\")",
+      "Bash(powershell -Command \"Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force; npm -v\")",
+      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''; npm create vite@latest . -- --template react-ts 2>&1\")",
+      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''; echo y | npm create vite@latest . -- --template react-ts 2>&1\")",
+      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''; npx create-vite@latest . --template react-ts 2>&1\")",
+      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop''; npx create-vite@latest ''warhammer-temp'' --template react-ts 2>&1\")",
+      "Bash(powershell -Command \"Move-Item ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer-temp\\\\*'' ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj\\\\'' -Force; Move-Item ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer-temp\\\\.*'' ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj\\\\'' -ErrorAction SilentlyContinue; Remove-Item ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer-temp'' -Recurse -Force\")",
+      "Bash(powershell -Command \"ls ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''\")",
+      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''; npm install 2>&1\")",
+      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''; npm install zustand dexie @tailwindcss/vite tailwindcss 2>&1\")",
+      "Bash(powershell -Command \":*)",
+      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''; npm run build 2>&1\")",
+      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''; npm run dev\")",
+      "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''; npm install react-router-dom 2>&1\")",
+      "Bash(powershell -Command \"New-Item -ItemType Directory -Force ''C:\\\\Users\\\\austi\\\\.claude\\\\projects\\\\c--Users-austi-Desktop-warhammer-proj\\\\memory'' | Out-Null; echo done\")",
+      "Bash(powershell -Command \"Start-Process ''http://localhost:5173''\")"
+    ]
+  }
+}

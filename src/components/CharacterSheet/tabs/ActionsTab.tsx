@@ -1,0 +1,521 @@
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from '@/components/ui/collapsible'
+import { useCharacterStore, getModifier } from '../../../store/characterStore'
+import { getItemById, getAllClasses } from '../../../modules/registry'
+import type { ClassFeature, FeatureActionType, Item } from '../../../types/module'
+import type { InventoryItem } from '../../../types/character'
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type Filter =
+  | 'all'
+  | 'attack'
+  | 'action'
+  | 'bonus-action'
+  | 'reaction'
+  | 'other'
+  | 'limited-use'
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const FILTERS: { value: Filter; label: string }[] = [
+  { value: 'all',          label: 'ALL'          },
+  { value: 'attack',       label: 'ATTACK'       },
+  { value: 'action',       label: 'ACTION'       },
+  { value: 'bonus-action', label: 'BONUS ACTION' },
+  { value: 'reaction',     label: 'REACTION'     },
+  { value: 'other',        label: 'OTHER'        },
+  { value: 'limited-use',  label: 'LIMITED USE'  },
+]
+
+const ACTION_TYPE_LABELS: Partial<Record<FeatureActionType, string>> = {
+  'action':       'Action',
+  'bonus-action': 'Bonus Action',
+  'reaction':     'Reaction',
+  'free':         'Free Action',
+}
+
+const ACTION_TYPE_BADGE_CLASS: Partial<Record<FeatureActionType, string>> = {
+  'action':       'bg-primary/10 text-primary border-primary/30',
+  'bonus-action': 'bg-[var(--wh-gold)]/10 text-[var(--wh-gold)] border-[var(--wh-gold)]/30',
+  'reaction':     'bg-[var(--wh-info)]/10 text-[var(--wh-info)] border-[var(--wh-info)]/30',
+  'free':         'bg-muted text-muted-foreground border-border',
+}
+
+const TIER_BADGE: Record<string, string> = {
+  uncommon: 'bg-green-100  text-green-800  border-green-300',
+  rare:     'bg-blue-100   text-blue-800   border-blue-300',
+  relic:    'bg-amber-100  text-amber-800  border-amber-300',
+  heroic:   'bg-purple-100 text-purple-800 border-purple-300',
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function fmtBonus(n: number): string {
+  return n >= 0 ? `+${n}` : String(n)
+}
+
+function getAttackMod(item: Item, strMod: number, dexMod: number): number {
+  const isFinesse = item.attackAbility === 'finesse' || item.properties?.includes('finesse')
+  if (isFinesse) return Math.max(strMod, dexMod)
+  if (item.attackAbility === 'dexterity' || item.rangeType === 'ranged') return dexMod
+  return strMod
+}
+
+function buildDamageStr(item: Item, abilityMod: number): string {
+  if (!item.damage) return '—'
+  const totalMod = abilityMod + (item.bonusDamage ?? 0)
+  const modPart  = totalMod > 0 ? ` + ${totalMod}` : totalMod < 0 ? ` − ${Math.abs(totalMod)}` : ''
+  const typePart = item.damageType ? ` ${item.damageType}` : ''
+  return `${item.damage}${modPart}${typePart}`
+}
+
+function buildRangeStr(item: Item): string {
+  if (!item.range) return item.rangeType === 'melee' ? '5 ft.' : '—'
+  const { normal, long } = item.range
+  return long ? `${normal} (${long})` : `${normal}`
+}
+
+function featureMatchesFilter(f: ClassFeature, filter: Filter): boolean {
+  switch (filter) {
+    case 'all':          return true
+    case 'attack':       return f.tags?.includes('attack') ?? false
+    case 'action':       return f.actionType === 'action'
+    case 'bonus-action': return f.actionType === 'bonus-action'
+    case 'reaction':     return f.actionType === 'reaction'
+    case 'other':
+      return !f.actionType || f.actionType === 'passive' || f.actionType === 'special' || f.actionType === 'free'
+    case 'limited-use':  return !!f.usesPerRest
+    default:             return true
+  }
+}
+
+// ─── FilterBar ────────────────────────────────────────────────────────────────
+
+function FilterBar({
+  active,
+  onChange,
+}: {
+  active: Filter
+  onChange: (f: Filter) => void
+}) {
+  return (
+    <div className="flex gap-1.5 overflow-x-auto pb-1 filter-bar-scroll">
+      {FILTERS.map(({ value, label }) => (
+        <Button
+          key={value}
+          size="sm"
+          variant={active === value ? 'default' : 'outline'}
+          onClick={() => onChange(value)}
+          className="shrink-0 text-[10px] tracking-wide h-7 px-2"
+        >
+          {label}
+        </Button>
+      ))}
+    </div>
+  )
+}
+
+// ─── WeaponRow ────────────────────────────────────────────────────────────────
+
+function WeaponRow({
+  invItem,
+  item,
+  strMod,
+  dexMod,
+  profBonus,
+}: {
+  invItem: InventoryItem
+  item: Item
+  strMod: number
+  dexMod: number
+  profBonus: number
+}) {
+  const [abOpen, setAbOpen] = useState(false)
+  const abilityMod = getAttackMod(item, strMod, dexMod)
+  const hitBonus   = profBonus + abilityMod + (item.bonusAttack ?? 0)
+  const damage     = buildDamageStr(item, abilityMod)
+  const range      = buildRangeStr(item)
+  const notes      = (item.properties ?? []).join(', ')
+  const activeAbilities = item.itemAbilities?.filter(a => a.actionType !== 'passive') ?? []
+
+  return (
+    <>
+      <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors group">
+        <td className="py-2 pr-3">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-medium text-foreground text-xs">
+              {item.rangeType === 'ranged' ? '🏹' : '⚔'} {item.name}
+            </span>
+            {item.tier && item.tier !== 'standard' && (
+              <Badge
+                variant="outline"
+                className={`text-[9px] h-4 px-1 ${TIER_BADGE[item.tier] ?? ''}`}
+              >
+                {item.tier}
+              </Badge>
+            )}
+            {invItem.quantity > 1 && (
+              <span className="text-[10px] text-muted-foreground">×{invItem.quantity}</span>
+            )}
+          </div>
+          <p className="text-[10px] text-muted-foreground capitalize mt-0.5">
+            {item.rangeType ?? (item.range ? 'ranged' : 'melee')} weapon
+          </p>
+        </td>
+        <td className="py-2 pr-3 text-right text-xs tabular-nums whitespace-nowrap text-foreground/80">
+          {range}
+        </td>
+        <td className="py-2 pr-3 text-right text-xs tabular-nums font-mono font-semibold text-foreground">
+          {fmtBonus(hitBonus)}
+        </td>
+        <td className="py-2 pr-3 text-right text-xs tabular-nums text-foreground/80 whitespace-nowrap">
+          {damage}
+        </td>
+        <td className="py-2 text-right text-[10px] text-muted-foreground max-w-[100px]">
+          {notes || '—'}
+          {activeAbilities.length > 0 && (
+            <button
+              className="ml-1.5 text-primary hover:underline text-[10px]"
+              onClick={() => setAbOpen(o => !o)}
+            >
+              {abOpen ? '▲' : '▼'} abilities
+            </button>
+          )}
+        </td>
+      </tr>
+
+      {/* Item abilities row */}
+      {activeAbilities.length > 0 && abOpen && (
+        <tr className="bg-muted/20">
+          <td colSpan={5} className="px-3 py-2">
+            <div className="space-y-2">
+              {activeAbilities.map(ab => (
+                <div key={ab.name} className="text-xs">
+                  <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                    <span className="font-medium">{ab.name}</span>
+                    {ab.actionType && ACTION_TYPE_LABELS[ab.actionType] && (
+                      <Badge
+                        variant="outline"
+                        className={`text-[9px] h-4 px-1 ${ACTION_TYPE_BADGE_CLASS[ab.actionType] ?? ''}`}
+                      >
+                        {ACTION_TYPE_LABELS[ab.actionType]}
+                      </Badge>
+                    )}
+                    {ab.usesPerRest && ab.usesMax && (
+                      <Badge variant="outline" className="text-[9px] h-4 px-1">
+                        {ab.usesMax}×/{ab.usesPerRest} rest
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">{ab.description}</p>
+                </div>
+              ))}
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+  )
+}
+
+// ─── AttackSection ────────────────────────────────────────────────────────────
+
+function AttackSection({
+  characterId,
+  show,
+}: {
+  characterId: string
+  show: boolean
+}) {
+  const character = useCharacterStore(s => s.characters.find(c => c.id === characterId))
+  if (!character || !show) return null
+
+  const strMod   = getModifier(character.abilityScores.strength)
+  const dexMod   = getModifier(character.abilityScores.dexterity)
+  const profBonus = character.proficiencyBonus
+
+  // Weapons: not explicitly un-equipped
+  const weapons: { invItem: InventoryItem; item: Item }[] = character.inventory
+    .filter(inv => inv.equipped !== false)
+    .flatMap(inv => {
+      const item = getItemById(inv.itemId)
+      return item && item.type === 'weapon' ? [{ invItem: inv, item }] : []
+    })
+
+  // Extra Attack detection
+  const cls = getAllClasses().find(c => c.id === character.class)
+  const subclass = cls?.subclasses?.find(s => s.id === character.subclass)
+  const allFeatures = [
+    ...(cls?.features ?? []),
+    ...(subclass?.features ?? []),
+  ]
+  const hasExtraAttack = allFeatures.some(
+    f => f.level <= character.level && f.name.toLowerCase().includes('extra attack'),
+  )
+  const attacksPerAction = hasExtraAttack ? 2 : 1
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
+          Attacks per action:{' '}
+          <span className="text-foreground">{attacksPerAction}</span>
+        </p>
+      </div>
+
+      {weapons.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-24 gap-1 text-muted-foreground/50 border border-dashed border-border rounded-lg">
+          <span className="text-xl">⚔</span>
+          <span className="text-xs italic">No weapons equipped</span>
+        </div>
+      ) : (
+        <>
+          {/* Mobile: card layout */}
+          <div className="sm:hidden space-y-2">
+            {weapons.map(({ invItem, item }) => {
+              const abilityMod = getAttackMod(item, strMod, dexMod)
+              const hitBonus   = profBonus + abilityMod + (item.bonusAttack ?? 0)
+              const damage     = buildDamageStr(item, abilityMod)
+              const range      = buildRangeStr(item)
+              return (
+                <div
+                  key={invItem.itemId}
+                  className="border border-border rounded-md p-3 space-y-1.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm">
+                      {item.rangeType === 'ranged' ? '🏹' : '⚔'} {item.name}
+                    </span>
+                    {item.tier && item.tier !== 'standard' && (
+                      <Badge variant="outline" className={`text-[9px] h-4 px-1 ${TIER_BADGE[item.tier] ?? ''}`}>
+                        {item.tier}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div>
+                      <p className="text-[9px] uppercase tracking-wide text-muted-foreground">HIT</p>
+                      <p className="font-mono font-semibold">{fmtBonus(hitBonus)}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] uppercase tracking-wide text-muted-foreground">DAMAGE</p>
+                      <p className="font-mono">{damage}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] uppercase tracking-wide text-muted-foreground">RANGE</p>
+                      <p>{range}</p>
+                    </div>
+                  </div>
+                  {item.properties && item.properties.length > 0 && (
+                    <p className="text-[10px] text-muted-foreground">{item.properties.join(', ')}</p>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Desktop: table layout */}
+          <div className="hidden sm:block overflow-x-auto -mx-1 px-1">
+            <table className="w-full min-w-[520px]">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left text-[9px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">ATTACK</th>
+                  <th className="text-right text-[9px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">RANGE</th>
+                  <th className="text-right text-[9px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">HIT / DC</th>
+                  <th className="text-right text-[9px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">DAMAGE</th>
+                  <th className="text-right text-[9px] uppercase tracking-wider text-muted-foreground py-1.5 font-medium">NOTES</th>
+                </tr>
+              </thead>
+              <tbody>
+                {weapons.map(({ invItem, item }) => (
+                  <WeaponRow
+                    key={invItem.itemId}
+                    invItem={invItem}
+                    item={item}
+                    strMod={strMod}
+                    dexMod={dexMod}
+                    profBonus={profBonus}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// ─── FeatureRow ───────────────────────────────────────────────────────────────
+
+function FeatureRow({
+  feature,
+  sourceName,
+}: {
+  feature: ClassFeature
+  sourceName?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const actionLabel = feature.actionType ? ACTION_TYPE_LABELS[feature.actionType] : undefined
+  const badgeClass  = feature.actionType ? ACTION_TYPE_BADGE_CLASS[feature.actionType] : undefined
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <CollapsibleTrigger className="flex w-full items-start gap-2 py-2 text-left focus:outline-none group hover:bg-muted/30 px-2 rounded-md transition-colors">
+        <span
+          className="text-muted-foreground text-[10px] mt-0.5 shrink-0 transition-transform duration-150"
+          style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}
+          aria-hidden="true"
+        >
+          ▶
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-sm font-medium text-foreground">{feature.name}</span>
+            {actionLabel && (
+              <Badge
+                variant="outline"
+                className={`text-[9px] h-4 px-1.5 ${badgeClass ?? ''}`}
+              >
+                {actionLabel}
+              </Badge>
+            )}
+            {feature.usesPerRest && (
+              <Badge variant="outline" className="text-[9px] h-4 px-1.5 text-muted-foreground">
+                {feature.usesMax ? `${feature.usesMax}×` : ''}
+                {feature.usesPerRest === 'short' ? ' Short Rest' : ' Long Rest'}
+              </Badge>
+            )}
+            {sourceName && (
+              <span className="text-[10px] text-muted-foreground/60 italic">({sourceName})</span>
+            )}
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-0.5">Lv. {feature.level}</p>
+        </div>
+      </CollapsibleTrigger>
+
+      <CollapsibleContent>
+        <div className="px-7 pb-3 pt-0.5">
+          <p className="text-xs text-foreground/80 leading-relaxed whitespace-pre-wrap">
+            {feature.description}
+          </p>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
+
+// ─── ClassFeaturesSection ─────────────────────────────────────────────────────
+
+function ClassFeaturesSection({
+  characterId,
+  filter,
+}: {
+  characterId: string
+  filter: Filter
+}) {
+  const character = useCharacterStore(s => s.characters.find(c => c.id === characterId))
+  if (!character) return null
+
+  const cls      = getAllClasses().find(c => c.id === character.class)
+  const subclass = cls?.subclasses?.find(s => s.id === character.subclass)
+
+  const clsFeatures = (cls?.features ?? [])
+    .filter(f => f.level <= character.level)
+    .filter(f => featureMatchesFilter(f, filter))
+
+  const subFeatures = (subclass?.features ?? [])
+    .filter(f => f.level <= character.level)
+    .filter(f => featureMatchesFilter(f, filter))
+
+  const totalCount = clsFeatures.length + subFeatures.length
+
+  return (
+    <div>
+      <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-1 mt-2">
+        Class Features
+        {totalCount === 0 && (
+          <span className="normal-case tracking-normal font-normal ml-1 italic">— none match this filter</span>
+        )}
+      </p>
+      <div className="divide-y divide-border/50">
+        {clsFeatures.map(f => (
+          <FeatureRow key={`cls-${f.name}-${f.level}`} feature={f} />
+        ))}
+        {subFeatures.map(f => (
+          <FeatureRow
+            key={`sub-${f.name}-${f.level}`}
+            feature={f}
+            sourceName={subclass?.name}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ─── CombatReference ─────────────────────────────────────────────────────────
+
+const COMBAT_ACTIONS = [
+  'Attack', 'Cast a Spell', 'Dash', 'Disengage', 'Dodge', 'Grapple',
+  'Help', 'Hide', 'Ready', 'Search', 'Shove', 'Use Object',
+]
+
+function CombatReference() {
+  const [open, setOpen] = useState(false)
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <CollapsibleTrigger className="flex w-full items-center justify-between py-2 px-2 rounded-md hover:bg-muted/30 transition-colors focus:outline-none text-left mt-2">
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+          Actions in Combat
+        </span>
+        <span
+          className="text-muted-foreground text-xs transition-transform duration-150"
+          style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}
+          aria-hidden="true"
+        >
+          ▶
+        </span>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <div className="px-2 pb-3 pt-1">
+          <div className="flex flex-wrap gap-1.5">
+            {COMBAT_ACTIONS.map(action => (
+              <Badge key={action} variant="outline" className="text-xs font-normal">
+                {action}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
+
+// ─── ActionsTab ───────────────────────────────────────────────────────────────
+
+interface Props {
+  characterId: string
+}
+
+export default function ActionsTab({ characterId }: Props) {
+  const [filter, setFilter] = useState<Filter>('all')
+
+  const showAttacks = filter === 'all' || filter === 'attack'
+
+  return (
+    <div className="space-y-4">
+      <FilterBar active={filter} onChange={setFilter} />
+      <AttackSection  characterId={characterId} show={showAttacks} />
+      <ClassFeaturesSection characterId={characterId} filter={filter} />
+      <CombatReference />
+    </div>
+  )
+}

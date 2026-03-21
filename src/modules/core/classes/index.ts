@@ -1,0 +1,1 @@
+export { imperialGuardsman } from './imperialGuardsman'

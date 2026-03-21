@@ -1,0 +1,72 @@
+/* Minimal sheet-specific styles — prefer Tailwind classes in components */
+
+/* Hide scrollbar in nav tabs row */
+.sheet-nav__tabs {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.sheet-nav__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* Content tabs — active trigger underline uses primary color */
+.content-tabs-trigger::after {
+  background-color: var(--primary) !important;
+}
+
+/* Content tabs list — hide scrollbar on mobile overflow */
+.content-tabs-list {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.content-tabs-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar on skill list mobile scroll area */
+.skill-list-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.skill-list-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Filter bar — hide scrollbar */
+.filter-bar-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.filter-bar-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Spin-button removal for number inputs (webkit fallback for older browsers) */
+.sheet-nav input[type='number']::-webkit-outer-spin-button,
+.sheet-nav input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* Roll toast entrance */
+@keyframes toast-enter {
+  from { opacity: 0; transform: translate(-50%, -12px); }
+  to   { opacity: 1; transform: translate(-50%, 0);     }
+}
+
+/* Smooth collapsible animations */
+[data-slot="collapsible-content"][data-open] {
+  animation: collapsible-slide-down 160ms ease-out;
+}
+[data-slot="collapsible-content"][data-closed] {
+  animation: collapsible-slide-up 120ms ease-in forwards;
+}
+
+@keyframes collapsible-slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes collapsible-slide-up {
+  from { opacity: 1; transform: translateY(0);    }
+  to   { opacity: 0; transform: translateY(-4px); }
+}
