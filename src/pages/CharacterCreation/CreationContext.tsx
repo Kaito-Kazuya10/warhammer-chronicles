@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react'
-import { getAllClasses } from '../../modules/registry'
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
+import { getAllClasses, getAllRaces, getAllBackgrounds } from '../../modules/registry'
 import type { CharacterClass } from '../../types/module'
+import type { Character } from '../../types/character'
 
 // ─── Draft state shape ────────────────────────────────────────────────────────
 
@@ -55,6 +56,54 @@ const defaultDraft: CreationDraft = {
   equipmentChoices: {},
   useStartingWealth: false,
   startingWealth: null,
+}
+
+// ─── Hydrate draft from existing character ───────────────────────────────────
+
+const ABBR_MAP: Record<string, string> = {
+  strength: 'STR', dexterity: 'DEX', constitution: 'CON',
+  intelligence: 'INT', wisdom: 'WIS', charisma: 'CHA',
+}
+
+function hydrateDraftFromCharacter(char: Character): CreationDraft {
+  const race = char.race ? getAllRaces().find(r => r.id === char.race) : null
+  const bg   = char.background ? getAllBackgrounds().find(b => b.id === char.background) : null
+
+  // Compute base ability scores by subtracting racial bonuses
+  const baseScores: Record<string, number> = {}
+  for (const [full, abbr] of Object.entries(ABBR_MAP)) {
+    const total  = char.abilityScores[full as keyof typeof char.abilityScores] ?? 10
+    const racial = race?.abilityScoreIncreases[full as keyof typeof race.abilityScoreIncreases] ?? 0
+    baseScores[abbr] = total - racial
+  }
+
+  // Extract class-selected skills by removing background skills
+  const bgSkillSet = new Set(bg?.skillProficiencies ?? [])
+  const selectedSkills: string[] = []
+  if (char.skills) {
+    for (const [skill, proficient] of Object.entries(char.skills)) {
+      if (proficient && !bgSkillSet.has(skill)) {
+        selectedSkills.push(skill)
+      }
+    }
+  }
+
+  return {
+    name: char.name,
+    portrait: char.portrait ?? null,
+    raceId: char.race || null,
+    abilityScoreChoices: {},
+    classId: char.class || null,
+    subclassId: char.subclass || null,
+    fightingStyle: char.fightingStyle ?? null,
+    backgroundId: char.background || null,
+    abilityScoreMethod: 'manual',
+    baseAbilityScores: baseScores,
+    selectedSkills,
+    equipmentChoices: {},
+    useStartingWealth: false,
+    startingWealth: null,
+  }
 }
 
 // ─── Validation helpers ───────────────────────────────────────────────────────
@@ -120,28 +169,54 @@ interface CreationContextValue {
   canAdvanceFrom: (step: number) => boolean
   nameError: boolean
   setNameError: (v: boolean) => void
+  /** Non-null when editing an existing character */
+  editId: string | null
 }
 
 const CreationContext = createContext<CreationContextValue | null>(null)
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
-export function CreationProvider({ children }: { children: React.ReactNode }) {
-  const [draft, setDraft] = useState<CreationDraft>(defaultDraft)
+interface CreationProviderProps {
+  children: React.ReactNode
+  editCharacter?: Character | null
+}
+
+export function CreationProvider({ children, editCharacter }: CreationProviderProps) {
+  const editId = editCharacter?.id ?? null
+  const hydratedRef = useRef(false)
+
+  const [draft, setDraft] = useState<CreationDraft>(() => {
+    if (editCharacter) {
+      hydratedRef.current = true
+      return hydrateDraftFromCharacter(editCharacter)
+    }
+    return defaultDraft
+  })
   const [currentStep, setCurrentStepRaw] = useState(0)
-  const [furthestStep, setFurthestStep] = useState(0)
+  const [furthestStep, setFurthestStep] = useState(() => editCharacter ? TOTAL_STEPS - 1 : 0)
   const [nameError, setNameErrorRaw] = useState(false)
+
+  // If editCharacter changes after mount (shouldn't normally happen), re-hydrate
+  useEffect(() => {
+    if (editCharacter && !hydratedRef.current) {
+      hydratedRef.current = true
+      setDraft(hydrateDraftFromCharacter(editCharacter))
+      setFurthestStep(TOTAL_STEPS - 1)
+    }
+  }, [editCharacter])
 
   const updateDraft = useCallback((partial: Partial<CreationDraft>) => {
     setDraft(prev => ({ ...prev, ...partial }))
   }, [])
 
   // When the draft changes, trim furthestStep back to the first invalid step.
-  // This ensures that if the player goes back and changes something that breaks
-  // a later step, the later steps become locked in the nav bar.
+  // In edit mode, allow all steps to remain accessible.
   useEffect(() => {
-    setFurthestStep(prev => Math.min(prev, computeMaxFurthestStep(draft)))
-  }, [draft])
+    if (!editId) {
+      setFurthestStep(prev => Math.min(prev, computeMaxFurthestStep(draft)))
+    }
+  }, [draft, editId])
 
   const resetDraft = useCallback(() => {
     setDraft(defaultDraft)
@@ -171,6 +246,7 @@ export function CreationProvider({ children }: { children: React.ReactNode }) {
         currentStep, setCurrentStep, furthestStep,
         canAdvanceFrom,
         nameError, setNameError,
+        editId,
       }}
     >
       {children}

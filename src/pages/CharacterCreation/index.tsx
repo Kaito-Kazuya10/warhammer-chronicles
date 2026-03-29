@@ -1,6 +1,8 @@
 import { useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import './creation.css'
 import { CreationProvider, useCreation } from './CreationContext'
+import { useCharacterStore } from '../../store/characterStore'
 import StepNavBar from './components/StepNavBar'
 import CreationHeader from './components/CreationHeader'
 import SpeciesStep from './steps/SpeciesStep'
@@ -77,8 +79,13 @@ function WizardBody() {
 // ─── Page root ────────────────────────────────────────────────────────────────
 
 export default function CharacterCreation() {
+  const [searchParams] = useSearchParams()
+  const editId = searchParams.get('edit')
+  const characters = useCharacterStore(s => s.characters)
+  const editCharacter = editId ? characters.find(c => c.id === editId) ?? null : null
+
   return (
-    <CreationProvider>
+    <CreationProvider editCharacter={editCharacter}>
       <div className="creation-page">
         <StepNavBar />
         <CreationHeader />

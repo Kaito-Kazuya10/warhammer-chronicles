@@ -17,10 +17,10 @@ interface Props {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TIER_BADGE: Record<string, string> = {
-  uncommon: 'bg-green-500/15 text-green-700 border-green-500/30',
-  rare:     'bg-blue-500/15 text-blue-700 border-blue-500/30',
-  relic:    'bg-purple-500/15 text-purple-700 border-purple-500/30',
-  heroic:   'bg-[var(--wh-gold)]/15 text-[var(--wh-gold)] border-[var(--wh-gold)]/30',
+  'master-crafted': 'bg-green-500/15 text-green-700 border-green-500/30',
+  'artificer':      'bg-blue-500/15 text-blue-700 border-blue-500/30',
+  'relic':          'bg-purple-500/15 text-purple-700 border-purple-500/30',
+  'heroic':         'bg-[var(--wh-gold)]/15 text-[var(--wh-gold)] border-[var(--wh-gold)]/30',
 }
 
 const ACTION_LABEL: Record<FeatureActionType, string> = {

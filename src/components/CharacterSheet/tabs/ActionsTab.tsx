@@ -49,10 +49,10 @@ const ACTION_TYPE_BADGE_CLASS: Partial<Record<FeatureActionType, string>> = {
 }
 
 const TIER_BADGE: Record<string, string> = {
-  uncommon: 'bg-green-100  text-green-800  border-green-300',
-  rare:     'bg-blue-100   text-blue-800   border-blue-300',
-  relic:    'bg-amber-100  text-amber-800  border-amber-300',
-  heroic:   'bg-purple-100 text-purple-800 border-purple-300',
+  'master-crafted': 'bg-green-100  text-green-800  border-green-300',
+  'artificer':      'bg-blue-100   text-blue-800   border-blue-300',
+  'relic':          'bg-amber-100  text-amber-800  border-amber-300',
+  'heroic':         'bg-purple-100 text-purple-800 border-purple-300',
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -414,6 +414,10 @@ function FeatureRow({
 
 // ─── ClassFeaturesSection ─────────────────────────────────────────────────────
 
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+}
+
 function ClassFeaturesSection({
   characterId,
   filter,
@@ -426,16 +430,54 @@ function ClassFeaturesSection({
 
   const cls      = getAllClasses().find(c => c.id === character.class)
   const subclass = cls?.subclasses?.find(s => s.id === character.subclass)
+  const choices  = character.featureChoices ?? {}
 
-  const clsFeatures = (cls?.features ?? [])
-    .filter(f => f.level <= character.level)
-    .filter(f => featureMatchesFilter(f, filter))
+  // Determine which originals are replaced by ENHANCE options
+  const enhancedOriginals = new Set<string>()
+  const enhancementMap = new Map<string, ClassFeature>()
+  for (const [optGroup, chosenSlug] of Object.entries(choices)) {
+    const chosen = (subclass?.features ?? []).find(
+      f => f.optionGroup === optGroup && slugify(f.name) === chosenSlug
+    )
+    if (chosen?.sourceFeature) {
+      enhancedOriginals.add(chosen.sourceFeature)
+      enhancementMap.set(chosen.sourceFeature, chosen)
+    }
+  }
 
-  const subFeatures = (subclass?.features ?? [])
-    .filter(f => f.level <= character.level)
-    .filter(f => featureMatchesFilter(f, filter))
+  // Filter features: apply choices logic then filter
+  const resolveFeatures = (features: ClassFeature[], source?: string) => {
+    const resolved: { feature: ClassFeature; sourceName?: string }[] = []
+    for (const f of features) {
+      if (f.level > character.level) continue
 
-  const totalCount = clsFeatures.length + subFeatures.length
+      // Options: only show chosen
+      if (f.featureType === 'option' && f.optionGroup) {
+        const chosen = choices[f.optionGroup]
+        if (!chosen || slugify(f.name) !== chosen) continue
+        if (f.sourceFeature) continue // ENHANCE shown as replacement
+      }
+
+      // Replace enhanced originals
+      const fSlug = slugify(f.name)
+      if (enhancedOriginals.has(fSlug)) {
+        const enhanced = enhancementMap.get(fSlug)!
+        if (featureMatchesFilter(enhanced, filter)) {
+          resolved.push({ feature: enhanced, sourceName: source })
+        }
+        continue
+      }
+
+      if (featureMatchesFilter(f, filter)) {
+        resolved.push({ feature: f, sourceName: source })
+      }
+    }
+    return resolved
+  }
+
+  const clsResolved = resolveFeatures(cls?.features ?? [])
+  const subResolved = resolveFeatures(subclass?.features ?? [], subclass?.name)
+  const totalCount = clsResolved.length + subResolved.length
 
   return (
     <div>
@@ -446,14 +488,14 @@ function ClassFeaturesSection({
         )}
       </p>
       <div className="divide-y divide-border/50">
-        {clsFeatures.map(f => (
-          <FeatureRow key={`cls-${f.name}-${f.level}`} feature={f} />
+        {clsResolved.map(({ feature, sourceName }) => (
+          <FeatureRow key={`cls-${feature.name}-${feature.level}`} feature={feature} sourceName={sourceName} />
         ))}
-        {subFeatures.map(f => (
+        {subResolved.map(({ feature, sourceName }) => (
           <FeatureRow
-            key={`sub-${f.name}-${f.level}`}
-            feature={f}
-            sourceName={subclass?.name}
+            key={`sub-${feature.name}-${feature.level}`}
+            feature={feature}
+            sourceName={sourceName}
           />
         ))}
       </div>

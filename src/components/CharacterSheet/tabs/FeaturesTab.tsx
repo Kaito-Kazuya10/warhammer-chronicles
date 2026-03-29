@@ -10,6 +10,12 @@ interface Props {
   characterId: string
 }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+}
+
 // ─── Label maps ───────────────────────────────────────────────────────────────
 
 const ACTION_LABEL: Record<FeatureActionType, string> = {
@@ -42,9 +48,10 @@ const TAG_BADGE: Record<string, { label: string; cls: string }> = {
 interface FeatureRowProps {
   feature: ClassFeature
   source?: string   // 'Subclass' label when from a subclass
+  enhanced?: boolean // true if this feature was enhanced via featureChoices
 }
 
-function FeatureRow({ feature, source }: FeatureRowProps) {
+function FeatureRow({ feature, source, enhanced }: FeatureRowProps) {
   const [open, setOpen] = useState(false)
 
   const tagBadges = (feature.tags ?? [])
@@ -68,6 +75,9 @@ function FeatureRow({ feature, source }: FeatureRowProps) {
 
           {/* Badges */}
           <div className="flex flex-wrap gap-1 flex-shrink-0">
+            {enhanced && (
+              <Badge className="text-[9px] py-0 px-1 bg-purple-500/15 text-purple-400 border-purple-500/30">⬆ ENHANCED</Badge>
+            )}
             {tagBadges.map(({ label, cls }) => (
               <Badge key={label} className={`text-[9px] py-0 px-1 ${cls}`}>{label}</Badge>
             ))}
@@ -103,7 +113,7 @@ function FeatureRow({ feature, source }: FeatureRowProps) {
 
 interface LevelGroupProps {
   level: number
-  features: { feature: ClassFeature; source?: string }[]
+  features: { feature: ClassFeature; source?: string; enhanced?: boolean }[]
 }
 
 function LevelGroup({ level, features }: LevelGroupProps) {
@@ -116,8 +126,8 @@ function LevelGroup({ level, features }: LevelGroupProps) {
         </span>
         <Separator className="flex-1" />
       </div>
-      {features.map(({ feature, source }, i) => (
-        <FeatureRow key={i} feature={feature} source={source} />
+      {features.map(({ feature, source, enhanced }, i) => (
+        <FeatureRow key={i} feature={feature} source={source} enhanced={enhanced} />
       ))}
     </div>
   )
@@ -144,11 +154,48 @@ export default function FeaturesTab({ characterId }: Props) {
   }
 
   // Collect all features at or below character level, tagged with source
-  type Entry = { feature: ClassFeature; source?: string }
+  // Apply featureChoices: show chosen options, hide unchosen, replace enhanced originals
+  type Entry = { feature: ClassFeature; source?: string; enhanced?: boolean }
   const byLevel = new Map<number, Entry[]>()
+  const choices = character.featureChoices ?? {}
+
+  // Track which original features are replaced by ENHANCE options
+  const enhancedOriginals = new Set<string>() // slugified names of replaced originals
+  const enhancementMap = new Map<string, ClassFeature>() // original slug → enhanced feature
+
+  // First pass: determine which originals are enhanced
+  for (const [optGroup, chosenSlug] of Object.entries(choices)) {
+    const chosen = (subclass?.features ?? []).find(
+      f => f.optionGroup === optGroup && slugify(f.name) === chosenSlug
+    )
+    if (chosen?.sourceFeature) {
+      enhancedOriginals.add(chosen.sourceFeature)
+      enhancementMap.set(chosen.sourceFeature, chosen)
+    }
+  }
 
   const addFeature = (feature: ClassFeature, source?: string) => {
     if (feature.level > character.level) return
+
+    // Handle options: only show chosen option, skip unchosen
+    if (feature.featureType === 'option' && feature.optionGroup) {
+      const chosen = choices[feature.optionGroup]
+      if (!chosen) return // no choice made yet — hide all options for this group
+      if (slugify(feature.name) !== chosen) return // not the chosen option
+      // If it's an ENHANCE option, it will be shown in place of the original
+      if (feature.sourceFeature) return // will be rendered as replacement below
+      // It's a NEW option — add it
+    }
+
+    // Handle originals that have been enhanced — replace with enhanced version
+    const featureSlug = slugify(feature.name)
+    if (enhancedOriginals.has(featureSlug)) {
+      const enhanced = enhancementMap.get(featureSlug)!
+      if (!byLevel.has(feature.level)) byLevel.set(feature.level, [])
+      byLevel.get(feature.level)!.push({ feature: enhanced, source, enhanced: true })
+      return
+    }
+
     if (!byLevel.has(feature.level)) byLevel.set(feature.level, [])
     byLevel.get(feature.level)!.push({ feature, source })
   }

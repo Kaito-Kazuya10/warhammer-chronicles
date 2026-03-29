@@ -1,5 +1,10 @@
 import { create } from 'zustand'
 import type { Character, AbilityScores, Skills } from '../types/character'
+import {
+  fetchMyCharacters,
+  upsertCharacter,
+  deleteCharacterFromDb,
+} from '../db/characterRepository'
 
 const defaultAbilityScores: AbilityScores = {
   strength: 10,
@@ -79,9 +84,14 @@ export function getProficiencyBonus(level: number): number {
 interface CharacterStore {
   characters: Character[]
   activeCharacterId: string | null
+  loading: boolean
+  error: string | null
   activeCharacter: () => Character | null
 
+  loadCharacters: () => Promise<void>
   createCharacter: () => string
+  importCharacter: (data: Omit<Character, 'id' | 'createdAt' | 'updatedAt'>) => string
+  duplicateCharacter: (id: string) => string | null
   setActiveCharacter: (id: string) => void
   updateCharacter: (id: string, patch: Partial<Character>) => void
   updateAbilityScore: (id: string, ability: keyof AbilityScores, value: number) => void
@@ -90,32 +100,104 @@ interface CharacterStore {
   deleteCharacter: (id: string) => void
 }
 
+// Debounced save — batches rapid updates into a single DB write
+const saveTimers = new Map<string, ReturnType<typeof setTimeout>>()
+
+function debouncedSave(character: Character) {
+  const existing = saveTimers.get(character.id)
+  if (existing) clearTimeout(existing)
+  saveTimers.set(
+    character.id,
+    setTimeout(() => {
+      saveTimers.delete(character.id)
+      upsertCharacter(character).catch(err =>
+        console.error('[characterStore] Background save failed:', err),
+      )
+    }, 800),
+  )
+}
+
 export const useCharacterStore = create<CharacterStore>((set, get) => ({
   characters: [],
   activeCharacterId: null,
+  loading: false,
+  error: null,
 
   activeCharacter: () => {
     const { characters, activeCharacterId } = get()
     return characters.find(c => c.id === activeCharacterId) ?? null
   },
 
+  // ── Load from Supabase ────────────────────────────────────────────────────
+
+  loadCharacters: async () => {
+    set({ loading: true, error: null })
+    try {
+      const characters = await fetchMyCharacters()
+      set({ characters, loading: false })
+    } catch (err) {
+      set({ error: (err as Error).message, loading: false })
+    }
+  },
+
+  // ── Create ────────────────────────────────────────────────────────────────
+
   createCharacter: () => {
     const id = crypto.randomUUID()
     const newChar = createNewCharacter(id)
     set(state => ({ characters: [...state.characters, newChar], activeCharacterId: id }))
+    // Save to DB in background
+    upsertCharacter(newChar).catch(err =>
+      console.error('[characterStore] Failed to save new character:', err),
+    )
     return id
+  },
+
+  importCharacter: (data) => {
+    const id = crypto.randomUUID()
+    const now = Date.now()
+    const newChar: Character = { ...data, id, createdAt: now, updatedAt: now } as Character
+    set(state => ({ characters: [...state.characters, newChar], activeCharacterId: id }))
+    upsertCharacter(newChar).catch(err =>
+      console.error('[characterStore] Failed to save imported character:', err),
+    )
+    return id
+  },
+
+  duplicateCharacter: (id) => {
+    const source = get().characters.find(c => c.id === id)
+    if (!source) return null
+    const newId = crypto.randomUUID()
+    const now = Date.now()
+    const copy: Character = {
+      ...source,
+      id: newId,
+      name: `${source.name} (Copy)`,
+      createdAt: now,
+      updatedAt: now,
+    }
+    set(state => ({ characters: [...state.characters, copy], activeCharacterId: newId }))
+    upsertCharacter(copy).catch(err =>
+      console.error('[characterStore] Failed to save duplicated character:', err),
+    )
+    return newId
   },
 
   setActiveCharacter: (id) => set({ activeCharacterId: id }),
 
-  updateCharacter: (id, patch) =>
+  // ── Update (optimistic + debounced DB sync) ───────────────────────────────
+
+  updateCharacter: (id, patch) => {
     set(state => ({
       characters: state.characters.map(c =>
         c.id === id ? { ...c, ...patch, updatedAt: Date.now() } : c
       ),
-    })),
+    }))
+    const updated = get().characters.find(c => c.id === id)
+    if (updated) debouncedSave(updated)
+  },
 
-  updateAbilityScore: (id, ability, value) =>
+  updateAbilityScore: (id, ability, value) => {
     set(state => ({
       characters: state.characters.map(c =>
         c.id === id
@@ -126,9 +208,12 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
             }
           : c
       ),
-    })),
+    }))
+    const updated = get().characters.find(c => c.id === id)
+    if (updated) debouncedSave(updated)
+  },
 
-  toggleSkill: (id, skill) =>
+  toggleSkill: (id, skill) => {
     set(state => ({
       characters: state.characters.map(c =>
         c.id === id
@@ -139,20 +224,32 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
             }
           : c
       ),
-    })),
+    }))
+    const updated = get().characters.find(c => c.id === id)
+    if (updated) debouncedSave(updated)
+  },
 
-  setHitPoints: (id, current) =>
+  setHitPoints: (id, current) => {
     set(state => ({
       characters: state.characters.map(c =>
         c.id === id
           ? { ...c, currentHitPoints: Math.min(Math.max(current, 0), c.maxHitPoints), updatedAt: Date.now() }
           : c
       ),
-    })),
+    }))
+    const updated = get().characters.find(c => c.id === id)
+    if (updated) debouncedSave(updated)
+  },
 
-  deleteCharacter: (id) =>
+  // ── Delete (optimistic + DB sync) ─────────────────────────────────────────
+
+  deleteCharacter: (id) => {
     set(state => ({
       characters: state.characters.filter(c => c.id !== id),
       activeCharacterId: state.activeCharacterId === id ? null : state.activeCharacterId,
-    })),
+    }))
+    deleteCharacterFromDb(id).catch(err =>
+      console.error('[characterStore] Failed to delete character from DB:', err),
+    )
+  },
 }))

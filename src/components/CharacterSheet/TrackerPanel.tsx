@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   Card,
   CardHeader,
@@ -7,18 +6,8 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from '@/components/ui/collapsible'
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from '@/components/ui/tooltip'
 import { useCharacterStore } from '../../store/characterStore'
+import { useAuth } from '@/auth/useAuth'
 
 // ─── Currency ─────────────────────────────────────────────────────────────────
 
@@ -124,23 +113,14 @@ function AugmentSlots({ characterId }: { characterId: string }) {
   )
 }
 
-// ─── GM Panel ─────────────────────────────────────────────────────────────────
+// ─── GM Panel (DM role only) ─────────────────────────────────────────────────
 
 function GMPanel({ characterId }: { characterId: string }) {
   const character       = useCharacterStore(s => s.characters.find(c => c.id === characterId))
   const updateCharacter = useCharacterStore(s => s.updateCharacter)
+  const { profile }     = useAuth()
 
-  const [gmMode, setGmMode] = useState<boolean>(
-    () => localStorage.getItem('wh40k-gm-mode') === 'true'
-  )
-
-  if (!character) return null
-
-  const toggleGm = (open: boolean) => {
-    localStorage.setItem('wh40k-gm-mode', String(open))
-    setGmMode(open)
-    window.dispatchEvent(new Event('gm-mode-change'))
-  }
+  if (!character || profile?.role !== 'dm') return null
 
   const numField = (
     label: string,
@@ -165,37 +145,14 @@ function GMPanel({ characterId }: { characterId: string }) {
   )
 
   return (
-    <Collapsible open={gmMode} onOpenChange={toggleGm}>
-      <TooltipProvider delay={400}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <CollapsibleTrigger className="flex w-full items-center justify-between py-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
-              <span className="text-xs font-bold tracking-widest uppercase text-muted-foreground flex items-center gap-1.5">
-                {gmMode ? '🔓' : '🔒'} GM Panel
-              </span>
-              <span
-                className="text-muted-foreground text-xs transition-transform duration-200"
-                style={{ transform: gmMode ? 'rotate(90deg)' : 'rotate(0deg)' }}
-                aria-hidden="true"
-              >
-                ▶
-              </span>
-            </CollapsibleTrigger>
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            Toggle GM mode to view hidden trackers
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <CollapsibleContent>
-        <div className="border-l-2 border-destructive/40 pl-3 py-1 space-y-2 mt-1">
-          {numField('Warp Exposure', character.warpExposure, 10,  v => updateCharacter(characterId, { warpExposure: v }))}
-          {numField('Corruption',    character.corruption,   100, v => updateCharacter(characterId, { corruption: v }))}
-          {numField('Faith',         character.faith,        100, v => updateCharacter(characterId, { faith: v }))}
-        </div>
-      </CollapsibleContent>
-    </Collapsible>
+    <div>
+      <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-2">GM Panel</p>
+      <div className="border-l-2 border-destructive/40 pl-3 space-y-2">
+        {numField('Warp Exposure', character.warpExposure, 10,  v => updateCharacter(characterId, { warpExposure: v }))}
+        {numField('Corruption',    character.corruption,   100, v => updateCharacter(characterId, { corruption: v }))}
+        {numField('Faith',         character.faith,        100, v => updateCharacter(characterId, { faith: v }))}
+      </div>
+    </div>
   )
 }
 

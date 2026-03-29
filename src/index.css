@@ -59,8 +59,8 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #1a1209;
-  color: #e8d5a3;
+  background-color: #131519;
+  color: #d4d0c8;
 }
 
 .dark {
@@ -148,5 +148,38 @@ body {
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* ── Landing page title glow ──────────────────────────────────────────────── */
+
+.landing-title {
+  text-shadow:
+    0 0 20px rgba(217, 160, 60, 0.35),
+    0 0 50px rgba(217, 160, 60, 0.15),
+    0 0 90px rgba(217, 160, 60, 0.08);
+  animation: title-glow 4s ease-in-out infinite alternate;
+}
+
+.landing-subtitle {
+  text-shadow:
+    0 0 14px rgba(217, 160, 60, 0.25),
+    0 0 40px rgba(217, 160, 60, 0.10);
+  animation: title-glow 4s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes title-glow {
+  0% {
+    filter: brightness(1);
+    text-shadow:
+      0 0 20px rgba(217, 160, 60, 0.30),
+      0 0 50px rgba(217, 160, 60, 0.12);
+  }
+  100% {
+    filter: brightness(1.08);
+    text-shadow:
+      0 0 25px rgba(217, 160, 60, 0.50),
+      0 0 60px rgba(217, 160, 60, 0.22),
+      0 0 100px rgba(217, 160, 60, 0.10);
   }
 }

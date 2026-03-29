@@ -1,4 +1,4 @@
-import type { AbilityScore, SkillName } from './module'
+import type { AbilityScore, SkillName, PsychicDiscipline } from './module'
 
 // Re-export SkillName so existing imports from this file continue to work
 export type { SkillName }
@@ -20,7 +20,7 @@ export interface InventoryItem {
   notes?: string
 }
 
-// ─── Spell Slot ───────────────────────────────────────────────────────────────
+// ─── Spell Slots ─────────────────────────────────────────────────────────────
 
 export interface SpellSlots {
   [level: number]: {
@@ -32,69 +32,93 @@ export interface SpellSlots {
 // ─── Character ────────────────────────────────────────────────────────────────
 
 export interface Character {
+  // ── Identity ────────────────────────────────────────────────────────────────
   id: string
   name: string
-  race: string           // references Race.id
-  class: string          // references CharacterClass.id
-  subclass?: string
+  race: string                        // references Race.id
+  class: string                       // references CharacterClass.id
+  subclass?: string                   // references Subclass.id
   level: number
   experiencePoints: number
-  background: string     // references Background.id
+  background: string                  // references Background.id
   alignment: string
+  portrait?: string | null            // base64 data URL
+  campaignId?: string | null          // references Campaign.id
 
+  // ── Core Stats ──────────────────────────────────────────────────────────────
   abilityScores: AbilityScores
-  skills: Skills
+  skills: Skills                      // true = proficient
   savingThrowProficiencies: AbilityScore[]
-
   maxHitPoints: number
   currentHitPoints: number
   temporaryHitPoints: number
   hitDiceUsed: number
-
   armorClass: number
   initiative: number
   speed: number
-
   proficiencyBonus: number
 
+  // ── Content References ───────────────────────────────────────────────────────
   inventory: InventoryItem[]
-  spellIds: string[]        // references Spell.id from modules
+  spellIds: string[]                  // references Spell.id from modules
   spellSlots: SpellSlots
-
-  featIds: string[]         // references Feat.id from modules
-
+  featIds: string[]                   // references Feat.id from modules
   languages: string[]
-  proficiencies: string[]   // weapon/armor/tool proficiencies
+  proficiencies: string[]             // weapon/armor/tool proficiency strings
+
+  // ── Personality ─────────────────────────────────────────────────────────────
   personalityTraits: string
   ideals: string
   bonds: string
   flaws: string
   backstory: string
 
+  // ── Combat State ────────────────────────────────────────────────────────────
   inspiration: boolean
   deathSaveSuccesses: number
   deathSaveFailures: number
 
-  // ─── 40K Tracker Fields ─────────────────────────────────────────────────────
-  warpExposure: number    // 0–10, GM-facing
-  warpBar?: number        // 0–20, Psyker only
-  corruption: number      // 0–100, hidden from players
-  faith: number           // 0–100, hidden from players
+  // ── 40K Trackers ────────────────────────────────────────────────────────────
+  warpExposure: number                // 0–10, GM-facing
+  warpBar?: number                    // 0–20, Psyker only
+  corruption: number                  // 0–100, hidden from players
+  faith: number                       // 0–100, hidden from players
+  currency: { thrones: number; melt: number; aquila: number }
 
-  // ─── Augmenticist Fields ─────────────────────────────────────────────────────
+  // ── Augmenticist ────────────────────────────────────────────────────────────
   augmentSlots?: number
   powerCells?: { current: number; max: number }
-  installedAugmentIds?: string[]   // references Item.id
+  installedAugmentIds?: string[]      // references Item.id
 
-  // ─── Currency (40K) ──────────────────────────────────────────────────────────
-  currency: {
-    thrones: number
-    melt: number
-    aquila: number
-  }
+  // ── Player Choices ──────────────────────────────────────────────────────────
+  fightingStyle?: string              // "Archery", "Defense", "Marksman", etc.
+  featureChoices?: Record<string, string>  // optionGroup → chosen option id
+  classResourceCurrent?: number       // current value of class resource (pool/bar)
+  classResourceDiceRemaining?: number // for 'dice' type resources
 
-  portrait?: string | null
+  // ── Warrior ─────────────────────────────────────────────────────────────────
+  techniquesKnown?: string[]          // references ClassFeature ids/names
 
+  // ── Officer ─────────────────────────────────────────────────────────────────
+  commandsKnownIds?: string[]         // references Command.id
+  commandDiceRemaining?: number       // Command Dice pool remaining this rest
+
+  // ── Desperado ───────────────────────────────────────────────────────────────
+  tricksKnownIds?: string[]           // references Trick.id
+  trickUsesRemaining?: number         // shared pool: 2 × proficiency, recharges short rest
+
+  // ── Gene-Fighter ────────────────────────────────────────────────────────────
+  isInGeneSurge?: boolean
+  geneSurgesRemaining?: number
+  geneticInstability?: number         // 0+, triggers mutations at thresholds
+  installedModIds?: string[]          // references GeneModification.id
+
+  // ── Psyker ──────────────────────────────────────────────────────────────────
+  psykerDiscipline?: PsychicDiscipline
+  sanctioningStatus?: 'sanctioned' | 'unsanctioned'
+  preparedSpellIds?: string[]
+
+  // ── Meta ────────────────────────────────────────────────────────────────────
   notes: string
   createdAt: number
   updatedAt: number

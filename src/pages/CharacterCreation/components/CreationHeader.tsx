@@ -14,6 +14,7 @@ export default function CreationHeader() {
     currentStep, setCurrentStep, furthestStep,
     canAdvanceFrom,
     nameError, setNameError,
+    editId,
   } = useCreation()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -113,20 +114,20 @@ export default function CreationHeader() {
           aria-label="Character name"
         />
         <p className="creation-header__name-hint">
-          Step {currentStep + 1} of {TOTAL_STEPS}
-          {furthestStep < TOTAL_STEPS - 1
-            ? ' — Complete each step to forge your character.'
-            : ' — All steps reached — review and forge.'}
+          {editId ? 'Editing Character — ' : ''}Step {currentStep + 1} of {TOTAL_STEPS}
+          {editId
+            ? ' — Change any choices, then save.'
+            : furthestStep < TOTAL_STEPS - 1
+              ? ' — Complete each step to forge your character.'
+              : ' — All steps reached — review and forge.'}
         </p>
       </div>
 
       {/* Navigation buttons */}
       <div className="creation-header__nav">
-        {canGoBack && (
-          <button className="creation-nav-btn creation-nav-btn--back" onClick={goBack}>
-            ← Back
-          </button>
-        )}
+        <button className="creation-nav-btn creation-nav-btn--back" onClick={goBack}>
+          {canGoBack ? '← Back' : '← Exit'}
+        </button>
 
         {/* Always render Next on non-final steps; visually disabled when step is incomplete */}
         {!isLastStep && (

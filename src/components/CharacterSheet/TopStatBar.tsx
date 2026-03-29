@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Toggle } from '@/components/ui/toggle'
-import { useCharacterStore, getModifier } from '../../store/characterStore'
+import { useCharacterStore, getModifier, getProficiencyBonus } from '../../store/characterStore'
 import { getAllRaces, getAllClasses } from '../../modules/registry'
 import { useDiceStore } from '../../store/diceStore'
 import { rollCheck, fmtMod } from '../../utils/dice'
@@ -22,9 +22,10 @@ const ABILITIES: { key: keyof AbilityScores; label: string; abbr: string }[] = [
 
 // ─── Character Header ─────────────────────────────────────────────────────────
 
-function CharacterHeader({ characterId }: { characterId: string }) {
+function CharacterHeader({ characterId, onLevelUp }: { characterId: string; onLevelUp?: () => void }) {
   const character       = useCharacterStore(s => s.characters.find(c => c.id === characterId))
   const updateCharacter = useCharacterStore(s => s.updateCharacter)
+  const [showLevelDown, setShowLevelDown] = useState(false)
   if (!character) return null
 
   const races    = getAllRaces()
@@ -33,6 +34,26 @@ function CharacterHeader({ characterId }: { characterId: string }) {
   const cls      = classes.find(c => c.id === character.class)
   const className    = cls?.name ?? ''
   const subclassName = cls?.subclasses?.find(sc => sc.id === character.subclass)?.name
+  const canLevelUp = character.class && character.level < 10
+
+  const handleLevelDown = () => {
+    if (character.level <= 1) return
+    const newLevel = character.level - 1
+    // Remove featureChoices for option groups at the removed level
+    const sub = cls?.subclasses?.find(sc => sc.id === character.subclass)
+    const removedGroups = (sub?.features ?? [])
+      .filter(f => f.level === character.level && f.optionGroup)
+      .map(f => f.optionGroup!)
+    const newChoices = { ...(character.featureChoices ?? {}) }
+    for (const g of removedGroups) delete newChoices[g]
+
+    updateCharacter(characterId, {
+      level: newLevel,
+      proficiencyBonus: getProficiencyBonus(newLevel),
+      featureChoices: newChoices,
+    })
+    setShowLevelDown(false)
+  }
 
   return (
     <div className="flex items-start gap-3 pb-4 mb-4 border-b border-border">
@@ -50,20 +71,51 @@ function CharacterHeader({ characterId }: { characterId: string }) {
           placeholder="Character Name"
           className="text-xl font-bold border-0 border-b border-border rounded-none px-0 h-auto py-0 mb-1 focus-visible:ring-0 shadow-none bg-transparent w-full"
         />
-        <p className="text-sm text-muted-foreground truncate">
-          Level{' '}
-          <input
-            type="number"
-            min={1}
-            max={20}
-            value={character.level}
-            onChange={e => updateCharacter(characterId, { level: Math.max(1, Number(e.target.value) || 1) })}
-            className="w-7 text-center text-sm bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          />
-          {raceName && ` ${raceName}`}
-          {className && ` ${className}`}
-          {subclassName && ` · ${subclassName}`}
-        </p>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <p className="text-sm text-muted-foreground truncate">
+            Level{' '}
+            <input
+              type="number"
+              min={1}
+              max={20}
+              value={character.level}
+              onChange={e => updateCharacter(characterId, { level: Math.max(1, Number(e.target.value) || 1) })}
+              className="w-7 text-center text-sm bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+            {raceName && ` ${raceName}`}
+            {className && ` ${className}`}
+            {subclassName && ` · ${subclassName}`}
+          </p>
+
+          {/* Level Up button */}
+          {canLevelUp && (
+            <Button
+              size="sm"
+              onClick={onLevelUp}
+              className="h-5 px-2 text-[10px] font-bold tracking-wider"
+            >
+              LEVEL UP
+            </Button>
+          )}
+
+          {/* Level Down button */}
+          {character.level > 1 && !showLevelDown && (
+            <button
+              onClick={() => setShowLevelDown(true)}
+              className="w-5 h-5 rounded text-[10px] text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/40 transition-colors flex items-center justify-center"
+              title="Reduce level"
+            >
+              −
+            </button>
+          )}
+          {showLevelDown && (
+            <span className="inline-flex items-center gap-1 text-[10px]">
+              <span className="text-muted-foreground">Reduce to Lv {character.level - 1}?</span>
+              <button onClick={handleLevelDown} className="text-destructive hover:underline font-semibold">Yes</button>
+              <button onClick={() => setShowLevelDown(false)} className="text-muted-foreground hover:underline">No</button>
+            </span>
+          )}
+        </div>
       </div>
       {/* XP */}
       <div className="flex flex-col items-center flex-shrink-0">
@@ -294,9 +346,10 @@ function HPSection({ characterId }: { characterId: string }) {
 
 interface Props {
   characterId: string
+  onLevelUp?: () => void
 }
 
-export default function TopStatBar({ characterId }: Props) {
+export default function TopStatBar({ characterId, onLevelUp }: Props) {
   const character         = useCharacterStore(s => s.characters.find(c => c.id === characterId))
   const updateCharacter   = useCharacterStore(s => s.updateCharacter)
   const updateAbilityScore = useCharacterStore(s => s.updateAbilityScore)
@@ -314,7 +367,7 @@ export default function TopStatBar({ characterId }: Props) {
   return (
     <Card className="p-4">
       {/* ── Character identity header ── */}
-      <CharacterHeader characterId={characterId} />
+      <CharacterHeader characterId={characterId} onLevelUp={onLevelUp} />
 
       {/* ── Stats ── */}
       <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-x-6 items-start">

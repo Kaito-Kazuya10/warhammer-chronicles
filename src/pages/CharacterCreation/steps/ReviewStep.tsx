@@ -106,11 +106,14 @@ function ReviewRow({ label, value }: { label: string; value: React.ReactNode }) 
 
 export default function ReviewStep() {
   const navigate = useNavigate()
-  const { draft, setNameError } = useCreation()
-  const { createCharacter, updateCharacter, setActiveCharacter } = useCharacterStore()
+  const { draft, setNameError, editId } = useCreation()
+  const { createCharacter, updateCharacter, setActiveCharacter, characters } = useCharacterStore()
   const [errors, setErrors]   = useState<string[]>([])
   const [forging, setForging] = useState(false)
   const errorsRef = useRef<HTMLDivElement>(null)
+
+  const isEditMode = !!editId
+  const existingCharacter = isEditMode ? characters.find(c => c.id === editId) : null
 
   // ── Resolve module data ────────────────────────────────────────────────────
   const race     = draft.raceId      ? getAllRaces().find(r => r.id === draft.raceId)           ?? null : null
@@ -150,7 +153,7 @@ export default function ReviewStep() {
   const classEquip = draft.useStartingWealth ? [] : getDisplayEquipment(draft, cls)
   const bgEquip    = bg?.startingEquipment ?? []
 
-  // ── Validation + Forge ────────────────────────────────────────────────────
+  // ── Validation + Forge / Save ─────────────────────────────────────────────
   const handleForge = () => {
     const errs: string[] = []
     const nameEmpty = !draft.name.trim()
@@ -166,7 +169,6 @@ export default function ReviewStep() {
     if (errs.length > 0) {
       setErrors(errs)
       if (nameEmpty) setNameError(true)
-      // Scroll to the error banner after React renders it
       setTimeout(() => errorsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 10)
       return
     }
@@ -175,9 +177,7 @@ export default function ReviewStep() {
     setNameError(false)
     setForging(true)
 
-    const id         = createCharacter()
     const skills     = buildSkills(draft, bg)
-    const inventory  = resolveInventory(draft, cls, bg)
     const proficiencies = [
       ...(cls?.armorProficiencies  ?? []),
       ...(cls?.weaponProficiencies ?? []),
@@ -185,49 +185,89 @@ export default function ReviewStep() {
       ...(bg?.toolProficiencies    ?? []),
     ]
 
-    updateCharacter(id, {
-      name:       draft.name.trim(),
-      race:       draft.raceId!,
-      class:      draft.classId!,
-      subclass:   draft.subclassId ?? undefined,
-      background: draft.backgroundId ?? '',
-      level:      1,
-      abilityScores:            finalScores,
-      skills,
-      savingThrowProficiencies: cls?.savingThrows ?? [],
-      maxHitPoints:     Math.max(1, hp),
-      currentHitPoints: Math.max(1, hp),
-      speed,
-      armorClass:       10 + dexMod,
-      initiative:       dexMod,
-      proficiencyBonus: 2,
-      warpExposure: 0,
-      corruption:   0,
-      faith:        0,
-      currency: {
-        thrones: draft.useStartingWealth ? (draft.startingWealth ?? 0) : 0,
-        melt:    0,
-        aquila:  0,
-      },
-      spellIds:     [],
-      featIds:      [],
-      inventory,
-      proficiencies,
-      languages:    allLanguages,
-      portrait:     draft.portrait ?? null,
-    })
+    if (isEditMode && editId) {
+      // ── EDIT MODE: update existing character, preserve untouched fields ──
+      const level = existingCharacter?.level ?? 1
+      const isLevel1 = level === 1
 
-    setActiveCharacter(id)
-    navigate('/sheet')
+      updateCharacter(editId, {
+        name:       draft.name.trim(),
+        race:       draft.raceId!,
+        class:      draft.classId!,
+        subclass:   draft.subclassId ?? undefined,
+        background: draft.backgroundId ?? '',
+        abilityScores:            finalScores,
+        skills,
+        savingThrowProficiencies: cls?.savingThrows ?? [],
+        // Only reset HP if still level 1
+        ...(isLevel1 ? {
+          maxHitPoints:     Math.max(1, hp),
+          currentHitPoints: Math.max(1, hp),
+        } : {}),
+        speed,
+        armorClass:       10 + dexMod,
+        initiative:       dexMod,
+        proficiencies,
+        languages:    allLanguages,
+        portrait:     draft.portrait ?? null,
+        fightingStyle: draft.fightingStyle ?? undefined,
+        updatedAt:    Date.now(),
+      })
+
+      setActiveCharacter(editId)
+      navigate('/sheet')
+    } else {
+      // ── CREATE MODE: forge a new character ──
+      const id         = createCharacter()
+      const inventory  = resolveInventory(draft, cls, bg)
+
+      updateCharacter(id, {
+        name:       draft.name.trim(),
+        race:       draft.raceId!,
+        class:      draft.classId!,
+        subclass:   draft.subclassId ?? undefined,
+        background: draft.backgroundId ?? '',
+        level:      1,
+        abilityScores:            finalScores,
+        skills,
+        savingThrowProficiencies: cls?.savingThrows ?? [],
+        maxHitPoints:     Math.max(1, hp),
+        currentHitPoints: Math.max(1, hp),
+        speed,
+        armorClass:       10 + dexMod,
+        initiative:       dexMod,
+        proficiencyBonus: 2,
+        warpExposure: 0,
+        corruption:   0,
+        faith:        0,
+        currency: {
+          thrones: draft.useStartingWealth ? (draft.startingWealth ?? 0) : 0,
+          melt:    0,
+          aquila:  0,
+        },
+        spellIds:     [],
+        featIds:      [],
+        inventory,
+        proficiencies,
+        languages:    allLanguages,
+        portrait:     draft.portrait ?? null,
+        fightingStyle: draft.fightingStyle ?? undefined,
+      })
+
+      setActiveCharacter(id)
+      navigate('/sheet')
+    }
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="review-step">
       <div className="step-intro">
-        <h2 className="step-intro__title">Review Your Character</h2>
+        <h2 className="step-intro__title">{isEditMode ? 'Review Changes' : 'Review Your Character'}</h2>
         <p className="step-intro__desc">
-          Check your choices below. When you're ready, forge your character and begin your service to the Emperor.
+          {isEditMode
+            ? 'Review your changes below. Existing progress (HP, inventory, XP, notes) will be preserved.'
+            : "Check your choices below. When you're ready, forge your character and begin your service to the Emperor."}
         </p>
       </div>
 
@@ -253,7 +293,7 @@ export default function ReviewStep() {
           </div>
           <div className="review-identity__info">
             <h2 className="review-identity__name">{draft.name || 'Unnamed Warrior'}</h2>
-            <p className="review-identity__line1">Level 1 {race?.name ?? '—'} {cls?.name ?? '—'}</p>
+            <p className="review-identity__line1">Level {existingCharacter?.level ?? 1} {race?.name ?? '—'} {cls?.name ?? '—'}</p>
             {subclass && <p className="review-identity__subclass">{subclass.name}</p>}
             <p className="review-identity__bg">Background: {bg?.name ?? 'None'}</p>
           </div>
@@ -377,7 +417,7 @@ export default function ReviewStep() {
 
       </div>{/* /review-card */}
 
-      {/* Forge button */}
+      {/* Forge / Save button */}
       <div className="review-forge-wrap">
         <button
           type="button"
@@ -385,7 +425,7 @@ export default function ReviewStep() {
           onClick={handleForge}
           disabled={forging}
         >
-          ⚔ FORGE CHARACTER
+          {isEditMode ? 'SAVE CHANGES' : 'FORGE CHARACTER'}
         </button>
       </div>
     </div>

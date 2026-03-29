@@ -1,10 +1,26 @@
 import type { CharacterClass } from '../../../types/module'
 
+/**
+ * IMPERIAL GUARDSMAN
+ *
+ * Source: WH40K_Imperial_Guardsman.docx
+ * Subclass (Regiment) at Level 1. Regiment features at 1, 3, 6, 9.
+ * Base class features at 1, 2, 4, 5, 7, 8, 9, 10.
+ *
+ * 6 Regiments:
+ *   - Cadian Shock Trooper
+ *   - Catachan Jungle Fighter
+ *   - Tallarn Desert Raider
+ *   - Vostroyan Firstborn
+ *   - Kriegsman (Death Korps of Krieg)
+ *   - Heavy Weapons Specialist
+ */
+
 export const imperialGuardsman: CharacterClass = {
   id: 'imperial-guardsman',
   name: 'Imperial Guardsman',
   description:
-    'Among the trillions who serve in the Astra Militarum, the Imperial Guard stands as humanity\'s first and last line of defense. Forged in the crucible of regimental doctrine, every Guardsman knows their purpose: to hold the line, fire their lasgun until the power pack runs dry, and if necessary, die so that humanity may endure.',
+    "Among the trillions who serve in the Astra Militarum, the Imperial Guard stands as humanity's first and last line of defense against the horrors of the galaxy. Unlike the adaptable warrior who learns combat through varied experience, the Guardsman is forged in the crucible of regimental doctrine. Your regiment is not merely your background — it is your identity, your fighting style, and your path to victory or a glorious death.",
   hitDie: 10,
   primaryAbility: ['dexterity', 'constitution', 'wisdom'],
   savingThrows: ['strength', 'constitution'],
@@ -25,802 +41,1602 @@ export const imperialGuardsman: CharacterClass = {
     '(a) Flak armor or (b) Mesh armor',
     '(a) Lasgun and two power packs or (b) Autogun and 80 rounds',
     '(a) Combat knife and two frag grenades or (b) Chainsword',
-    '(a) Explorer\'s pack or (b) Military pack',
+    "(a) Explorer's pack or (b) Military pack (bedroll, mess kit, rations for 5 days, waterskin, 50 feet of rope, flashlight, 2 batteries)",
     'Regimental insignia, dog tags, photo of loved ones or the Emperor',
   ],
+  startingWealthFormula: '5d4 × 10 Thrones',
 
-  // ─── BASE CLASS FEATURES ─────────────────────────────────────────
+  featureTabName: 'Regimental Doctrine',
+  subclassLabel: 'Regiment',
+
+  // ─── BASE CLASS FEATURES ───────────────────────────────────────────────────
+
   features: [
+    // ─── Level 1 ────────────────────────────────────────────────────────────
     {
       level: 1,
       name: 'Fighting Style',
       description:
-        'You adopt a particular style of fighting as your specialty. Choose one of the following options. You can\'t take the same option more than once.\n\n' +
-        '**Archery.** +2 bonus to attack rolls with ranged weapons.\n\n' +
-        '**Defense.** While wearing armor, +1 bonus to AC.\n\n' +
-        '**Dueling.** When wielding a melee weapon in one hand and no other weapons, +2 bonus to damage rolls with that weapon.\n\n' +
-        '**Two-Weapon Fighting.** When you engage in two-weapon fighting, add your ability modifier to the damage of the second attack.\n\n' +
-        '**Marksman.** Ignore half cover and three-quarters cover with ranged attacks. Attacking at long range doesn\'t impose disadvantage.\n\n' +
-        '**Close Quarters Battle.** No disadvantage on ranged attacks against creatures within 10 feet. If you hit a creature within 10 feet with a ranged weapon on your turn, that creature can\'t take reactions until end of turn.',
+        "[CHOOSE ONE] You adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again.\n\n" +
+        '**Archery.** You gain a +2 bonus to attack rolls you make with ranged weapons.\n\n' +
+        '**Defense.** While you are wearing armor, you gain a +1 bonus to AC.\n\n' +
+        '**Dueling.** When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon.\n\n' +
+        "**Two-Weapon Fighting.** When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack.\n\n" +
+        "**Marksman.** When you make a ranged weapon attack, you ignore half cover and three-quarters cover. Additionally, attacking at long range doesn't impose disadvantage on your ranged weapon attack rolls.\n\n" +
+        "**Close Quarters Battle.** When you make a ranged weapon attack against a creature within 10 feet of you, you don't have disadvantage on the attack roll. Additionally, if you hit a creature within 10 feet of you with a ranged weapon attack on your turn, that creature can't take reactions until the end of this turn.",
+      featureType: 'base',
+      actionType: 'passive',
     },
+
+    // ─── Level 2 ────────────────────────────────────────────────────────────
     {
       level: 2,
       name: 'Fire Discipline',
       description:
-        'Your military training has taught you to make every shot count.\n\n' +
-        '**Aimed Shot.** As an action, make one ranged weapon attack with advantage. On hit, deal extra 1d8 damage of the weapon\'s type. Uses equal to proficiency bonus per short or long rest.\n\n' +
-        '**Ammo Conservation.** When you roll a natural 1 on a ranged attack (which would mark off ammunition), you can reroll the attack. You must use the new result, but don\'t mark off ammunition. Uses equal to Wisdom modifier (min 1) per long rest.',
+        "[CORE] Your military training has taught you to make every shot count and manage your ammunition effectively in prolonged engagements.\n\n" +
+        "**Aimed Shot.** As an action, you can take careful aim at a target you can see within your weapon's range. Make one ranged weapon attack with advantage. If the attack hits, you deal an extra 1d8 damage of the weapon's type. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a short or long rest.\n\n" +
+        "**Ammo Conservation.** When you roll a natural 1 on a ranged attack roll (which would normally cause you to mark off one magazine or power pack), you can choose to reroll that attack. If you do, you must use the new result, but you don't mark off ammunition regardless of the outcome. You can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a long rest.",
+      featureType: 'base',
+      actionType: 'action',
+      usesPerRest: 'short',
+      usesCount: 'proficiency',
     },
     {
       level: 2,
       name: 'Second Wind',
       description:
-        'On your turn, you can use a bonus action to regain hit points equal to 1d10 + your Guardsman level. Once used, must finish a short or long rest before using again.',
+        '[CORE] You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your Guardsman level. Once you use this feature, you must finish a short or long rest before you can use it again.',
+      featureType: 'base',
+      actionType: 'bonus-action',
+      usesPerRest: 'short',
+      usesCount: '1',
+      tags: ['healing'],
     },
     {
       level: 2,
       name: 'Squad Tactics',
       description:
-        '**Covering Fire.** When a creature you can see attacks a target other than you within 5 feet of you, use your reaction to impose disadvantage on the attack roll. Must be wielding a ranged weapon with line of sight. Recharges on short or long rest.\n\n' +
-        '**Coordinated Assault.** Once per turn, when you hit a creature with a ranged weapon attack, if an ally is within 5 feet of that creature and isn\'t incapacitated, deal extra 1d6 damage. Increases to 2d6 at 7th level.',
+        "[CORE] Your training emphasizes fighting as part of a unit rather than as an individual warrior.\n\n" +
+        "**Covering Fire.** When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a ranged weapon and have line of sight to the attacker. Once you use this feature, you must finish a short or long rest before you can use it again.\n\n" +
+        "**Coordinated Assault.** Once per turn, when you hit a creature with a ranged weapon attack, if an ally is within 5 feet of that creature and that ally isn't incapacitated, you deal an extra 1d6 damage. This damage increases to 2d6 at 7th level.",
+      featureType: 'base',
+      actionType: 'reaction',
+      usesPerRest: 'short',
+      usesCount: '1',
+      tags: ['support', 'damage'],
     },
+
+    // ─── Level 4 ────────────────────────────────────────────────────────────
     {
       level: 4,
       name: 'Ability Score Improvement',
       description:
-        'Increase one ability score by 2, or two ability scores by 1 each. Cannot exceed 20.',
+        "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature. Alternatively, you can choose a feat.",
+      featureType: 'base',
+      actionType: 'passive',
     },
+
+    // ─── Level 5 ────────────────────────────────────────────────────────────
     {
       level: 5,
       name: 'Extra Attack',
       description:
-        'You can attack twice, instead of once, whenever you take the Attack action on your turn.',
+        'Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.',
+      featureType: 'base',
+      actionType: 'passive',
+      tags: ['attack'],
     },
     {
       level: 5,
       name: 'Battlefield Awareness',
       description:
-        'You gain proficiency in Perception if you don\'t already have it. If already proficient, gain proficiency in another Guardsman skill. Additionally, you can\'t be surprised while conscious.',
+        "Your experience in combat has honed your ability to read the flow of battle and react to threats. You gain proficiency in the Perception skill if you don't already have it. If you are already proficient in Perception, you gain proficiency in another skill from the Guardsman skill list.\n\nAdditionally, you can't be surprised while you are conscious.",
+      featureType: 'base',
+      actionType: 'passive',
     },
+
+    // ─── Level 7 ────────────────────────────────────────────────────────────
     {
       level: 7,
       name: 'Improved Fire Discipline',
       description:
-        'Aimed Shot extra damage increases to 2d8, and you score a critical hit with Aimed Shot on 19-20. When you use Ammo Conservation, gain +2 to the rerolled attack.',
+        'Your Aimed Shot feature improves. The extra damage increases to 2d8, and you score a critical hit with Aimed Shot attacks on a roll of 19–20.\n\nAdditionally, when you use Ammo Conservation, you gain a +2 bonus to the rerolled attack.',
+      featureType: 'base',
+      actionType: 'passive',
+      tags: ['attack', 'damage'],
     },
     {
       level: 7,
-      name: 'Veteran\'s Reflexes',
+      name: "Veteran's Reflexes",
       description:
-        'Add your Wisdom modifier to initiative rolls. When an attacker you can see makes a ranged attack against you, use your reaction to impose disadvantage. Uses equal to proficiency bonus per long rest.',
+        "Your combat experience has sharpened your reflexes to a razor's edge. You add your Wisdom modifier to initiative rolls.\n\nAdditionally, when an attacker that you can see makes a ranged attack against you, you can use your reaction to impose disadvantage on the attack roll. You can use this reaction feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+      featureType: 'base',
+      actionType: 'reaction',
+      usesPerRest: 'long',
+      usesCount: 'proficiency',
+      tags: ['defensive'],
     },
+
+    // ─── Level 8 ────────────────────────────────────────────────────────────
     {
       level: 8,
       name: 'Ability Score Improvement',
       description:
-        'Increase one ability score by 2, or two ability scores by 1 each. Cannot exceed 20.',
+        "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature. Alternatively, you can choose a feat.",
+      featureType: 'base',
+      actionType: 'passive',
     },
+
+    // ─── Level 9 ────────────────────────────────────────────────────────────
     {
       level: 9,
       name: 'Indomitable',
       description:
-        'You can reroll a failed saving throw. You must use the new roll. Once per long rest.',
+        'Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll. You can use this feature once, and you regain the ability to do so when you finish a long rest.',
+      featureType: 'base',
+      actionType: 'special',
+      usesPerRest: 'long',
+      usesCount: '1',
+      tags: ['defensive'],
     },
+
+    // ─── Level 10 ───────────────────────────────────────────────────────────
     {
       level: 10,
       name: 'Ability Score Improvement',
       description:
-        'Increase one ability score by 2, or two ability scores by 1 each. Cannot exceed 20.',
+        "You can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature. Alternatively, you can choose a feat.",
+      featureType: 'base',
+      actionType: 'passive',
     },
     {
       level: 10,
       name: 'Hold the Line',
       description:
-        '**Last Stand.** When reduced to 0 HP but not killed outright, drop to 1 HP instead. Once per long rest.\n\n' +
-        '**Backs Against the Wall.** While at or below half HP maximum, you have advantage on ranged weapon attack rolls and creatures have disadvantage on opportunity attacks against you. Always active when condition is met.',
+        "You have learned to stand firm in the face of overwhelming odds.\n\n**Last Stand.** When you are reduced to 0 hit points but not killed outright, you can choose to drop to 1 hit point instead. Once you use this feature, you can't use it again until you finish a long rest.\n\n**Backs Against the Wall.** While you are at or below half your hit point maximum, you have advantage on attack rolls with ranged weapons and creatures have disadvantage on opportunity attacks against you. This benefit is always active when the condition is met.",
+      featureType: 'base',
+      actionType: 'special',
+      usesPerRest: 'long',
+      usesCount: '1',
+      tags: ['defensive'],
     },
   ],
 
-  // ─── REGIMENTS (SUBCLASSES) ──────────────────────────────────────
+  // ─── SUBCLASSES (REGIMENTS) ────────────────────────────────────────────────
+
   subclasses: [
-    // ═══════════════════════════════════════════════════════════════
-    // CADIAN SHOCK TROOPER
-    // ═══════════════════════════════════════════════════════════════
+    // ─── 1. CADIAN SHOCK TROOPER ──────────────────────────────────────────
     {
       id: 'cadian-shock-trooper',
       name: 'Cadian Shock Trooper',
       description:
-        'The Cadian regiments are the gold standard by which all Imperial Guard forces are measured. Raised on a fortress world at the edge of the Eye of Terror, Cadians are drilled from birth in military doctrine, weapons proficiency, and tactical superiority. Even with their homeworld destroyed, the Cadian way of war endures — disciplined, coordinated, and devastatingly effective.',
+        'The Cadian regiments are the gold standard by which all other Imperial Guard forces are measured. Raised on a fortress world that stood at the very edge of the Eye of Terror, Cadians are drilled from birth in military doctrine, weapons proficiency, and tactical superiority. Even with their homeworld destroyed, the Cadian way of war endures across the galaxy — disciplined, coordinated, and devastatingly effective.',
       unlockLevel: 1,
+      flavorQuote: 'Cadia stands! Though the planet broke, the people never did.',
+      identity: 'Tactical coordination, superior accuracy, leadership, combined arms',
+      recommendedFightingStyle: ['Archery', 'Marksman'],
+      recommendedAbilities: 'DEX > WIS > CON',
+
       features: [
-        // ── Level 1 ──
+        // ── Level 1: Cadian Discipline ─────────────────────────────────────
         {
           level: 1,
-          name: 'Cadian Discipline — Unshakeable Nerve',
+          name: 'Unshakeable Nerve',
           description:
-            '[CORE] Advantage on saves against being frightened. When you succeed on a save vs. frightened, use your reaction to make one ranged weapon attack against the creature that frightened you (if in range).',
-        },
-        {
-          level: 1,
-          name: 'Cadian Discipline — Born to the Gun',
-          description:
-            '[MAIN] Proficiency with all ranged weapons. When you make a ranged attack with a proficient weapon, you can use DEX for the damage roll if the weapon doesn\'t already allow it.',
+            "You have advantage on saving throws against being frightened. When you succeed on a saving throw against being frightened, you can use your reaction to immediately make one ranged weapon attack against the creature that attempted to frighten you, provided it is within your weapon's range.",
+          featureType: 'core',
+          actionType: 'reaction',
+          tags: ['defensive', 'attack'],
         },
         {
           level: 1,
-          name: 'Cadian Discipline — Tactical Superiority',
+          name: 'Born to the Gun',
           description:
-            '[MAIN] Add proficiency bonus to initiative rolls. When you roll initiative, grant one ally within 30 feet a bonus to their initiative equal to your WIS modifier (min +1).',
+            "You gain proficiency with all ranged weapons. Additionally, when you make a ranged weapon attack with a weapon you are proficient with, you can use your Dexterity modifier for the damage roll if the weapon doesn't already allow it.",
+          featureType: 'main',
+          actionType: 'passive',
         },
-        // ── Level 3 ──
+        {
+          level: 1,
+          name: 'Tactical Superiority',
+          description:
+            'You add your proficiency bonus to initiative rolls. Additionally, when you roll initiative, you can grant one ally you can see within 30 feet a bonus to their initiative roll equal to your Wisdom modifier (minimum of +1).',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['support'],
+        },
+
+        // ── Level 3: Coordinated Fire ──────────────────────────────────────
         {
           level: 3,
-          name: 'Coordinated Fire — Volley Fire',
+          name: 'Volley Fire',
           description:
-            '[CORE] As an action, choose a target in range. You and up to two allies who can see/hear you each use their reaction to make one ranged attack against that target. If all three participate, attacks are made with advantage. Uses equal to WIS modifier (min 1) per short or long rest.',
+            "As an action, you can coordinate fire with allies. Choose a target you can see within your weapon's range. You and up to two allies who can see or hear you can each use their reaction to make one ranged weapon attack against that target. If all three creatures participate in the volley, these attacks are made with advantage.\n\nYou can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a short or long rest.",
+          featureType: 'core',
+          actionType: 'action',
+          usesPerRest: 'short',
+          usesCount: 'wisdom',
+          tags: ['attack', 'support'],
         },
         {
           level: 3,
-          name: 'Coordinated Fire — Suppressing Fire',
+          name: 'Suppressing Fire',
           description:
-            '[MAIN] As an action, expend 5 rounds to suppress a 10-foot square within normal range. Until your next turn, creatures entering or starting their turn there must make a WIS save (DC 8 + prof + DEX mod) or become Suppressed (disadvantage on attacks, no reactions, must seek cover). Fearless creatures have advantage. Maintain by spending action + ammo each turn. Ends if you move 5+ feet or are incapacitated.',
+            "As an action, you can expend 5 rounds of ammunition (or mark one magazine/power pack) to suppress an area. Choose a 10-foot square area within your weapon's normal range that you can see. Until the start of your next turn, the area becomes suppressed.\n\nAny creature that starts its turn in the suppressed area or enters it for the first time on a turn must succeed on a Wisdom saving throw (DC = 8 + your proficiency bonus + your Dexterity modifier) or become suppressed until the end of their turn.\n\n**Suppressed Condition.** While suppressed, a creature has disadvantage on attack rolls, cannot take reactions, and must use its movement to seek the nearest available cover if possible. Creatures with the Fearless trait or immunity to being frightened have advantage on this saving throw.\n\nYou can maintain suppression by using your action on subsequent turns and expending ammunition each turn. Suppression ends if you move more than 5 feet, become incapacitated, or choose to end it (no action required).",
+          featureType: 'main',
+          actionType: 'action',
+          tags: ['control'],
         },
         {
           level: 3,
-          name: 'Coordinated Fire — Fire Team Leader',
+          name: 'Fire Team Leader',
           description:
-            '[MAIN] When you Help an ally\'s attack, you can do so at 30 feet (instead of 5). The assisted creature deals extra 1d4 damage on hit.',
+            "When you take the Help action to assist an ally's attack roll, you can do so at a range of 30 feet (instead of the normal 5 feet), provided you can see both the ally and their target. The assisted creature's attack deals an additional 1d4 damage on a hit.",
+          featureType: 'main',
+          actionType: 'action',
+          tags: ['support'],
         },
         {
           level: 3,
-          name: 'Coordinated Fire — Options',
+          name: 'Overwatch Protocol',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Overwatch Protocol:** As an action, choose a 60-foot cone from you. Until you move or lose concentration (up to 10 min), when a hostile creature enters or moves in the cone, use reaction to make one ranged attack. Once per short or long rest.\n\n' +
-            '**B) Rapid Fire Drill:** Aimed Shot can be part of the Attack action (replacing one attack) instead of a separate action. Lose the advantage but keep the extra damage.\n\n' +
-            '**C) Enhance — Unshakeable Nerve:** Extends to allies within 10 feet (advantage vs. frightened while they can see you). Your reaction attack on a successful save adds WIS modifier to damage.',
+            "[CHOOSE ONE] As an action, you can set up an overwatch position. Choose a 60-foot cone originating from you. Until you move, lose concentration (as if concentrating on a spell), or use this feature again, when a hostile creature you can see enters the cone for the first time on a turn or moves within the cone, you can use your reaction to make one ranged weapon attack against that creature. You can maintain this for up to 10 minutes. Once used, you must finish a short or long rest before using it again.",
+          featureType: 'option',
+          optionGroup: 'cadian-level-3',
+          actionType: 'action',
+          usesPerRest: 'short',
+          usesCount: '1',
+          tags: ['attack'],
         },
-        // ── Level 6 ──
+        {
+          level: 3,
+          name: 'Rapid Fire Drill',
+          description:
+            '[CHOOSE ONE] When you use your Aimed Shot feature, you can make it as part of the Attack action (replacing one of your attacks) instead of using a separate action. You lose the advantage on the attack roll when used this way, but you retain the extra damage.',
+          featureType: 'option',
+          optionGroup: 'cadian-level-3',
+          actionType: 'passive',
+          tags: ['attack'],
+        },
+        {
+          level: 3,
+          name: 'Unshakeable Nerve (Enhanced)',
+          description:
+            '[CHOOSE ONE] Your Unshakeable Nerve now extends to allies within 10 feet of you. While they can see you, they gain advantage on saving throws against being frightened. Additionally, when you succeed on a save against being frightened, the reaction attack you make gains a bonus to the damage roll equal to your Wisdom modifier.',
+          featureType: 'option',
+          optionGroup: 'cadian-level-3',
+          sourceFeature: 'unshakeable-nerve',
+          actionType: 'passive',
+          tags: ['support', 'defensive'],
+        },
+
+        // ── Level 6: Born in the Purple ────────────────────────────────────
         {
           level: 6,
-          name: 'Born in the Purple — Cadian Fortitude',
+          name: 'Cadian Fortitude',
           description:
-            '[CORE] AC increases by 1. When you use Second Wind, grant one ally within 30 feet temporary HP equal to your Guardsman level.',
+            'Your Armor Class increases by 1. Additionally, when you use your Second Wind feature, you can grant one ally within 30 feet who can see you temporary hit points equal to your Guardsman level.',
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['defensive', 'support'],
         },
         {
           level: 6,
-          name: 'Born in the Purple — Decisive Commander',
+          name: 'Decisive Commander',
           description:
-            '[MAIN] Bonus action to issue a command to one ally within 60 feet. That ally uses their reaction to: move half speed without opportunity attacks, make one weapon attack, or take the Dodge action. Uses equal to WIS modifier (min 1) per short or long rest.',
+            "You can use a bonus action to issue a tactical command to one ally within 60 feet who can hear you. That ally can immediately use their reaction to take one of the following actions: move up to half their speed without provoking opportunity attacks, make one weapon attack, or take the Dodge action until the start of their next turn.\n\nYou can use this feature a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a short or long rest.",
+          featureType: 'main',
+          actionType: 'bonus-action',
+          usesPerRest: 'short',
+          usesCount: 'wisdom',
+          tags: ['support'],
         },
         {
           level: 6,
-          name: 'Born in the Purple — Combined Arms Doctrine',
+          name: 'Combined Arms Doctrine',
           description:
-            '[MAIN] Once per short rest, when you hit with a ranged attack while within 5 feet and have a melee weapon drawn, immediately make one melee attack as part of the same action. Extra 1d6 damage on hit.',
+            'Once per short rest, when you hit a creature with a ranged weapon attack and you are within 5 feet of it with a melee weapon drawn, you can immediately make one melee weapon attack against that creature as part of the same action. This melee attack deals an additional 1d6 damage on a hit.',
+          featureType: 'main',
+          actionType: 'free',
+          usesPerRest: 'short',
+          usesCount: '1',
+          tags: ['attack', 'damage'],
         },
         {
           level: 6,
-          name: 'Born in the Purple — Options',
+          name: 'Artillery Observer',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Artillery Observer:** As an action, designate a creature within 120 feet. Until your next turn, all ranged attacks by you and allies against that target have advantage. Once per long rest.\n\n' +
-            '**B) Tactical Withdrawal:** When an ally within 30 feet is hit, use reaction to let them move half speed without opportunity attacks. Uses equal to WIS modifier (min 1) per short or long rest.\n\n' +
-            '**C) Enhance — Volley Fire:** Coordinate up to three allies (instead of two). Volley attacks deal extra 1d6 damage on hit.\n\n' +
-            '**D) Enhance — Suppressing Fire:** Area increases to 15-foot square, DC increases by 2, failed saves also halve speed.',
-        },
-        // ── Level 9 ──
-        {
-          level: 9,
-          name: 'Cadian Stand — The Planet Broke Before the Guard Did',
-          description:
-            '[CORE] When reduced to 0 HP, use reaction to make one weapon attack before falling unconscious. If this kills an enemy, you drop to 1 HP instead. All allies within 30 feet gain temp HP equal to your Guardsman level.',
+            '[CHOOSE ONE] As an action, you can designate a single target you can see within 120 feet. Until the start of your next turn, all ranged weapon attacks made by you and your allies against that target are made with advantage. Once you use this feature, you must finish a long rest before you can use it again.',
+          featureType: 'option',
+          optionGroup: 'cadian-level-6',
+          actionType: 'action',
+          usesPerRest: 'long',
+          usesCount: '1',
+          tags: ['support'],
         },
         {
-          level: 9,
-          name: 'Cadian Stand — Aura of Discipline',
+          level: 6,
+          name: 'Tactical Withdrawal',
           description:
-            '[MAIN] Allies within 10 feet have advantage on saves vs. frightened. Allies within 10 feet add +1 to ranged weapon attack rolls.',
+            '[CHOOSE ONE] When an ally within 30 feet of you is hit by an attack, you can use your reaction to allow that ally to immediately move up to half their speed without provoking opportunity attacks. You can use this a number of times equal to your Wisdom modifier (minimum of once), regaining all uses on a short or long rest.',
+          featureType: 'option',
+          optionGroup: 'cadian-level-6',
+          actionType: 'reaction',
+          usesPerRest: 'short',
+          usesCount: 'wisdom',
+          tags: ['support', 'movement'],
+        },
+        {
+          level: 6,
+          name: 'Volley Fire (Enhanced)',
+          description:
+            '[CHOOSE ONE] Your Volley Fire can now coordinate up to three allies (instead of two). Attacks made as part of the volley deal an additional 1d6 damage on a hit.',
+          featureType: 'option',
+          optionGroup: 'cadian-level-6',
+          sourceFeature: 'volley-fire',
+          actionType: 'passive',
+          tags: ['attack', 'damage'],
+        },
+        {
+          level: 6,
+          name: 'Suppressing Fire (Enhanced)',
+          description:
+            '[CHOOSE ONE] Your suppression area increases to a 15-foot square. The saving throw DC increases by 2. Creatures that fail the save also have their speed halved until the end of their turn.',
+          featureType: 'option',
+          optionGroup: 'cadian-level-6',
+          sourceFeature: 'suppressing-fire',
+          actionType: 'passive',
+          tags: ['control'],
+        },
+
+        // ── Level 9: Cadian Stand ──────────────────────────────────────────
+        {
+          level: 9,
+          name: 'The Planet Broke Before the Guard Did',
+          description:
+            'When you are reduced to 0 hit points, you can use your reaction to make one weapon attack before falling unconscious. If this attack reduces an enemy to 0 hit points, you instead drop to 1 hit point and remain conscious. Additionally, when this feature activates, all allied creatures within 30 feet who can see you gain temporary hit points equal to your Guardsman level.',
+          featureType: 'core',
+          actionType: 'reaction',
+          usesPerRest: 'special',
+          tags: ['attack', 'defensive', 'support'],
         },
         {
           level: 9,
-          name: 'Cadian Stand — Masterwork Volley',
+          name: 'Aura of Discipline',
           description:
-            '[MAIN] Volley Fire attacks deal extra 1d8 damage on hit. If the target drops to 0 HP from the volley, regain one use of Volley Fire.',
+            'All allied creatures within 10 feet of you gain advantage on saving throws against being frightened. Additionally, when an ally within 10 feet of you makes a ranged weapon attack, they add +1 to the attack roll.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['support'],
         },
         {
           level: 9,
-          name: 'Cadian Stand — Options',
+          name: 'Masterwork Volley',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Cadian Commander:** Once per long rest, as an action, all allies within 30 feet who can hear you use their reaction to make one ranged attack with advantage.\n\n' +
-            '**B) Last Stand Protocol:** Once per long rest, when at/below half HP, bonus action: for 1 minute, you and allies within 10 feet have advantage on all attack rolls and saves. Ends if incapacitated.\n\n' +
-            '**C) Enhance — Decisive Commander:** Range increases to 120 feet. Ally can move half speed AND make one attack as part of the same reaction. Gain additional uses equal to proficiency bonus per long rest.\n\n' +
-            '**D) Enhance — Combined Arms Doctrine:** Melee damage increases to 2d6. Second use per short rest. After melee attack, push target 5 feet and move 5 feet without opportunity attacks.',
+            'When you use your Volley Fire feature, all attacks made as part of the volley deal an additional 1d8 damage on a hit. If the target is reduced to 0 hit points by the volley, you regain one use of Volley Fire.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['damage'],
+        },
+        {
+          level: 9,
+          name: 'Cadian Commander',
+          description:
+            '[CHOOSE ONE] Once per long rest, as an action, you issue a regiment-wide command. All allies within 30 feet who can hear you can immediately use their reaction to make one ranged weapon attack with advantage.',
+          featureType: 'option',
+          optionGroup: 'cadian-level-9',
+          actionType: 'action',
+          usesPerRest: 'long',
+          usesCount: '1',
+          tags: ['support', 'attack'],
+        },
+        {
+          level: 9,
+          name: 'Last Stand Protocol',
+          description:
+            '[CHOOSE ONE] Once per long rest, when you are at or below half your hit point maximum, you can use a bonus action to activate Last Stand Protocol. For 1 minute, you and all allies within 10 feet gain advantage on all attack rolls and saving throws. The effect ends early if you are incapacitated.',
+          featureType: 'option',
+          optionGroup: 'cadian-level-9',
+          actionType: 'bonus-action',
+          usesPerRest: 'long',
+          usesCount: '1',
+          tags: ['support'],
+        },
+        {
+          level: 9,
+          name: 'Decisive Commander (Enhanced)',
+          description:
+            '[CHOOSE ONE] Your Decisive Commander range increases to 120 feet. The commanded ally can now both move up to half their speed AND make one weapon attack as part of the same reaction. You gain additional uses equal to your proficiency bonus per long rest (on top of existing short rest uses).',
+          featureType: 'option',
+          optionGroup: 'cadian-level-9',
+          sourceFeature: 'decisive-commander',
+          actionType: 'passive',
+          tags: ['support'],
+        },
+        {
+          level: 9,
+          name: 'Combined Arms Doctrine (Enhanced)',
+          description:
+            '[CHOOSE ONE] The additional melee damage increases to 2d6. You gain a second use per short rest. After the melee attack, you can push the target 5 feet away and immediately move 5 feet in any direction without provoking opportunity attacks.',
+          featureType: 'option',
+          optionGroup: 'cadian-level-9',
+          sourceFeature: 'combined-arms-doctrine',
+          actionType: 'passive',
+          tags: ['attack', 'damage', 'movement'],
         },
       ],
     },
 
-    // ═══════════════════════════════════════════════════════════════
-    // CATACHAN JUNGLE FIGHTER
-    // ═══════════════════════════════════════════════════════════════
+    // ─── 2. CATACHAN JUNGLE FIGHTER ────────────────────────────────────────
     {
       id: 'catachan-jungle-fighter',
       name: 'Catachan Jungle Fighter',
       description:
-        'Catachan is a death world where everything — the plants, the animals, the very atmosphere — is trying to kill you. Those who survive to adulthood are among the toughest, most resourceful soldiers in the Imperium. Catachan Jungle Fighters excel at guerrilla warfare, ambush tactics, and close-quarters violence.',
+        "Catachan is a death world where everything — the plants, the animals, the very atmosphere — is trying to kill you. Those who survive to adulthood are among the toughest, most resourceful soldiers in the Imperium. Catachan Jungle Fighters excel at guerrilla warfare, ambush tactics, and close-quarters violence. They trust their muscles as much as their lasguns, and when the enemy gets close, they prefer the intimate brutality of knife and fist.",
       unlockLevel: 1,
+      flavorQuote: "It takes a special kind of soldier to survive Catachan. The kind that makes the galaxy's nightmares wake up screaming.",
+      identity: 'Stealth, ambush tactics, close combat, survival, physical prowess',
+      recommendedFightingStyle: ['Close Quarters Battle', 'Dueling'],
+      recommendedAbilities: 'STR > DEX > CON',
+
       features: [
-        // ── Level 1 ──
+        // ── Level 1: Jungle Warfare ────────────────────────────────────────
         {
           level: 1,
-          name: 'Jungle Warfare — Death World Survivor',
+          name: 'Death World Survivor',
           description:
-            '[CORE] Proficiency in Survival and Stealth (expertise if already proficient). Advantage on Survival in jungle/forest/dense vegetation. Can use STR instead of DEX for Stealth checks.',
-        },
-        {
-          level: 1,
-          name: 'Jungle Warfare — Guerrilla Fighter',
-          description:
-            '[MAIN] Move through difficult terrain without extra movement. Can hide when only lightly obscured in natural cover (foliage, jungle, rubble).',
+            'You gain proficiency in the Survival and Stealth skills. If you are already proficient in either skill, you gain expertise in it (your proficiency bonus is doubled for ability checks using that skill). You have advantage on Survival checks made in jungle, forest, or dense vegetation environments. Additionally, you can use your Strength modifier instead of your Dexterity modifier for Stealth checks.',
+          featureType: 'core',
+          actionType: 'passive',
         },
         {
           level: 1,
-          name: 'Jungle Warfare — Catachan Fang',
+          name: 'Guerrilla Fighter',
           description:
-            '[MAIN] Unarmed strikes deal 1d6 + STR bludgeoning. Daggers/combat knives/small blades deal 1d6 damage and count as finesse weapons for you.',
+            'You can move through difficult terrain without expending extra movement. Additionally, when you take the Hide action in an environment with natural cover (such as foliage, jungle, forest, or rubble), you can attempt to hide even if you are only lightly obscured.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['movement'],
         },
-        // ── Level 3 ──
+        {
+          level: 1,
+          name: 'Catachan Fang',
+          description:
+            'Your unarmed strikes and attacks with knives or other small blades are unnaturally deadly. Your unarmed strikes deal 1d6 + your Strength modifier bludgeoning damage. When you wield a dagger, combat knife, or similar small blade, it deals 1d6 damage (instead of its normal damage) and counts as a finesse weapon for you.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['attack'],
+        },
+
+        // ── Level 3: Ambush Predator ───────────────────────────────────────
         {
           level: 3,
-          name: 'Ambush Predator — Surprise Attack',
+          name: 'Surprise Attack',
           description:
-            '[CORE] Extra 1d6 damage on weapon attacks during first round of combat against creatures that haven\'t acted. Also triggers once per turn when you have advantage on an attack roll (even outside first round).',
+            "If you hit a creature with a weapon attack during the first round of combat and that creature hasn't taken a turn yet, the attack deals an extra 1d6 damage. Additionally, when you have advantage on an attack roll, you can deal this extra damage once per turn (even outside the first round of combat).",
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['damage'],
         },
         {
           level: 3,
-          name: 'Ambush Predator — Strike and Fade',
+          name: 'Strike and Fade',
           description:
-            '[MAIN] After the Attack action, take Hide as a bonus action. When you Hide, move up to half speed as part of the same bonus action without revealing position.',
+            'Immediately after you take the Attack action on your turn, you can take the Hide action as a bonus action. Additionally, when you take the Hide action, you can move up to half your speed as part of the same bonus action without revealing your position.',
+          featureType: 'main',
+          actionType: 'bonus-action',
+          tags: ['movement'],
         },
         {
           level: 3,
-          name: 'Ambush Predator — Silent Kill',
+          name: 'Silent Kill',
           description:
-            '[MAIN] On melee attack against unaware target or one you have advantage against: target makes CON save (DC 8 + prof + STR mod) or can\'t speak/make noise until end of its next turn. If attack drops target to 0 HP, it dies silently. Uses equal to proficiency bonus per long rest.',
+            "When you make a melee weapon attack against a creature that is unaware of your presence or that you have advantage against, you can attempt a silent kill. The target must succeed on a Constitution saving throw (DC = 8 + your proficiency bonus + your Strength modifier) or be unable to speak or make noise until the end of its next turn. If the attack reduces the target to 0 hit points, it dies silently without alerting nearby creatures. You can use this feature a number of times equal to your proficiency bonus, and you regain all expended uses when you finish a long rest.",
+          featureType: 'main',
+          actionType: 'free',
+          usesPerRest: 'long',
+          usesCount: 'proficiency',
+          tags: ['control'],
         },
         {
           level: 3,
-          name: 'Ambush Predator — Options',
+          name: 'Trapper',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Trapper:** Spend 1 minute to set a trap in a 5-foot area. First creature entering makes DEX save (DC 8 + prof + STR or DEX mod) or takes 2d6 piercing and is restrained until end of its next turn. Max 3 traps at once. Uses equal to proficiency bonus per long rest.\n\n' +
-            '**B) Predator\'s Focus:** When you deal Surprise Attack damage, mark the creature as quarry for 1 minute. Advantage on Perception/Survival to track it. First attack each turn deals extra 1d4. One quarry at a time.\n\n' +
-            '**C) Enhance — Catachan Fang:** Unarmed/small blade damage increases to 1d8. On hit, can attempt grapple as a bonus action.',
+            '[CHOOSE ONE] You can spend 1 minute setting a trap in a 5-foot area using materials at hand. The first creature to enter the area must succeed on a Dexterity saving throw (DC = 8 + your proficiency bonus + your Strength or Dexterity modifier) or take 2d6 piercing damage and be restrained until the end of its next turn. You can maintain up to 3 traps at a time. You can use this feature a number of times equal to your proficiency bonus, regaining all uses on a long rest.',
+          featureType: 'option',
+          optionGroup: 'catachan-level-3',
+          actionType: 'special',
+          usesPerRest: 'long',
+          usesCount: 'proficiency',
+          tags: ['control', 'damage'],
         },
-        // ── Level 6 ──
+        {
+          level: 3,
+          name: "Predator's Focus",
+          description:
+            "[CHOOSE ONE] When you hit a creature with a weapon attack and deal Surprise Attack damage, you can mark that creature as your quarry for 1 minute. While the quarry is marked, you have advantage on Perception and Survival checks to track it, and the first attack you make against it each turn deals an extra 1d4 damage. You can only have one quarry at a time.",
+          featureType: 'option',
+          optionGroup: 'catachan-level-3',
+          actionType: 'free',
+          tags: ['damage'],
+        },
+        {
+          level: 3,
+          name: 'Catachan Fang (Enhanced)',
+          description:
+            '[CHOOSE ONE] Your unarmed strikes and small blade attacks now deal 1d8 damage (instead of 1d6). Additionally, when you hit a creature with an unarmed strike or small blade, you can attempt to grapple the creature as a bonus action.',
+          featureType: 'option',
+          optionGroup: 'catachan-level-3',
+          sourceFeature: 'catachan-fang',
+          actionType: 'passive',
+          tags: ['attack'],
+        },
+
+        // ── Level 6: Death World Conditioning ─────────────────────────────
         {
           level: 6,
-          name: 'Death World Conditioning — Toxin Resistance',
+          name: 'Toxin Resistance',
           description:
-            '[CORE] Advantage on saves vs. poison and disease. Resistance to poison damage.',
+            'You have advantage on saving throws against poison and disease, and you have resistance to poison damage.',
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['defensive'],
         },
         {
           level: 6,
-          name: 'Death World Conditioning — Savage Resilience',
+          name: 'Savage Resilience',
           description:
-            '[MAIN] When damage would reduce you to 0 HP (not killed outright), use reaction to move up to your speed and make one melee attack. Once per short or long rest.',
+            "When you take damage that would reduce you to 0 hit points but doesn't kill you outright, you can use your reaction to move up to your speed and make one melee weapon attack. Once you use this feature, you can't use it again until you finish a short or long rest.",
+          featureType: 'main',
+          actionType: 'reaction',
+          usesPerRest: 'short',
+          usesCount: '1',
+          tags: ['attack', 'defensive', 'movement'],
         },
         {
           level: 6,
-          name: 'Death World Conditioning — Jungle Predator',
+          name: 'Jungle Predator',
           description:
-            '[MAIN] On melee hit, attempt grapple or shove as a bonus action. Advantage on Athletics checks to grapple, shove, or escape grapples.',
+            'When you hit a creature with a melee weapon attack, you can attempt to grapple or shove that creature as a bonus action. Additionally, you have advantage on Strength (Athletics) checks made to grapple, shove, or escape a grapple.',
+          featureType: 'main',
+          actionType: 'bonus-action',
+          tags: ['control'],
         },
         {
           level: 6,
-          name: 'Death World Conditioning — Options',
+          name: 'Unseen Stalker',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Unseen Stalker:** Missing a weapon attack while hidden doesn\'t reveal your position. Dim light doesn\'t impose disadvantage on Perception.\n\n' +
-            '**B) Death World Toxins:** Spend 10 minutes to create toxin. Apply as bonus action. Next creature hit makes CON save (DC 8 + prof + CON mod) or takes 2d6 poison and is poisoned for 1 minute. Doses equal to proficiency bonus per long rest.\n\n' +
-            '**C) Enhance — Surprise Attack:** Damage increases to 2d6. Target must also make STR save (DC 8 + prof + STR mod) or be knocked prone.',
-        },
-        // ── Level 9 ──
-        {
-          level: 9,
-          name: 'Apex Hunter — Master Ambusher',
-          description:
-            '[CORE] Take Hide as part of your movement (no action) once per turn. Advantage on initiative rolls.',
+            "While you are hidden from a creature and miss it with a weapon attack, making the attack doesn't reveal your position to that creature. Additionally, dim light doesn't impose disadvantage on your Perception checks.",
+          featureType: 'option',
+          optionGroup: 'catachan-level-6',
+          actionType: 'passive',
         },
         {
-          level: 9,
-          name: 'Apex Hunter — Relentless Assault',
+          level: 6,
+          name: 'Death World Toxins',
           description:
-            '[MAIN] On a critical hit or reducing a creature to 0 HP, make one additional weapon attack as part of the same action. Once per turn.',
+            '[CHOOSE ONE] You can spend 10 minutes harvesting natural materials to create a potent toxin. You can apply this toxin to a weapon or piece of ammunition as a bonus action. The next creature hit by the coated weapon must make a Constitution saving throw (DC = 8 + your proficiency bonus + your Constitution modifier) or take 2d6 poison damage and be poisoned for 1 minute. You can create a number of doses equal to your proficiency bonus per long rest.',
+          featureType: 'option',
+          optionGroup: 'catachan-level-6',
+          actionType: 'bonus-action',
+          usesPerRest: 'long',
+          usesCount: 'proficiency',
+          tags: ['damage'],
+        },
+        {
+          level: 6,
+          name: 'Surprise Attack (Enhanced)',
+          description:
+            '[CHOOSE ONE] Your Surprise Attack damage increases to 2d6. Additionally, when you deal Surprise Attack damage, the target must succeed on a Strength saving throw (DC = 8 + your proficiency bonus + your Strength modifier) or be knocked prone.',
+          featureType: 'option',
+          optionGroup: 'catachan-level-6',
+          sourceFeature: 'surprise-attack',
+          actionType: 'passive',
+          tags: ['damage', 'control'],
+        },
+
+        // ── Level 9: Apex Hunter ───────────────────────────────────────────
+        {
+          level: 9,
+          name: 'Master Ambusher',
+          description:
+            'You can take the Hide action as part of your movement (no action required) once per turn. Additionally, you have advantage on initiative rolls.',
+          featureType: 'core',
+          actionType: 'free',
+          tags: ['movement'],
         },
         {
           level: 9,
-          name: 'Apex Hunter — Catachan\'s Finest',
+          name: 'Relentless Assault',
           description:
-            '[MAIN] Unarmed/small blade damage increases to 1d10 + STR (or 1d8 + STR if not previously enhanced). When you have advantage, roll the weapon\'s damage dice two additional times.',
+            'When you score a critical hit with a weapon attack or reduce a creature to 0 hit points with a weapon attack, you can make one additional weapon attack as part of the same action. You can do this only once per turn.',
+          featureType: 'main',
+          actionType: 'free',
+          tags: ['attack'],
         },
         {
           level: 9,
-          name: 'Apex Hunter — Options',
+          name: "Catachan's Finest",
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Ghost of the Jungle:** Become invisible until end of your next turn when you succeed on a Hide check. Ends on attack, spell, or taking damage. Uses equal to proficiency bonus per long rest.\n\n' +
-            '**B) Apex Predator:** On melee hit, force WIS save (DC 8 + prof + STR mod). Failure: frightened of you until end of your next turn and must move away. Uses equal to proficiency bonus per long rest.\n\n' +
-            '**C) Enhance — Surprise Attack:** Damage increases to 3d6. Target has disadvantage on all attack rolls until start of your next turn.',
+            "Your unarmed strikes and attacks with small blades now deal 1d10 + your Strength modifier damage (or 1d8 + STR if not previously enhanced). When you hit a creature that you have advantage against with an unarmed strike or small blade attack, you can roll the weapon's damage dice two additional times and add them to the damage.",
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['damage'],
+        },
+        {
+          level: 9,
+          name: 'Ghost of the Jungle',
+          description:
+            '[CHOOSE ONE] You become invisible until the end of your next turn whenever you take the Hide action and succeed on the Stealth check. This invisibility ends if you make an attack, cast a spell, or take damage. You can use this feature a number of times equal to your proficiency bonus, regaining all uses on a long rest.',
+          featureType: 'option',
+          optionGroup: 'catachan-level-9',
+          actionType: 'free',
+          usesPerRest: 'long',
+          usesCount: 'proficiency',
+        },
+        {
+          level: 9,
+          name: 'Apex Predator',
+          description:
+            '[CHOOSE ONE] When you hit a creature with a melee weapon attack, you can force it to make a Wisdom saving throw (DC = 8 + your proficiency bonus + your Strength modifier). On a failure, the creature is frightened of you until the end of your next turn and must use its movement to move away from you. You can use this a number of times equal to your proficiency bonus, regaining all uses on a long rest.',
+          featureType: 'option',
+          optionGroup: 'catachan-level-9',
+          actionType: 'free',
+          usesPerRest: 'long',
+          usesCount: 'proficiency',
+          tags: ['control'],
+        },
+        {
+          level: 9,
+          name: 'Surprise Attack (Greater Enhanced)',
+          description:
+            "[CHOOSE ONE] Your Surprise Attack damage increases to 3d6. Additionally, when you deal Surprise Attack damage, the target has disadvantage on all attack rolls until the start of your next turn.",
+          featureType: 'option',
+          optionGroup: 'catachan-level-9',
+          sourceFeature: 'surprise-attack',
+          actionType: 'passive',
+          tags: ['damage', 'control'],
         },
       ],
     },
 
-    // ═══════════════════════════════════════════════════════════════
-    // TALLARN DESERT RAIDER
-    // ═══════════════════════════════════════════════════════════════
+    // ─── 3. TALLARN DESERT RAIDER ──────────────────────────────────────────
     {
       id: 'tallarn-desert-raider',
       name: 'Tallarn Desert Raider',
       description:
-        'The Tallarn regiments are masters of mobile warfare and hit-and-run tactics, forged in the endless deserts of their homeworld. Where other regiments stand and fight, Tallarn forces move like the desert wind — swift, unpredictable, and gone before the enemy can retaliate.',
+        'The Tallarn regiments are masters of mobile warfare and hit-and-run tactics, forged in the endless deserts of their homeworld. Where other regiments stand and fight, Tallarn forces move like the desert wind — swift, unpredictable, and gone before the enemy can retaliate. They excel at mounted operations, rapid flanking maneuvers, and exploiting enemy weaknesses with lightning-fast raids.',
       unlockLevel: 1,
+      flavorQuote: 'Strike hard, strike fast, strike first. Then disappear like a mirage.',
+      identity: 'Superior mobility, hit-and-run tactics, vehicle proficiency, evasion',
+      recommendedFightingStyle: ['Archery', 'Close Quarters Battle'],
+      recommendedAbilities: 'DEX > CON > WIS',
+
       features: [
-        // ── Level 1 ──
+        // ── Level 1: Mobile Warfare ────────────────────────────────────────
         {
           level: 1,
-          name: 'Mobile Warfare — Desert Born',
+          name: 'Desert Born',
           description:
-            '[CORE] Base walking speed increases by 10 feet. Ignore difficult terrain from sand, ash, or loose earth. Advantage on saves vs. exhaustion from extreme heat or dehydration.',
-        },
-        {
-          level: 1,
-          name: 'Mobile Warfare — Hit and Run',
-          description:
-            '[MAIN] When you Dash, make one weapon attack as a bonus action. You don\'t provoke opportunity attacks from the target for the rest of your turn.',
+            'Your base walking speed increases by 10 feet. Additionally, you ignore difficult terrain caused by sand, ash, or loose earth. You have advantage on saving throws against exhaustion caused by extreme heat or dehydration.',
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['movement'],
         },
         {
           level: 1,
-          name: 'Mobile Warfare — Raider\'s Mobility',
+          name: 'Hit and Run',
           description:
-            '[MAIN] Opportunity attacks against you are made with disadvantage. Move through spaces of creatures larger than you without extra movement.',
+            "When you take the Dash action on your turn, you can make one weapon attack as a bonus action. Additionally, when you make this attack, you don't provoke opportunity attacks from the target of the attack for the rest of your turn.",
+          featureType: 'main',
+          actionType: 'bonus-action',
+          tags: ['attack', 'movement'],
         },
-        // ── Level 3 ──
+        {
+          level: 1,
+          name: "Raider's Mobility",
+          description:
+            'Opportunity attacks against you are made with disadvantage. Additionally, you can move through the space of any creature that is of a size larger than yours without expending extra movement.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['movement', 'defensive'],
+        },
+
+        // ── Level 3: Lightning Assault ─────────────────────────────────────
         {
           level: 3,
-          name: 'Lightning Assault — Rapid Strike',
+          name: 'Rapid Strike',
           description:
-            '[CORE] When you Attack with a ranged weapon, move up to 10 feet before or after each attack without provoking opportunity attacks. This doesn\'t count against total movement.',
+            "When you take the Attack action and attack with a ranged weapon, you can move up to 10 feet before or after each attack without provoking opportunity attacks. This movement doesn't count against your total movement for the turn.",
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['movement'],
         },
         {
           level: 3,
-          name: 'Lightning Assault — Flanking Maneuver',
+          name: 'Flanking Maneuver',
           description:
-            '[MAIN] Bonus action to move half speed. If you end within 5 feet of a creature that an ally is also within 5 feet of, your next attack against it this turn has advantage. Uses equal to DEX modifier (min 1) per short or long rest.',
+            'As a bonus action, you can move up to half your speed. If you end this movement within 5 feet of a creature that an ally is also within 5 feet of, the next attack you make against that creature before the end of your turn has advantage. You can use this a number of times equal to your Dexterity modifier (minimum of once), regaining all uses on a short or long rest.',
+          featureType: 'main',
+          actionType: 'bonus-action',
+          usesPerRest: 'short',
+          usesCount: 'dexterity',
+          tags: ['movement', 'attack'],
         },
         {
           level: 3,
-          name: 'Lightning Assault — Dust Cloud',
+          name: 'Dust Cloud',
           description:
-            '[MAIN] When you Dash, the 5-foot area along your path becomes lightly obscured until your next turn (terrain permitting). Opportunity attacks through this area have disadvantage.',
+            "When you take the Dash action, you kick up a cloud of dust or debris (if the terrain permits). Until the start of your next turn, the area within 5 feet of the path you moved becomes lightly obscured. Creatures attempting to make opportunity attacks against you through this area have disadvantage.",
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['defensive', 'movement'],
         },
         {
           level: 3,
-          name: 'Lightning Assault — Options',
+          name: "Skirmisher's Harass",
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Skirmisher\'s Harass:** When you hit with a ranged attack after moving 10+ feet, target\'s speed is reduced by 10 feet until your next turn. Doesn\'t stack.\n\n' +
-            '**B) Wind Runner:** Disengage as a bonus action. Speed increases by 5 feet.\n\n' +
-            '**C) Enhance — Hit and Run:** Make two attacks instead of one as the bonus action. No opportunity attacks from any creature (not just target) for rest of turn.',
+            "[CHOOSE ONE] When you hit a creature with a ranged weapon attack after moving at least 10 feet on your turn, the target's speed is reduced by 10 feet until the start of your next turn. This reduction doesn't stack.",
+          featureType: 'option',
+          optionGroup: 'tallarn-level-3',
+          actionType: 'passive',
+          tags: ['control'],
         },
-        // ── Level 6 ──
+        {
+          level: 3,
+          name: 'Wind Runner',
+          description:
+            '[CHOOSE ONE] You can take the Disengage action as a bonus action. Additionally, your speed increases by an additional 5 feet.',
+          featureType: 'option',
+          optionGroup: 'tallarn-level-3',
+          actionType: 'bonus-action',
+          tags: ['movement'],
+        },
+        {
+          level: 3,
+          name: 'Hit and Run (Enhanced)',
+          description:
+            "[CHOOSE ONE] When you use Hit and Run, you can make two weapon attacks instead of one as part of the bonus action. Additionally, you don't provoke opportunity attacks from any creature (not just the target) for the rest of your turn after using Hit and Run.",
+          featureType: 'option',
+          optionGroup: 'tallarn-level-3',
+          sourceFeature: 'hit-and-run',
+          actionType: 'passive',
+          tags: ['attack', 'movement'],
+        },
+
+        // ── Level 6: Born to the Saddle ────────────────────────────────────
         {
           level: 6,
-          name: 'Born to the Saddle — Vehicle Specialist',
+          name: 'Vehicle Specialist',
           description:
-            '[CORE] Proficiency with all ground vehicles. Double proficiency bonus on vehicle operation/repair checks. Vehicle speed increases by 10 feet. Dash as bonus action while operating a vehicle.',
+            "You gain proficiency with all ground vehicles and can add double your proficiency bonus to ability checks related to operating or repairing ground vehicles. When you are operating a ground vehicle, the vehicle's speed increases by 10 feet, and you can take the Dash action as a bonus action while operating the vehicle.",
+          featureType: 'core',
+          actionType: 'passive',
         },
         {
           level: 6,
-          name: 'Born to the Saddle — Mounted Combatant',
+          name: 'Mounted Combatant',
           description:
-            '[MAIN] Advantage on melee attacks against unmounted creatures smaller than your mount/vehicle. If your mount/vehicle makes a DEX save for half damage, it takes none on success and half on failure.',
+            'You have advantage on melee attack rolls against any unmounted creature that is smaller than your mount or vehicle. Additionally, if your mount or vehicle is subjected to an effect that allows it to make a Dexterity saving throw to take only half damage, it instead takes no damage on a success and only half damage on a failure.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['attack', 'defensive'],
         },
         {
           level: 6,
-          name: 'Born to the Saddle — Evasive Maneuvers',
+          name: 'Evasive Maneuvers',
           description:
-            '[MAIN] When targeted by an attack, use reaction to impose disadvantage. On miss, move 10 feet without opportunity attacks. Uses equal to DEX modifier (min 1) per short or long rest.',
+            'When a creature you can see targets you or your vehicle with an attack, you can use your reaction to impose disadvantage on the attack roll. If the attack misses, you can immediately move up to 10 feet without provoking opportunity attacks. You can use this a number of times equal to your Dexterity modifier (minimum of once), regaining all uses on a short or long rest.',
+          featureType: 'main',
+          actionType: 'reaction',
+          usesPerRest: 'short',
+          usesCount: 'dexterity',
+          tags: ['defensive', 'movement'],
         },
         {
           level: 6,
-          name: 'Born to the Saddle — Options',
+          name: "Raider's Instinct",
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Raider\'s Instinct:** Advantage on initiative. During first round of combat, speed is doubled.\n\n' +
-            '**B) Sandstorm Assault:** As an action, you and up to two willing allies within 30 feet simultaneously move up to your respective speeds without opportunity attacks, each making one attack at the end. Once per short or long rest.\n\n' +
-            '**C) Enhance — Flanking Maneuver:** Advantage on all attacks (not just the next) against the flanked creature until end of turn. Flanking attacks deal extra 1d6.',
-        },
-        // ── Level 9 ──
-        {
-          level: 9,
-          name: 'Desert Wind — Relentless Pursuit',
-          description:
-            '[CORE] Speed increases by additional 10 feet (total +20 from Desert Born). Dash as a bonus action each turn.',
+            '[CHOOSE ONE] You have advantage on initiative rolls. Additionally, during the first round of combat, your speed is doubled.',
+          featureType: 'option',
+          optionGroup: 'tallarn-level-6',
+          actionType: 'passive',
+          tags: ['movement'],
         },
         {
-          level: 9,
-          name: 'Desert Wind — Master of Evasion',
+          level: 6,
+          name: 'Sandstorm Assault',
           description:
-            '[MAIN] When making a DEX save for half damage: no damage on success, half on failure.',
+            '[CHOOSE ONE] As an action, you and up to two willing allies within 30 feet can simultaneously move up to your respective speeds without provoking opportunity attacks. Each creature that participates can make one weapon attack at the end of their movement. Once used, you must finish a short or long rest before using it again.',
+          featureType: 'option',
+          optionGroup: 'tallarn-level-6',
+          actionType: 'action',
+          usesPerRest: 'short',
+          usesCount: '1',
+          tags: ['support', 'attack', 'movement'],
+        },
+        {
+          level: 6,
+          name: 'Flanking Maneuver (Enhanced)',
+          description:
+            '[CHOOSE ONE] When you use Flanking Maneuver, you gain advantage on all attacks against the flanked creature until the end of your turn (not just the next attack). Additionally, your flanking attacks deal an extra 1d6 damage.',
+          featureType: 'option',
+          optionGroup: 'tallarn-level-6',
+          sourceFeature: 'flanking-maneuver',
+          actionType: 'passive',
+          tags: ['attack', 'damage'],
+        },
+
+        // ── Level 9: Desert Wind ───────────────────────────────────────────
+        {
+          level: 9,
+          name: 'Relentless Pursuit',
+          description:
+            'Your speed increases by an additional 10 feet (total of +20 feet from Desert Born). You can take the Dash action as a bonus action on each of your turns.',
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['movement'],
         },
         {
           level: 9,
-          name: 'Desert Wind — Lightning Raid',
+          name: 'Master of Evasion',
           description:
-            '[MAIN] Once per turn, when you hit after moving 20+ feet, deal extra 3d6 damage. On crit, target must also make CON save (DC 8 + prof + DEX mod) or be stunned until end of your next turn.',
+            'When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['defensive'],
         },
         {
           level: 9,
-          name: 'Desert Wind — Options',
+          name: 'Lightning Raid',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Phantom Raider:** After an attack, move half speed without opportunity attacks (doesn\'t count against movement). Uses equal to DEX modifier per short rest.\n\n' +
-            '**B) Cavalry Charge:** Once per long rest, move 30+ feet straight toward a creature then hit with melee: auto-crit. Target makes STR save (DC 8 + prof + STR mod) or is knocked prone.\n\n' +
-            '**C) Enhance — Lightning Raid:** Damage increases to 4d6. Target must make STR save or be knocked 10 feet in a direction of your choice.',
+            'Once per turn, when you hit a creature with a weapon attack after moving at least 20 feet on your turn, you deal an extra 3d6 damage to the target. If the attack is a critical hit, the target must also succeed on a Constitution saving throw (DC = 8 + your proficiency bonus + your Dexterity modifier) or be stunned until the end of your next turn.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['damage'],
+        },
+        {
+          level: 9,
+          name: 'Phantom Raider',
+          description:
+            "[CHOOSE ONE] After you make an attack, you can immediately move up to half your speed without provoking opportunity attacks. This movement doesn't count against your normal movement. You can use this feature a number of times equal to your Dexterity modifier, regaining all uses on a short rest.",
+          featureType: 'option',
+          optionGroup: 'tallarn-level-9',
+          actionType: 'free',
+          usesPerRest: 'short',
+          usesCount: 'dexterity',
+          tags: ['movement'],
+        },
+        {
+          level: 9,
+          name: 'Cavalry Charge',
+          description:
+            '[CHOOSE ONE] Once per long rest, when you move at least 30 feet in a straight line toward a creature and then hit it with a melee weapon attack, the attack is automatically a critical hit. The target must also succeed on a Strength saving throw (DC = 8 + your proficiency bonus + your Strength modifier) or be knocked prone.',
+          featureType: 'option',
+          optionGroup: 'tallarn-level-9',
+          actionType: 'free',
+          usesPerRest: 'long',
+          usesCount: '1',
+          tags: ['attack', 'damage'],
+        },
+        {
+          level: 9,
+          name: 'Lightning Raid (Enhanced)',
+          description:
+            '[CHOOSE ONE] Your Lightning Raid damage increases to 4d6. Additionally, the target must succeed on a Strength saving throw or be knocked 10 feet in a direction of your choice.',
+          featureType: 'option',
+          optionGroup: 'tallarn-level-9',
+          sourceFeature: 'lightning-raid',
+          actionType: 'passive',
+          tags: ['damage', 'control'],
         },
       ],
     },
 
-    // ═══════════════════════════════════════════════════════════════
-    // VOSTROYAN FIRSTBORN
-    // ═══════════════════════════════════════════════════════════════
+    // ─── 4. VOSTROYAN FIRSTBORN ────────────────────────────────────────────
     {
       id: 'vostroyan-firstborn',
       name: 'Vostroyan Firstborn',
       description:
-        'The Vostroyan regiments carry a burden of ancient shame, atoning for their ancestors\' failure during the Horus Heresy. Every generation, the firstborn is sent to serve. Vostroyan soldiers are master marksmen, trained from childhood, fighting with cold precision and delivering death at extreme range.',
+        "The Vostroyan regiments carry a burden of ancient shame, atoning for their ancestors' failure to answer the Emperor's call during the Horus Heresy. Every generation, the firstborn of each family is sent to serve in the Imperial Guard — a tradition that has lasted ten thousand years. Vostroyan soldiers are master marksmen, trained from childhood in the use of sophisticated weapons. They fight with cold precision and aristocratic bearing, delivering death at extreme range.",
       unlockLevel: 1,
+      flavorQuote: 'We fire with precision, we fight with honor, we die with dignity.',
+      identity: 'Precision marksmanship, long-range superiority, honor-bound discipline',
+      recommendedFightingStyle: ['Marksman', 'Archery'],
+      recommendedAbilities: 'DEX > WIS > CON',
+
       features: [
-        // ── Level 1 ──
+        // ── Level 1: Marksman Training ─────────────────────────────────────
         {
           level: 1,
-          name: 'Marksman Training — Firstborn Marksman',
+          name: 'Firstborn Marksman',
           description:
-            '[CORE] Ignore half and three-quarters cover on ranged attacks. No disadvantage at long range.',
-        },
-        {
-          level: 1,
-          name: 'Marksman Training — Steady Aim',
-          description:
-            '[MAIN] When you haven\'t moved this turn, bonus action to gain advantage on your next ranged attack before end of turn.',
+            "You ignore half cover and three-quarters cover when making ranged weapon attacks. Additionally, you don't have disadvantage on ranged weapon attacks made at long range.",
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['attack'],
         },
         {
           level: 1,
-          name: 'Marksman Training — Honorbound',
+          name: 'Steady Aim',
           description:
-            '[MAIN] Advantage on death saving throws. When an ally within 30 feet drops to 0 HP, use reaction to make one ranged attack with advantage.',
+            "When you haven't moved on your turn, you can use a bonus action to steady your aim. You gain advantage on the next ranged weapon attack you make before the end of your turn.",
+          featureType: 'main',
+          actionType: 'bonus-action',
+          tags: ['attack'],
         },
-        // ── Level 3 ──
+        {
+          level: 1,
+          name: 'Honorbound',
+          description:
+            'You have advantage on death saving throws. Additionally, when an ally within 30 feet of you drops to 0 hit points, you can use your reaction to make one ranged weapon attack against a creature you can see. This attack is made with advantage.',
+          featureType: 'main',
+          actionType: 'reaction',
+          tags: ['attack'],
+        },
+
+        // ── Level 3: Sniper ────────────────────────────────────────────────
         {
           level: 3,
-          name: 'Sniper — Improved Critical',
-          description: '[CORE] Ranged weapon attacks crit on 19-20.',
+          name: 'Improved Critical',
+          description:
+            'Your ranged weapon attacks score a critical hit on a roll of 19–20 on the d20.',
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['attack'],
         },
         {
           level: 3,
-          name: 'Sniper — Weakpoint Targeting',
+          name: 'Weakpoint Targeting',
           description:
-            '[MAIN] On ranged hit, choose one effect. Uses equal to DEX modifier (min 1) per short or long rest.\n\n' +
-            '• **Head Shot:** CON save (DC 8 + prof + DEX) or stunned until end of its next turn.\n' +
-            '• **Leg Shot:** Speed halved until end of its next turn.\n' +
-            '• **Arm Shot:** Disadvantage on next attack before end of its next turn.\n' +
-            '• **Vital Shot:** Extra 2d6 damage.',
+            "When you hit a creature with a ranged weapon attack, you can target a specific location to impose additional effects. Choose one:\n\n• **Head Shot:** The target must succeed on a Constitution saving throw (DC = 8 + your proficiency bonus + your Dexterity modifier) or be stunned until the end of its next turn.\n• **Leg Shot:** The target's speed is reduced by half until the end of its next turn.\n• **Arm Shot:** The target has disadvantage on its next attack roll made before the end of its next turn.\n• **Vital Shot:** The target takes an additional 2d6 damage.\n\nYou can use this feature a number of times equal to your Dexterity modifier (minimum of once), and you regain all expended uses when you finish a short or long rest.",
+          featureType: 'main',
+          actionType: 'free',
+          usesPerRest: 'short',
+          usesCount: 'dexterity',
+          tags: ['attack', 'control'],
         },
         {
           level: 3,
-          name: 'Sniper — Overwatch Position',
+          name: 'Overwatch Position',
           description:
-            '[MAIN] As an action, choose a 60-foot cone. Until you move or lose concentration (up to 10 min), when a creature enters or ends its turn in the cone, use reaction to make one ranged attack. Once per short or long rest.',
+            "As an action, you can set up an overwatch position. Choose a 60-foot cone originating from you. Until you move or lose concentration (as if concentrating on a spell), when a creature you can see enters the cone for the first time on a turn or ends its turn there, you can use your reaction to make one ranged weapon attack against that creature. You can maintain this for up to 10 minutes. Once used, you must finish a short or long rest before using it again.",
+          featureType: 'main',
+          actionType: 'action',
+          usesPerRest: 'short',
+          usesCount: '1',
+          tags: ['attack'],
         },
         {
           level: 3,
-          name: 'Sniper — Options',
+          name: 'Precision Shot',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Precision Shot:** Take -5 to attack roll for +10 damage. Can decide after seeing the roll but before knowing if it hits.\n\n' +
-            '**B) Spotter\'s Eye:** Bonus action to study a target in range. Until end of your next turn, attacks ignore total cover (must know location), advantage on first attack.\n\n' +
-            '**C) Enhance — Steady Aim:** Also gain +2 to damage. Can use even if you moved up to 5 feet (instead of no movement).',
+            "[CHOOSE ONE] When you make a ranged weapon attack, you can choose to take a -5 penalty to the attack roll. If the attack hits, you add +10 to the attack's damage. You can choose to use this feature after seeing the attack roll but before the DM says whether the attack hits or misses.",
+          featureType: 'option',
+          optionGroup: 'vostroyan-level-3',
+          actionType: 'passive',
+          tags: ['attack', 'damage'],
         },
-        // ── Level 6 ──
+        {
+          level: 3,
+          name: "Spotter's Eye",
+          description:
+            "As a bonus action, you can study a target you can see within your weapon's range. Until the end of your next turn, your attacks against that target ignore total cover (you must still know the target's location), and you have advantage on the first attack you make against it.",
+          featureType: 'option',
+          optionGroup: 'vostroyan-level-3',
+          actionType: 'bonus-action',
+          tags: ['attack'],
+        },
+        {
+          level: 3,
+          name: 'Steady Aim (Enhanced)',
+          description:
+            '[CHOOSE ONE] When you use Steady Aim, you also gain a +2 bonus to the damage roll. Additionally, you can now use Steady Aim even if you moved up to 5 feet on your turn (instead of requiring no movement).',
+          featureType: 'option',
+          optionGroup: 'vostroyan-level-3',
+          sourceFeature: 'steady-aim',
+          actionType: 'passive',
+          tags: ['attack', 'damage'],
+        },
+
+        // ── Level 6: Master Marksman ───────────────────────────────────────
         {
           level: 6,
-          name: 'Master Marksman — Extended Range',
+          name: 'Extended Range',
           description:
-            '[CORE] Normal range of ranged weapons increases by 50%. Long range increases by 100%.',
+            "The normal range of your ranged weapons increases by 50%, and the long range increases by 100%.",
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['attack'],
         },
         {
           level: 6,
-          name: 'Master Marksman — Sniper\'s Focus',
+          name: "Sniper's Focus",
           description:
-            '[MAIN] Aimed Shot can target creatures up to twice normal range. Half cover is ignored for this shot.',
+            "When you use your Aimed Shot feature, you can target a creature up to twice your weapon's normal range away. If the target has half cover, the cover is ignored for this shot.",
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['attack'],
         },
         {
           level: 6,
-          name: 'Master Marksman — Deadly Accuracy',
+          name: 'Deadly Accuracy',
           description:
-            '[MAIN] On a ranged crit, roll one of the weapon\'s damage dice one additional time and add it to the crit damage.',
+            "When you score a critical hit with a ranged weapon attack, you can roll one of the weapon's damage dice one additional time and add it to the extra damage of the critical hit.",
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['damage'],
         },
         {
           level: 6,
-          name: 'Master Marksman — Options',
+          name: 'Killzone',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Killzone:** As an action, designate a 10-foot square in range as your killzone for 1 minute. Advantage on attacks and extra 1d6 damage against creatures in the zone. Once per short or long rest.\n\n' +
-            '**B) Counter-Sniper:** When a creature makes a ranged attack against you or an ally within 10 feet, use reaction to attack it. If your damage exceeds the triggering attack\'s damage, the triggering attack misses. Uses equal to DEX modifier per long rest.\n\n' +
-            '**C) Enhance — Weakpoint Targeting:** Head Shot stuns for 1 minute (save end of each turn). Leg Shot reduces speed to 0 and knocks prone. Arm Shot drops one held object. Vital Shot deals 3d6.',
-        },
-        // ── Level 9 ──
-        {
-          level: 9,
-          name: 'Deadeye — Perfect Shot',
-          description:
-            '[CORE] Once per short rest, spend 1 minute lining up a shot (must see target). Next ranged attack has advantage, auto-crits if it hits, and deals max damage on all dice. Wasted if target moves 30+ feet before you fire.',
+            "[CHOOSE ONE] As an action, you can designate a 10-foot square area within your weapon's range as your killzone. For 1 minute, you have advantage on attack rolls against any creature within the killzone, and your attacks against creatures in the killzone deal an extra 1d6 damage. You can use this once per short or long rest.",
+          featureType: 'option',
+          optionGroup: 'vostroyan-level-6',
+          actionType: 'action',
+          usesPerRest: 'short',
+          usesCount: '1',
+          tags: ['attack', 'damage'],
         },
         {
-          level: 9,
-          name: 'Deadeye — Executioner\'s Eye',
+          level: 6,
+          name: 'Counter-Sniper',
           description:
-            '[MAIN] Ranged attacks ignore all cover (half, three-quarters, total). Can attack unseen creatures without disadvantage if you know their location.',
+            "[CHOOSE ONE] When a creature makes a ranged attack against you or an ally within 10 feet of you and you can see the attacker, you can use your reaction to make a ranged weapon attack against that creature. If your attack hits and deals damage greater than the triggering attack's damage, the triggering attack misses. You can use this a number of times equal to your Dexterity modifier, regaining all uses on a long rest.",
+          featureType: 'option',
+          optionGroup: 'vostroyan-level-6',
+          actionType: 'reaction',
+          usesPerRest: 'long',
+          usesCount: 'dexterity',
+          tags: ['attack', 'defensive'],
+        },
+        {
+          level: 6,
+          name: 'Weakpoint Targeting (Enhanced)',
+          description:
+            '[CHOOSE ONE] Your Weakpoint Targeting effects are enhanced. Head Shot stuns for 1 minute (save at end of each turn). Leg Shot reduces speed to 0 and knocks prone. Arm Shot causes the target to drop one held object. Vital Shot deals 3d6 instead of 2d6.',
+          featureType: 'option',
+          optionGroup: 'vostroyan-level-6',
+          sourceFeature: 'weakpoint-targeting',
+          actionType: 'passive',
+          tags: ['control', 'damage'],
+        },
+
+        // ── Level 9: Deadeye ───────────────────────────────────────────────
+        {
+          level: 9,
+          name: 'Perfect Shot',
+          description:
+            "Once per short rest, you can spend 1 minute lining up a perfect shot (you must be able to see your target during this time). Your next ranged weapon attack against that target is made with advantage, automatically scores a critical hit if it hits, and deals maximum damage on all damage dice. If the target moves more than 30 feet from its position before you make the attack, this feature is wasted.",
+          featureType: 'core',
+          actionType: 'action',
+          usesPerRest: 'short',
+          usesCount: '1',
+          tags: ['attack', 'damage'],
         },
         {
           level: 9,
-          name: 'Deadeye — Improved Critical (Greater)',
-          description: '[MAIN] Ranged weapon attacks crit on 18-20.',
+          name: "Executioner's Eye",
+          description:
+            "Your ranged weapon attacks ignore all cover (half, three-quarters, and total). You can attack creatures you cannot see without disadvantage, provided you have some way of knowing their location.",
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['attack'],
         },
         {
           level: 9,
-          name: 'Deadeye — Options',
+          name: 'Improved Critical (Greater)',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) One Shot, One Kill:** When you hit a creature at full HP, deal extra 4d6 damage. Once per long rest.\n\n' +
-            '**B) Bullet Time:** Once per long rest, bonus action: for 1 minute, ranged attacks have advantage, auto-succeed Concentration checks, speed becomes 0. Ends if you move or are moved.\n\n' +
-            '**C) Enhance — Perfect Shot:** Requires only 1 action to prepare (instead of 1 minute). Target threshold increases to 60 feet.',
+            'Your ranged weapon attacks now score a critical hit on a roll of 18–20 on the d20.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['attack'],
+        },
+        {
+          level: 9,
+          name: 'One Shot, One Kill',
+          description:
+            '[CHOOSE ONE] When you hit a creature that is at full hit points with a ranged weapon attack, the attack deals an additional 4d6 damage. You can use this once per long rest.',
+          featureType: 'option',
+          optionGroup: 'vostroyan-level-9',
+          actionType: 'free',
+          usesPerRest: 'long',
+          usesCount: '1',
+          tags: ['damage'],
+        },
+        {
+          level: 9,
+          name: 'Bullet Time',
+          description:
+            '[CHOOSE ONE] Once per long rest, you can enter a state of perfect focus as a bonus action. For 1 minute, your ranged weapon attacks have advantage, you automatically succeed on Concentration checks, and your speed becomes 0 (you cannot move). The effect ends early if you choose to move or are moved against your will.',
+          featureType: 'option',
+          optionGroup: 'vostroyan-level-9',
+          actionType: 'bonus-action',
+          usesPerRest: 'long',
+          usesCount: '1',
+          tags: ['attack'],
+        },
+        {
+          level: 9,
+          name: 'Perfect Shot (Enhanced)',
+          description:
+            "[CHOOSE ONE] Your Perfect Shot now requires only 1 action to prepare instead of 1 minute. Additionally, the target's movement threshold before the shot is wasted increases to 60 feet.",
+          featureType: 'option',
+          optionGroup: 'vostroyan-level-9',
+          sourceFeature: 'perfect-shot',
+          actionType: 'passive',
+          tags: ['attack', 'damage'],
         },
       ],
     },
 
-    // ═══════════════════════════════════════════════════════════════
-    // KRIEGSMAN (DEATH KORPS OF KRIEG)
-    // ═══════════════════════════════════════════════════════════════
+    // ─── 5. KRIEGSMAN (DEATH KORPS OF KRIEG) ──────────────────────────────
     {
       id: 'kriegsman',
       name: 'Kriegsman (Death Korps of Krieg)',
       description:
-        'The Death Korps of Krieg hail from a world that destroyed itself in nuclear fire. Consumed by guilt, they seek atonement through service and death. Kriegsmen are the most fatalistic, disciplined, and expendable soldiers in the Imperium — masters of siege warfare, trenches, and martyrdom.',
+        "The Death Korps of Krieg hail from a world that destroyed itself in nuclear fire during a civil war. The survivors, consumed by guilt for their world's rebellion, seek atonement through service and death. Kriegsmen are perhaps the most fatalistic, disciplined, and expendable soldiers in the Imperium. They wage siege warfare with methodical precision, dig trenches through any terrain, and welcome martyrdom as the ultimate service to the Emperor.",
       unlockLevel: 1,
+      flavorQuote: 'In life, war. In death, peace. In life, shame. In death, atonement.',
+      identity: 'Extreme durability, fearlessness, siege warfare, martyrdom, chemical warfare',
+      recommendedFightingStyle: ['Defense', 'Close Quarters Battle'],
+      recommendedAbilities: 'CON > STR > WIS',
+
       features: [
-        // ── Level 1 ──
+        // ── Level 1: No Pity, No Remorse, No Fear ─────────────────────────
         {
           level: 1,
-          name: 'No Pity, No Remorse, No Fear — Fatalistic Devotion',
-          description: '[CORE] You are immune to being frightened.',
-        },
-        {
-          level: 1,
-          name: 'No Pity, No Remorse, No Fear — Death Before Dishonor',
-          description:
-            '[MAIN] When you drop to 0 HP (not killed outright), use reaction to make one melee attack against a creature in reach before falling unconscious. If this kills an enemy, you stabilize automatically.',
+          name: 'Fatalistic Devotion',
+          description: 'You are immune to being frightened.',
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['defensive'],
         },
         {
           level: 1,
-          name: 'No Pity, No Remorse, No Fear — Trench Fighter',
+          name: 'Death Before Dishonor',
           description:
-            '[MAIN] While in a trench, foxhole, or behind fortifications: +2 AC, advantage on DEX saves vs. seen effects, and use reaction to grant an ally within 10 feet the same AC bonus until your next turn.',
+            'When you drop to 0 hit points but are not killed outright, you can use your reaction to make one melee weapon attack against a creature within reach before falling unconscious. If this attack reduces an enemy to 0 hit points, you stabilize automatically.',
+          featureType: 'main',
+          actionType: 'reaction',
+          tags: ['attack'],
         },
-        // ── Level 3 ──
+        {
+          level: 1,
+          name: 'Trench Fighter',
+          description:
+            'When you are in a trench, foxhole, or behind fortifications, you gain the following benefits: +2 bonus to AC, advantage on Dexterity saving throws against effects you can see, and you can use your reaction to grant an ally within 10 feet the same AC bonus until the start of your next turn.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['defensive', 'support'],
+        },
+
+        // ── Level 3: Siege Warfare ─────────────────────────────────────────
         {
           level: 3,
-          name: 'Siege Warfare — Sapper Training',
+          name: 'Sapper Training',
           description:
-            '[CORE] Proficiency with demolitions kits and mechanic\'s tools. Plant explosives as an action (detonate end of next turn): 4d6 bludgeoning in 10-foot radius (DEX save DC 8 + prof + INT mod for half). Double damage vs. structures/objects. Uses equal to proficiency bonus per long rest.',
+            "You gain proficiency with demolitions kits and mechanic's tools. You can use an action to plant explosives on a structure, fortification, or object. These explosives detonate at the end of your next turn, dealing 4d6 bludgeoning damage in a 10-foot radius (Dexterity save DC = 8 + your proficiency bonus + your Intelligence modifier for half damage). Against structures and objects, the damage is doubled. You can plant a number of explosives equal to your proficiency bonus, regaining all uses on a long rest.",
+          featureType: 'core',
+          actionType: 'action',
+          usesPerRest: 'long',
+          usesCount: 'proficiency',
+          tags: ['damage'],
         },
         {
           level: 3,
-          name: 'Siege Warfare — Grenadier',
+          name: 'Grenadier',
           description:
-            '[MAIN] Throw grenades as a bonus action (instead of action). Double throw range. Creatures have disadvantage on saves against your grenades.',
+            'You can throw grenades as a bonus action instead of an action. Additionally, when you throw a grenade, you can throw it up to twice its normal range, and creatures have disadvantage on saving throws against your grenades.',
+          featureType: 'main',
+          actionType: 'bonus-action',
+          tags: ['attack', 'damage'],
         },
         {
           level: 3,
-          name: 'Siege Warfare — Entrenchment',
+          name: 'Entrenchment',
           description:
-            '[MAIN] Use an action to dig a foxhole. After 1 minute in earth/sand, create a 5-foot square of three-quarters cover.',
+            'You can use an action to begin digging a foxhole or trench. After 1 minute of digging in earth or sand, you create a 5-foot square area of cover that provides three-quarters cover to creatures within it. You can dig in other materials (stone, metal) with proper tools.',
+          featureType: 'main',
+          actionType: 'action',
+          tags: ['defensive'],
         },
         {
           level: 3,
-          name: 'Siege Warfare — Options',
+          name: 'Siege Specialist',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Siege Specialist:** Explosives damage increases to 6d6, radius to 15 feet. Can set delayed detonation up to 10 minutes.\n\n' +
-            '**B) Bayonet Charge:** Move 20+ feet straight toward a creature then hit with melee: extra 2d6 damage. Target makes STR save (DC 8 + prof + STR mod) or is knocked prone. Uses equal to proficiency bonus per short rest.\n\n' +
-            '**C) Enhance — Trench Fighter:** Benefits now apply when prone or in any cover (not just fortifications). AC bonus increases to +3. While in trench/fortifications, ranged attacks don\'t reveal your hidden position.',
+            '[CHOOSE ONE] Your explosives damage increases to 6d6 and the radius increases to 15 feet. You can now set explosives with a delayed detonation of up to 10 minutes.',
+          featureType: 'option',
+          optionGroup: 'kriegsman-level-3',
+          actionType: 'passive',
+          tags: ['damage'],
         },
-        // ── Level 6 ──
+        {
+          level: 3,
+          name: 'Bayonet Charge',
+          description:
+            '[CHOOSE ONE] When you move at least 20 feet in a straight line toward a creature and then hit it with a melee weapon attack on the same turn, the attack deals an extra 2d6 damage. The target must succeed on a Strength saving throw (DC = 8 + your proficiency bonus + your Strength modifier) or be knocked prone. You can use this a number of times equal to your proficiency bonus, regaining all uses on a short rest.',
+          featureType: 'option',
+          optionGroup: 'kriegsman-level-3',
+          actionType: 'free',
+          usesPerRest: 'short',
+          usesCount: 'proficiency',
+          tags: ['attack', 'damage', 'control'],
+        },
+        {
+          level: 3,
+          name: 'Trench Fighter (Enhanced)',
+          description:
+            '[CHOOSE ONE] Your Trench Fighter benefits now also apply when you are prone or in any form of cover (not just fortifications). The AC bonus increases to +3. Additionally, while in a trench or behind fortifications, you can make ranged attacks without revealing your position if you are hidden.',
+          featureType: 'option',
+          optionGroup: 'kriegsman-level-3',
+          sourceFeature: 'trench-fighter',
+          actionType: 'passive',
+          tags: ['defensive'],
+        },
+
+        // ── Level 6: Martyrdom Protocol ────────────────────────────────────
         {
           level: 6,
-          name: 'Martyrdom Protocol — Toxic Environment Adaptation',
+          name: 'Toxic Environment Adaptation',
           description:
-            '[CORE] Immunity to poison damage and the poisoned condition. Can breathe in toxic atmospheres, chemical weapons, and hazardous environments.',
+            'You have immunity to poison damage and the poisoned condition. You can breathe in toxic atmospheres, chemical weapons, and other hazardous environments without suffering ill effects.',
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['defensive'],
         },
         {
           level: 6,
-          name: 'Martyrdom Protocol — Gas Warfare',
+          name: 'Gas Warfare',
           description:
-            '[MAIN] As an action, deploy a gas grenade up to 60 feet. 20-foot radius sphere of toxic gas (spreads around corners, lasts 1 min or until dispersed). Creatures entering or starting turn: CON save (DC 8 + prof + CON mod). Fail: 3d6 poison and poisoned until end of next turn. Success: half damage, not poisoned. Uses equal to CON modifier (min 1) per long rest.',
+            "As an action, you can deploy a gas grenade up to 60 feet. The grenade creates a 20-foot radius sphere of toxic gas that spreads around corners and lasts for 1 minute or until a strong wind disperses it. Any creature that starts its turn in the area or enters it for the first time on a turn must make a Constitution saving throw (DC = 8 + your proficiency bonus + your Constitution modifier). On a failed save, the creature takes 3d6 poison damage and is poisoned until the end of its next turn. On a successful save, the creature takes half damage and is not poisoned. You can use this a number of times equal to your Constitution modifier (minimum of once), regaining all uses on a long rest.",
+          featureType: 'main',
+          actionType: 'action',
+          usesPerRest: 'long',
+          usesCount: 'constitution',
+          tags: ['damage', 'control'],
         },
         {
           level: 6,
-          name: 'Martyrdom Protocol — Atonement Through Suffering',
+          name: 'Atonement Through Suffering',
           description:
-            '[MAIN] When you take damage, use reaction to reduce it by 1d10 + CON modifier. Once per short or long rest.',
+            "When you take damage, you can use your reaction to reduce the damage by an amount equal to 1d10 + your Constitution modifier. Once you use this feature, you can't use it again until you finish a short or long rest.",
+          featureType: 'main',
+          actionType: 'reaction',
+          usesPerRest: 'short',
+          usesCount: '1',
+          tags: ['defensive'],
         },
         {
           level: 6,
-          name: 'Martyrdom Protocol — Options',
+          name: 'Expendable',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Expendable:** When an ally within 5 feet is targeted, use reaction to become the target instead. If hit, you have resistance to the damage.\n\n' +
-            '**B) Chemical Specialist:** Gas grenades also impose disadvantage on attacks on failed save. Can choose compound type: Incendiary (fire), Hallucinogenic (frightened instead of poisoned), or Corrosive (acid, reduces target AC by 1 until repaired).\n\n' +
-            '**C) Enhance — Death Before Dishonor:** Make two weapon attacks instead of one. Either hit automatically stabilizes you (no kill required).',
-        },
-        // ── Level 9 ──
-        {
-          level: 9,
-          name: 'For the Emperor — Last Stand',
-          description:
-            '[CORE] Once per long rest, when reduced to 0 HP, remain conscious for 1 round. During this round: advantage on all attacks and saves, attacks deal max damage, resistance to all damage. At end of round, drop to 0 HP and begin death saves.',
+            '[CHOOSE ONE] When you are within 5 feet of an ally and that ally is targeted by an attack, you can use your reaction to become the target of the attack instead. If the attack hits you, you take the damage but have resistance to it.',
+          featureType: 'option',
+          optionGroup: 'kriegsman-level-6',
+          actionType: 'reaction',
+          tags: ['defensive', 'support'],
         },
         {
-          level: 9,
-          name: 'For the Emperor — Inspire Through Sacrifice',
+          level: 6,
+          name: 'Chemical Specialist',
           description:
-            '[MAIN] When you use Death Before Dishonor, all allies within 30 feet gain temp HP equal to twice your Guardsman level and advantage on their next attack.',
+            '[CHOOSE ONE] Your gas grenades now also impose disadvantage on attack rolls for creatures that fail the saving throw. Additionally, you can create specialized chemical compounds: choose incendiary (fire damage instead of poison), hallucinogenic (target is frightened instead of poisoned), or corrosive (acid damage, also damages armor reducing AC by 1 until repaired).',
+          featureType: 'option',
+          optionGroup: 'kriegsman-level-6',
+          actionType: 'passive',
+          tags: ['damage', 'control'],
+        },
+        {
+          level: 6,
+          name: 'Death Before Dishonor (Enhanced)',
+          description:
+            '[CHOOSE ONE] When you use Death Before Dishonor, you can make two weapon attacks instead of one. Additionally, if either attack hits, you automatically stabilize (regardless of whether you reduce the enemy to 0 hit points).',
+          featureType: 'option',
+          optionGroup: 'kriegsman-level-6',
+          sourceFeature: 'death-before-dishonor',
+          actionType: 'passive',
+          tags: ['attack'],
+        },
+
+        // ── Level 9: For the Emperor ───────────────────────────────────────
+        {
+          level: 9,
+          name: 'Last Stand',
+          description:
+            'Once per long rest, when you are reduced to 0 hit points, you can choose to remain conscious and continue fighting for 1 round. During this round, you have advantage on all attack rolls and saving throws, your attacks deal maximum damage, and you have resistance to all damage. At the end of the round, you drop to 0 hit points and must begin making death saving throws normally.',
+          featureType: 'core',
+          actionType: 'special',
+          usesPerRest: 'long',
+          usesCount: '1',
+          tags: ['defensive', 'attack'],
         },
         {
           level: 9,
-          name: 'For the Emperor — Master of Attrition',
+          name: 'Inspire Through Sacrifice',
           description:
-            '[MAIN] Advantage on all CON saves and death saves. When you succeed on a death save, regain 1 HP instead of just stabilizing on three successes.',
+            'When you use your Death Before Dishonor feature, all allies within 30 feet who can see you gain temporary hit points equal to twice your Guardsman level and have advantage on their next attack roll.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['support'],
         },
         {
           level: 9,
-          name: 'For the Emperor — Options',
+          name: 'Master of Attrition',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Scorched Earth:** Once per long rest, as an action, detonate all remaining explosives and gas grenades centered on yourself. All creatures within 30 feet: DEX save (DC 8 + prof + CON mod). Fail: 8d6 fire + 4d6 poison, poisoned 1 minute. Success: half, not poisoned. You have resistance.\n\n' +
-            '**B) Undying Will:** When Last Stand ends and you begin death saves, you have three automatic successes (stabilize immediately). Regain 1 HP at start of your next turn.\n\n' +
-            '**C) Enhance — Gas Warfare:** Radius increases to 30 feet, damage to 5d6. Gas lasts 2 minutes. You are immune to all gas effects, not just your own.',
+            'You have advantage on all Constitution saving throws and death saving throws. Additionally, when you succeed on a death saving throw, you regain 1 hit point instead of just stabilizing on three successes.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['defensive'],
+        },
+        {
+          level: 9,
+          name: 'Scorched Earth',
+          description:
+            '[CHOOSE ONE] Once per long rest, as an action, you detonate all remaining explosives and gas grenades in your possession simultaneously, centered on yourself. All creatures within 30 feet must make a Dexterity saving throw (DC = 8 + your proficiency bonus + your Constitution modifier). On a failure, creatures take 8d6 fire damage and 4d6 poison damage and are poisoned for 1 minute. On a success, they take half damage and are not poisoned. You have resistance to this damage.',
+          featureType: 'option',
+          optionGroup: 'kriegsman-level-9',
+          actionType: 'action',
+          usesPerRest: 'long',
+          usesCount: '1',
+          tags: ['damage'],
+        },
+        {
+          level: 9,
+          name: 'Undying Will',
+          description:
+            '[CHOOSE ONE] When your Last Stand round ends and you begin making death saving throws, you have three automatic successes (you stabilize immediately). Additionally, you regain 1 hit point at the start of your next turn after stabilizing this way.',
+          featureType: 'option',
+          optionGroup: 'kriegsman-level-9',
+          actionType: 'passive',
+          tags: ['defensive'],
+        },
+        {
+          level: 9,
+          name: 'Gas Warfare (Enhanced)',
+          description:
+            '[CHOOSE ONE] Your gas grenade radius increases to 30 feet and the damage increases to 5d6. The gas now lasts for 2 minutes. Additionally, you are immune to all gas effects, not just your own.',
+          featureType: 'option',
+          optionGroup: 'kriegsman-level-9',
+          sourceFeature: 'gas-warfare',
+          actionType: 'passive',
+          tags: ['damage', 'control'],
         },
       ],
     },
 
-    // ═══════════════════════════════════════════════════════════════
-    // HEAVY WEAPONS SPECIALIST
-    // ═══════════════════════════════════════════════════════════════
+    // ─── 6. HEAVY WEAPONS SPECIALIST ──────────────────────────────────────
     {
       id: 'heavy-weapons-specialist',
       name: 'Heavy Weapons Specialist',
       description:
-        'Heavy Weapons Specialists wield the most devastating portable weapons in the Imperial arsenal: lascannons, heavy bolters, autocannons, and missile launchers. These soldiers provide crucial fire support, suppressing enemy positions, destroying vehicles, and laying down withering curtains of fire.',
+        "Not all regiments emphasize individual marksmanship or small-unit tactics. Heavy Weapons Specialists are trained to wield the most devastating portable weapons in the Imperial arsenal: lascannons, heavy bolters, autocannons, and missile launchers. These soldiers provide crucial fire support, suppressing enemy positions, destroying vehicles, and laying down withering curtains of fire that no foe can cross.",
       unlockLevel: 1,
+      flavorQuote: "The Emperor's wrath made manifest through superior firepower.",
+      identity: 'Heavy weapon proficiency, sustained fire, defensive positions, vehicle destruction',
+      recommendedFightingStyle: ['Defense', 'Archery'],
+      recommendedAbilities: 'STR > CON > DEX',
+
       features: [
-        // ── Level 1 ──
+        // ── Level 1: Heavy Ordnance ────────────────────────────────────────
         {
           level: 1,
-          name: 'Heavy Ordnance — Heavy Weapons Proficiency',
+          name: 'Heavy Weapons Proficiency',
           description:
-            '[CORE] Proficiency with all heavy weapons (heavy bolter, lascannon, autocannon, missile launcher, heavy stubber, mortar). No disadvantage from the Heavy property even if STR is below 13.',
-        },
-        {
-          level: 1,
-          name: 'Heavy Ordnance — Weapon Stabilization',
-          description:
-            '[MAIN] Heavy weapons don\'t require Setup action before firing. Can move up to half speed on the same turn you fire a heavy weapon without disadvantage.',
+            "You gain proficiency with all heavy weapons (heavy bolter, lascannon, autocannon, missile launcher, heavy stubber, mortar). When you wield a heavy weapon, you don't suffer disadvantage from the weapon's Heavy property, even if your Strength score is below 13.",
+          featureType: 'core',
+          actionType: 'passive',
         },
         {
           level: 1,
-          name: 'Heavy Ordnance — Sustained Fire Doctrine',
+          name: 'Weapon Stabilization',
           description:
-            '[MAIN] When you hit with a heavy weapon, your next heavy weapon attack against the same target before end of your next turn has advantage.',
+            "Heavy weapons you wield don't require you to use the Setup action before firing (if they normally would). Additionally, you can move up to half your speed on the same turn you fire a heavy weapon without suffering disadvantage on the attack roll.",
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['attack'],
         },
-        // ── Level 3 ──
+        {
+          level: 1,
+          name: 'Sustained Fire Doctrine',
+          description:
+            'When you hit a creature with a heavy weapon attack, your next attack with a heavy weapon against the same target before the end of your next turn is made with advantage.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['attack'],
+        },
+
+        // ── Level 3: Fire Support ──────────────────────────────────────────
         {
           level: 3,
-          name: 'Fire Support — Suppressive Barrage',
+          name: 'Suppressive Barrage',
           description:
-            '[CORE] As an action, expend 10 rounds of heavy ammo to create a 20-foot square of heavy suppression within range. Until your next turn, creatures entering or starting turn: WIS save (DC 8 + prof + STR or DEX mod). Fail: Heavily Suppressed (disadvantage on attacks/checks, speed halved, no reactions). Fearless creatures have advantage. Maintain by using action + ammo each turn.',
+            "As an action, you can expend 10 rounds of heavy weapon ammunition to create a devastating barrage. Choose a 20-foot square area within your weapon's normal range. Until the start of your next turn, the area is heavily suppressed. Any creature that starts its turn in the area or enters it for the first time on a turn must succeed on a Wisdom saving throw (DC = 8 + your proficiency bonus + your Strength or Dexterity modifier, your choice) or become heavily suppressed until the end of their turn.\n\n**Heavily Suppressed.** The creature has disadvantage on attack rolls and ability checks, its speed is halved, and it cannot take reactions. Creatures with the Fearless trait or immunity to being frightened have advantage on this saving throw.\n\nYou can maintain this barrage by using your action on subsequent turns and expending ammunition each turn.",
+          featureType: 'core',
+          actionType: 'action',
+          tags: ['control'],
         },
         {
           level: 3,
-          name: 'Fire Support — Fortified Position',
+          name: 'Fortified Position',
           description:
-            '[MAIN] When you don\'t move on your turn, until your next turn: +2 AC, heavy weapon attacks deal extra 1d6 damage, advantage on STR/CON saves to maintain position. Damage increases to 2d6 at 7th level.',
+            "When you don't move on your turn, you gain the following benefits until the start of your next turn: +2 bonus to AC, your heavy weapon attacks deal an additional 1d6 damage, and you have advantage on Strength and Constitution saving throws to maintain your position. This bonus damage increases to 2d6 at 7th level.",
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['defensive', 'damage'],
         },
         {
           level: 3,
-          name: 'Fire Support — Loader\'s Efficiency',
+          name: "Loader's Efficiency",
           description:
-            '[MAIN] Reload heavy weapons as bonus action (instead of action). Reroll 1s on heavy weapon damage dice (must use new roll).',
+            "You can reload a heavy weapon as a bonus action instead of an action. Additionally, when you roll damage with a heavy weapon, you can reroll any 1s on the damage dice (you must use the new roll).",
+          featureType: 'main',
+          actionType: 'bonus-action',
+          tags: ['damage'],
         },
         {
           level: 3,
-          name: 'Fire Support — Options',
+          name: 'Pinpoint Barrage',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Pinpoint Barrage:** Reduce Suppressive Barrage to 10-foot square: DC increases by 2 and failed saves take 2d6 damage of weapon type.\n\n' +
-            '**B) Bracing Expert:** Fortified Position also grants half cover (+2 AC and DEX saves) to allies within 5 feet. You cannot be moved against your will while using it.\n\n' +
-            '**C) Enhance — Sustained Fire Doctrine:** Advantage also applies when switching to a different target within 10 feet of the original. If both attacks hit the same target, second deals extra 1d6.',
+            "[CHOOSE ONE] When you use Suppressive Barrage, you can choose to reduce the area to a 10-foot square. If you do, the saving throw DC increases by 2, and creatures that fail take 2d6 damage of your weapon's type.",
+          featureType: 'option',
+          optionGroup: 'heavy-weapons-level-3',
+          actionType: 'passive',
+          tags: ['damage', 'control'],
         },
-        // ── Level 6 ──
+        {
+          level: 3,
+          name: 'Bracing Expert',
+          description:
+            '[CHOOSE ONE] When you use Fortified Position, you can also grant half cover (+2 AC and Dexterity saves) to allies within 5 feet of you. Additionally, while using Fortified Position, you cannot be moved against your will.',
+          featureType: 'option',
+          optionGroup: 'heavy-weapons-level-3',
+          actionType: 'passive',
+          tags: ['defensive', 'support'],
+        },
+        {
+          level: 3,
+          name: 'Sustained Fire Doctrine (Enhanced)',
+          description:
+            "[CHOOSE ONE] When you use Sustained Fire Doctrine, the advantage on the follow-up attack also applies if you switch to a different target within 10 feet of the original target. Additionally, if both your current and follow-up attacks hit the same target, the second attack deals an extra 1d6 damage.",
+          featureType: 'option',
+          optionGroup: 'heavy-weapons-level-3',
+          sourceFeature: 'sustained-fire-doctrine',
+          actionType: 'passive',
+          tags: ['attack', 'damage'],
+        },
+
+        // ── Level 6: Walking Fortress ──────────────────────────────────────
         {
           level: 6,
-          name: 'Walking Fortress — Improved Fortification',
+          name: 'Improved Fortification',
           description:
-            '[CORE] Fortified Position AC bonus increases to +3. Advantage on saves vs. prone, push, or involuntary movement. Allies within 10 feet gain half cover.',
+            'When you use your Fortified Position feature, the AC bonus increases to +3, and you have advantage on saving throws against being knocked prone, pushed, or moved against your will. Additionally, while using Fortified Position, allies within 10 feet of you gain half cover.',
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['defensive', 'support'],
         },
         {
           level: 6,
-          name: 'Walking Fortress — Devastating Fire',
+          name: 'Devastating Fire',
           description:
-            '[MAIN] On heavy weapon hit, deal extra 3d6 damage. Vehicles/constructs have disadvantage on next attack. Uses equal to proficiency bonus per short or long rest.',
+            "When you hit a creature with a heavy weapon attack, you can choose to make the attack devastating. The attack deals an additional 3d6 damage, and if the target is a vehicle or construct, it has disadvantage on its next attack roll. You can use this a number of times equal to your proficiency bonus, regaining all uses on a short or long rest.",
+          featureType: 'main',
+          actionType: 'free',
+          usesPerRest: 'short',
+          usesCount: 'proficiency',
+          tags: ['damage'],
         },
         {
           level: 6,
-          name: 'Walking Fortress — Anti-Armor Specialist',
+          name: 'Anti-Armor Specialist',
           description:
-            '[MAIN] Heavy weapon attacks ignore damage resistance. Against vehicles, constructs, or heavy armor targets, crit on 19-20.',
+            'Your attacks with heavy weapons ignore resistance to the damage type they deal. Additionally, when you attack a vehicle, construct, or creature wearing heavy armor with a heavy weapon, you score a critical hit on a roll of 19–20.',
+          featureType: 'main',
+          actionType: 'passive',
+          tags: ['attack', 'damage'],
         },
         {
           level: 6,
-          name: 'Walking Fortress — Options',
+          name: 'Mobile Emplacement',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Mobile Emplacement:** Fortified Position works if you moved up to 10 feet (instead of 0). When you end your turn having moved 10 feet or less, set up Fortified Position (no action).\n\n' +
-            '**B) Armor Piercing Rounds:** Once per turn on heavy weapon hit, target makes CON save (DC 8 + prof + STR mod). Fail: AC reduced by 2 until end of your next turn. Doesn\'t stack.\n\n' +
-            '**C) Enhance — Suppressive Barrage:** Area increases to 30-foot square. Failed saves also take 2d6 weapon damage. Can maintain while moving up to 5 feet per turn.',
-        },
-        // ── Level 9 ──
-        {
-          level: 9,
-          name: 'Emperor\'s Hammer — Maximum Firepower',
-          description:
-            '[CORE] When you Attack with a heavy weapon, make three attacks instead of two (or two instead of one without Extra Attack).',
+            "[CHOOSE ONE] You can now use Fortified Position even if you moved up to 10 feet on your turn (instead of requiring no movement). Additionally, when you end your turn without moving more than 10 feet, you can immediately set up your Fortified Position (no action required).",
+          featureType: 'option',
+          optionGroup: 'heavy-weapons-level-6',
+          actionType: 'passive',
+          tags: ['defensive', 'movement'],
         },
         {
-          level: 9,
-          name: 'Emperor\'s Hammer — Overwhelming Barrage',
+          level: 6,
+          name: 'Armor Piercing Rounds',
           description:
-            '[MAIN] Once per short rest, as an action: make one heavy weapon attack against each creature of your choice in a 30-foot cone with advantage. OR focus on one target — three attacks with advantage. If 2+ hit the focused target, CON save (DC 8 + prof + STR or DEX mod) or stunned until end of your next turn.',
+            "[CHOOSE ONE] Once per turn, when you hit a creature with a heavy weapon attack, you can force it to make a Constitution saving throw (DC = 8 + your proficiency bonus + your Strength modifier). On a failure, the creature's AC is reduced by 2 until the end of your next turn. This effect doesn't stack.",
+          featureType: 'option',
+          optionGroup: 'heavy-weapons-level-6',
+          actionType: 'free',
+          tags: ['attack'],
+        },
+        {
+          level: 6,
+          name: 'Suppressive Barrage (Enhanced)',
+          description:
+            "[CHOOSE ONE] Your Suppressive Barrage area increases to a 30-foot square. Creatures that fail the saving throw also take 2d6 damage of your weapon's type. You can maintain the barrage even if you move up to 5 feet per turn.",
+          featureType: 'option',
+          optionGroup: 'heavy-weapons-level-6',
+          sourceFeature: 'suppressive-barrage',
+          actionType: 'passive',
+          tags: ['control', 'damage'],
+        },
+
+        // ── Level 9: Emperor's Hammer ──────────────────────────────────────
+        {
+          level: 9,
+          name: 'Maximum Firepower',
+          description:
+            "When you take the Attack action with a heavy weapon, you can make three attacks instead of two (or two instead of one if you don't have Extra Attack).",
+          featureType: 'core',
+          actionType: 'passive',
+          tags: ['attack'],
         },
         {
           level: 9,
-          name: 'Emperor\'s Hammer — Unbreakable Anchor',
+          name: 'Overwhelming Barrage',
           description:
-            '[MAIN] While using Fortified Position: resistance to bludgeoning, piercing, and slashing damage, and heavy weapon attacks ignore all cover. Lasts a number of rounds equal to proficiency bonus per long rest.',
+            'Once per short rest, as an action, you make one heavy weapon attack against each creature of your choice in a 30-foot cone originating from you with advantage. Alternatively, you can focus this barrage on a single target, making three heavy weapon attacks against that target with advantage. If at least two hit, the target must succeed on a Constitution saving throw (DC = 8 + your proficiency bonus + your Strength or Dexterity modifier) or be stunned until the end of your next turn.',
+          featureType: 'main',
+          actionType: 'action',
+          usesPerRest: 'short',
+          usesCount: '1',
+          tags: ['attack', 'damage', 'control'],
         },
         {
           level: 9,
-          name: 'Emperor\'s Hammer — Options',
+          name: 'Unbreakable Anchor',
           description:
-            '[CHOOSE ONE]\n\n' +
-            '**A) Walking Tank:** Wield vehicle-mounted heavy weapons. Extra die of damage but must remain stationary (0 movement) while firing. Double carrying capacity for heavy weapons.\n\n' +
-            '**B) Final Salvo:** Once per long rest, when reduced to 0 HP, use reaction to fire one Overwhelming Barrage before falling unconscious. Auto-hits all targets.\n\n' +
-            '**C) Enhance — Devastating Fire:** Damage increases to 4d6. Against vehicles/constructs, additional 2d6 damage and target speed reduced to 0 until end of its next turn.',
+            'While using your Fortified Position feature, you have resistance to bludgeoning, piercing, and slashing damage, and your heavy weapon attacks ignore all cover. You can maintain Unbreakable Anchor for a number of rounds equal to your proficiency bonus per long rest.',
+          featureType: 'main',
+          actionType: 'passive',
+          usesPerRest: 'long',
+          usesCount: 'proficiency',
+          tags: ['defensive', 'attack'],
+        },
+        {
+          level: 9,
+          name: 'Walking Tank',
+          description:
+            '[CHOOSE ONE] You can wield heavy weapons designed for vehicle mounting. These weapons deal an extra die of damage but require you to remain stationary (0 movement) while firing. Additionally, your carrying capacity for heavy weapons is doubled.',
+          featureType: 'option',
+          optionGroup: 'heavy-weapons-level-9',
+          actionType: 'passive',
+          tags: ['attack', 'damage'],
+        },
+        {
+          level: 9,
+          name: 'Final Salvo',
+          description:
+            '[CHOOSE ONE] Once per long rest, when you are reduced to 0 hit points, you can use your reaction to fire one final Overwhelming Barrage before falling unconscious. This barrage automatically hits all targets.',
+          featureType: 'option',
+          optionGroup: 'heavy-weapons-level-9',
+          actionType: 'reaction',
+          usesPerRest: 'long',
+          usesCount: '1',
+          tags: ['attack', 'damage'],
+        },
+        {
+          level: 9,
+          name: 'Devastating Fire (Enhanced)',
+          description:
+            "[CHOOSE ONE] Your Devastating Fire additional damage increases to 4d6. Against vehicles and constructs, the attack also deals an additional 2d6 damage and the target's speed is reduced to 0 until the end of its next turn.",
+          featureType: 'option',
+          optionGroup: 'heavy-weapons-level-9',
+          sourceFeature: 'devastating-fire',
+          actionType: 'passive',
+          tags: ['damage'],
         },
       ],
     },
   ],
-  tags: ['martial', 'ranged', 'military', 'imperial'],
+
+  tags: ['ranged', 'martial', 'military'],
 }

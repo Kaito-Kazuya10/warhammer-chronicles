@@ -1,6 +1,7 @@
 import type { WarhamerModule } from '../../types/module'
 import { coreRaces } from './races'
 import { imperialGuardsman } from './classes/imperialGuardsman'
+import { augmenticist } from './classes/augmenticist'
 import { allSpells } from './spells'
 import { allItems } from './items'
 import { coreFeats } from './feats'
@@ -20,7 +21,7 @@ export const coreModule: WarhamerModule = {
   author: 'Homebrew',
   content: {
     races: coreRaces,
-    classes: [imperialGuardsman],
+    classes: [imperialGuardsman, augmenticist],
     spells: allSpells,
     items: allItems,
     feats: coreFeats,

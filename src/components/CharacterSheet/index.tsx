@@ -1,9 +1,15 @@
+import { useState } from 'react'
 import TopStatBar from './TopStatBar'
 import LeftColumn from './LeftColumn'
 import SkillList from './SkillList'
 import ContentTabs from './ContentTabs'
 import RollToast from './RollToast'
 import RollHistoryPanel from './RollHistoryPanel'
+import LevelUpFlow from './LevelUp/LevelUpFlow'
+import {
+  Sheet,
+  SheetContent,
+} from '@/components/ui/sheet'
 import './sheet.css'
 
 // ─── CharacterSheet ───────────────────────────────────────────────────────────
@@ -13,6 +19,8 @@ interface Props {
 }
 
 export default function CharacterSheet({ characterId }: Props) {
+  const [showLevelUp, setShowLevelUp] = useState(false)
+
   return (
     <div className="min-h-screen bg-[var(--background)] p-4 space-y-4">
       {/* Floating roll toast — shows on every new roll */}
@@ -21,8 +29,23 @@ export default function CharacterSheet({ characterId }: Props) {
       {/* Slide-out roll history panel */}
       <RollHistoryPanel />
 
+      {/* Level Up side panel */}
+      <Sheet open={showLevelUp} onOpenChange={setShowLevelUp}>
+        <SheetContent
+          side="right"
+          showCloseButton={false}
+          className="w-full p-0"
+          style={{ maxWidth: 600 }}
+        >
+          <LevelUpFlow
+            characterId={characterId}
+            onClose={() => setShowLevelUp(false)}
+          />
+        </SheetContent>
+      </Sheet>
+
       {/* Top stat bar (includes identity header) */}
-      <TopStatBar characterId={characterId} />
+      <TopStatBar characterId={characterId} onLevelUp={() => setShowLevelUp(true)} />
 
       {/*
         Responsive three-section layout:
