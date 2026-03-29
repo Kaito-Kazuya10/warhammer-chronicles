@@ -16,7 +16,10 @@
       "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''; npm run dev\")",
       "Bash(powershell -Command \"cd ''c:\\\\Users\\\\austi\\\\Desktop\\\\warhammer proj''; npm install react-router-dom 2>&1\")",
       "Bash(powershell -Command \"New-Item -ItemType Directory -Force ''C:\\\\Users\\\\austi\\\\.claude\\\\projects\\\\c--Users-austi-Desktop-warhammer-proj\\\\memory'' | Out-Null; echo done\")",
-      "Bash(powershell -Command \"Start-Process ''http://localhost:5173''\")"
+      "Bash(powershell -Command \"Start-Process ''http://localhost:5173''\")",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(node_modules/.bin/vite build:*)",
+      "Bash(find /c/Users/austi/Desktop/Warhammer/warhammer-chronicles -type f -name *.sql)"
     ]
   }
 }

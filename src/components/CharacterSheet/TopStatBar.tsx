@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Moon, Sun } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,16 +9,17 @@ import { getAllRaces, getAllClasses } from '../../modules/registry'
 import { useDiceStore } from '../../store/diceStore'
 import { rollCheck, fmtMod } from '../../utils/dice'
 import type { AbilityScores } from '../../types/character'
+import RestDialog from './RestDialog'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ABILITIES: { key: keyof AbilityScores; label: string; abbr: string }[] = [
-  { key: 'strength',     label: 'STR', abbr: 'STR' },
-  { key: 'dexterity',    label: 'DEX', abbr: 'DEX' },
-  { key: 'constitution', label: 'CON', abbr: 'CON' },
-  { key: 'intelligence', label: 'INT', abbr: 'INT' },
-  { key: 'wisdom',       label: 'WIS', abbr: 'WIS' },
-  { key: 'charisma',     label: 'CHA', abbr: 'CHA' },
+  { key: 'strength',     label: 'STRENGTH',     abbr: 'STR' },
+  { key: 'dexterity',    label: 'DEXTERITY',    abbr: 'DEX' },
+  { key: 'constitution', label: 'CONSTITUTION', abbr: 'CON' },
+  { key: 'intelligence', label: 'INTELLIGENCE', abbr: 'INT' },
+  { key: 'wisdom',       label: 'WISDOM',       abbr: 'WIS' },
+  { key: 'charisma',     label: 'CHARISMA',     abbr: 'CHA' },
 ]
 
 // ─── Character Header ─────────────────────────────────────────────────────────
@@ -61,7 +63,7 @@ function CharacterHeader({ characterId, onLevelUp }: { characterId: string; onLe
         <img
           src={character.portrait}
           alt="Portrait"
-          className="w-10 h-10 rounded-md object-cover flex-shrink-0 border border-border"
+          className="w-20 h-20 rounded-lg object-cover flex-shrink-0 border-2 border-border shadow-md"
         />
       )}
       <div className="flex-1 min-w-0">
@@ -83,20 +85,9 @@ function CharacterHeader({ characterId, onLevelUp }: { characterId: string; onLe
               className="w-7 text-center text-sm bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
             {raceName && ` ${raceName}`}
-            {className && ` ${className}`}
+            {className && ` — ${className}`}
             {subclassName && ` · ${subclassName}`}
           </p>
-
-          {/* Level Up button */}
-          {canLevelUp && (
-            <Button
-              size="sm"
-              onClick={onLevelUp}
-              className="h-5 px-2 text-[10px] font-bold tracking-wider"
-            >
-              LEVEL UP
-            </Button>
-          )}
 
           {/* Level Down button */}
           {character.level > 1 && !showLevelDown && (
@@ -117,17 +108,17 @@ function CharacterHeader({ characterId, onLevelUp }: { characterId: string; onLe
           )}
         </div>
       </div>
-      {/* XP */}
-      <div className="flex flex-col items-center flex-shrink-0">
-        <input
-          type="number"
-          min={0}
-          value={character.experiencePoints}
-          onChange={e => updateCharacter(characterId, { experiencePoints: Math.max(0, Number(e.target.value) || 0) })}
-          className="w-16 text-center text-sm bg-transparent border border-border rounded-md outline-none focus:border-ring py-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-        />
-        <span className="text-[9px] uppercase tracking-widest text-muted-foreground mt-0.5">XP</span>
-      </div>
+
+      {/* Level Up button — top right, replaces XP box */}
+      {canLevelUp && (
+        <Button
+          size="sm"
+          onClick={onLevelUp}
+          className="flex-shrink-0 font-bold tracking-wider"
+        >
+          LEVEL UP ↑
+        </Button>
+      )}
     </div>
   )
 }
@@ -161,8 +152,8 @@ function AbilityScoreBlock({
   }
 
   return (
-    <div className="flex flex-col items-center justify-between border border-border rounded-md p-2 gap-0.5 min-w-0">
-      <span className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-medium">{label}</span>
+    <div className="flex flex-col items-center justify-between border border-border bg-muted/20 rounded-md p-2 gap-0.5 min-w-0">
+      <span className="text-[8px] uppercase tracking-[0.08em] text-muted-foreground font-medium text-center leading-tight">{label}</span>
 
       {/* Modifier — clickable to roll */}
       <span
@@ -208,8 +199,8 @@ function AbilityScoreBlock({
 
 function StatBox({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col items-center justify-between border border-border rounded-md p-2 gap-0.5 min-w-0">
-      <span className="text-xl font-bold font-mono text-foreground leading-none">{children}</span>
+    <div className="flex flex-col items-center justify-center border border-border bg-muted/20 rounded-md p-3 gap-1.5 min-w-0">
+      <span className="text-2xl font-bold font-mono text-foreground leading-none">{children}</span>
       <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground text-center font-medium leading-tight">
         {label}
       </span>
@@ -245,7 +236,8 @@ function HPSection({ characterId }: { characterId: string }) {
   const character       = useCharacterStore(s => s.characters.find(c => c.id === characterId))
   const updateCharacter = useCharacterStore(s => s.updateCharacter)
   const setHitPoints    = useCharacterStore(s => s.setHitPoints)
-  const [delta, setDelta] = useState('')
+  const [delta,    setDelta]    = useState('')
+  const [restType, setRestType] = useState<'short' | 'long' | null>(null)
 
   if (!character) return null
 
@@ -269,8 +261,8 @@ function HPSection({ characterId }: { characterId: string }) {
 
   return (
     <div className="flex flex-col gap-2 flex-1 min-w-0">
-      {/* Heal / damage controls */}
-      <div className="flex items-center gap-1.5 flex-wrap">
+      {/* Row 1 — Heal / Damage */}
+      <div className="flex items-center gap-1.5">
         <Input
           type="number"
           placeholder="0"
@@ -298,9 +290,41 @@ function HPSection({ characterId }: { characterId: string }) {
         </Button>
       </div>
 
-      {/* HP numbers row */}
-      <div className="flex items-baseline gap-1">
-        <div className="flex flex-col items-center">
+      {/* Row 2 — Rest buttons */}
+      <div className="flex items-center gap-1.5">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setRestType('short')}
+          className="text-xs gap-1.5 text-foreground flex-1"
+          title="Short Rest (1 hour)"
+        >
+          <Moon size={12} /> Short Rest
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setRestType('long')}
+          className="text-xs gap-1.5 text-foreground flex-1"
+          title="Long Rest (8 hours)"
+        >
+          <Sun size={12} /> Long Rest
+        </Button>
+      </div>
+
+      {/* Rest dialogs */}
+      {restType && (
+        <RestDialog
+          characterId={characterId}
+          restType={restType}
+          open={restType !== null}
+          onClose={() => setRestType(null)}
+        />
+      )}
+
+      {/* HP numbers row — two equal boxes */}
+      <div className="flex items-stretch gap-2">
+        <div className="flex flex-col items-center border border-border bg-muted/20 rounded-md px-3 py-2 flex-1">
           <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground mb-0.5">CURRENT</span>
           <EditableNumber
             value={character.currentHitPoints}
@@ -308,22 +332,21 @@ function HPSection({ characterId }: { characterId: string }) {
             className="text-3xl"
           />
         </div>
-        <span className="text-muted-foreground text-2xl pb-0.5">/</span>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center border border-border bg-muted/20 rounded-md px-3 py-2 flex-1">
           <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground mb-0.5">MAX</span>
           <EditableNumber
             value={character.maxHitPoints}
             onChange={v => updateCharacter(characterId, { maxHitPoints: Math.max(1, v) })}
-            className="text-xl"
+            className="text-3xl"
           />
         </div>
         {character.temporaryHitPoints > 0 && (
-          <div className="flex flex-col items-center ml-2">
+          <div className="flex flex-col items-center border border-blue-500/30 bg-blue-500/5 rounded-md px-3 py-2 flex-1">
             <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground mb-0.5">TEMP</span>
             <EditableNumber
               value={character.temporaryHitPoints}
               onChange={v => updateCharacter(characterId, { temporaryHitPoints: Math.max(0, v) })}
-              className="text-xl text-blue-500"
+              className="text-3xl text-blue-500"
             />
           </div>
         )}
@@ -369,11 +392,11 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
       {/* ── Character identity header ── */}
       <CharacterHeader characterId={characterId} onLevelUp={onLevelUp} />
 
-      {/* ── Stats ── */}
-      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-x-6 items-start">
+      {/* ── Stats — equal thirds ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-        {/* Ability scores: 3×2 on mobile, 6-in-a-row on sm+ */}
-        <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 w-full sm:w-auto">
+        {/* Column 1: Ability scores 3×2 */}
+        <div className="grid grid-cols-3 gap-1.5">
           {ABILITIES.map(ab => (
             <AbilityScoreBlock
               key={ab.key}
@@ -385,22 +408,19 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
           ))}
         </div>
 
-        {/* Divider — desktop only */}
-        <div className="w-px bg-border self-stretch hidden sm:block" />
-
-        {/* Combat stats: 2-col grid on mobile, flex on sm+ */}
-        <div className="grid grid-cols-2 sm:flex gap-1.5 items-start">
+        {/* Column 2: Combat stats bento 3×2 */}
+        <div className="grid grid-cols-3 gap-1.5">
           <StatBox label="PROF BONUS">+{character.proficiencyBonus}</StatBox>
 
           {/* Speed — editable */}
-          <div className="flex flex-col items-center justify-between border border-border rounded-md p-2 gap-0.5">
+          <div className="flex flex-col items-center justify-center border border-border bg-muted/20 rounded-md p-3 gap-1.5">
             <div className="flex items-baseline gap-0.5">
               <input
                 type="number"
                 value={character.speed}
                 onChange={e => updateCharacter(characterId, { speed: Number(e.target.value) || 30 })}
                 onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }}
-                className="text-xl font-bold font-mono text-foreground bg-transparent border-none outline-none w-10 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="text-2xl font-bold font-mono text-foreground bg-transparent border-none outline-none w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
               <span className="text-sm text-muted-foreground">ft</span>
             </div>
@@ -409,7 +429,7 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
 
           {/* Initiative — rollable */}
           <div
-            className="flex flex-col items-center justify-between border border-border rounded-md p-2 gap-0.5 cursor-pointer hover:border-primary/60 hover:bg-accent/5 active:scale-95 transition-all"
+            className="flex flex-col items-center justify-center border border-border bg-muted/20 rounded-md p-3 gap-1.5 cursor-pointer hover:border-primary/60 hover:bg-muted/40 active:scale-95 transition-all"
             role="button"
             tabIndex={0}
             aria-label={`Roll Initiative (${dexModStr})`}
@@ -417,30 +437,30 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rollInitiative() } }}
             title="Click to roll Initiative"
           >
-            <span className="text-xl font-bold font-mono text-foreground leading-none">{dexModStr}</span>
+            <span className="text-2xl font-bold font-mono text-foreground leading-none">{dexModStr}</span>
             <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">INITIATIVE</span>
           </div>
 
           {/* Armor class */}
-          <div className="flex flex-col items-center justify-between border border-border rounded-md p-2 gap-0.5">
+          <div className="flex flex-col items-center justify-center border border-border bg-muted/20 rounded-md p-3 gap-1.5">
             <input
               type="number"
               value={character.armorClass}
               onChange={e => updateCharacter(characterId, { armorClass: Number(e.target.value) || 10 })}
               onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }}
-              className="text-xl font-bold font-mono text-foreground bg-transparent border-none outline-none w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="text-2xl font-bold font-mono text-foreground bg-transparent border-none outline-none w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
             <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">AC</span>
           </div>
 
           {/* Inspiration toggle */}
-          <div className="flex flex-col items-center justify-between border border-border rounded-md p-2 gap-0.5">
+          <div className="flex flex-col items-center justify-center border border-border bg-muted/20 rounded-md p-3 gap-1.5">
             <Toggle
               pressed={character.inspiration}
               onPressedChange={(v: boolean) => updateCharacter(characterId, { inspiration: v })}
               size="sm"
               variant="outline"
-              className={`text-lg border-none p-0 h-auto ${character.inspiration ? 'text-[var(--wh-gold)]' : 'text-muted-foreground/40'}`}
+              className={`text-3xl border-none p-0 h-auto leading-none ${character.inspiration ? 'text-[var(--wh-gold)]' : 'text-muted-foreground/40'}`}
               aria-label="Toggle inspiration"
             >
               {character.inspiration ? '★' : '☆'}
@@ -449,13 +469,8 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
           </div>
         </div>
 
-        {/* Divider — desktop only */}
-        <div className="w-px bg-border self-stretch hidden sm:block" />
-
-        {/* HP */}
-        <div className="w-full sm:w-auto sm:flex-1 sm:min-w-[240px]">
-          <HPSection characterId={characterId} />
-        </div>
+        {/* Column 3: HP */}
+        <HPSection characterId={characterId} />
 
       </div>
     </Card>

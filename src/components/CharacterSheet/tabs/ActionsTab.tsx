@@ -7,6 +7,8 @@ import {
   CollapsibleContent,
 } from '@/components/ui/collapsible'
 import { useCharacterStore, getModifier } from '../../../store/characterStore'
+import { resolveUsesCount } from '../../../utils/resolveUsesCount'
+import { renderDescription } from '../../../utils/renderDescription'
 import { getItemById, getAllClasses } from '../../../modules/registry'
 import type { ClassFeature, FeatureActionType, Item } from '../../../types/module'
 import type { InventoryItem } from '../../../types/character'
@@ -358,13 +360,35 @@ function AttackSection({
 function FeatureRow({
   feature,
   sourceName,
+  characterId,
 }: {
   feature: ClassFeature
   sourceName?: string
+  characterId: string
 }) {
   const [open, setOpen] = useState(false)
+  const character       = useCharacterStore(s => s.characters.find(c => c.id === characterId))
+  const updateCharacter = useCharacterStore(s => s.updateCharacter)
+
   const actionLabel = feature.actionType ? ACTION_TYPE_LABELS[feature.actionType] : undefined
   const badgeClass  = feature.actionType ? ACTION_TYPE_BADGE_CLASS[feature.actionType] : undefined
+
+  // Use tracking
+  const hasUses   = !!(feature.usesPerRest && feature.usesPerRest !== 'at-will' && feature.usesCount && character)
+  const featureKey = slugify(feature.name)
+  const usesMax    = hasUses && character ? resolveUsesCount(feature.usesCount!, character) : 0
+  const usesSpent  = character?.featureUsesSpent?.[featureKey] ?? 0
+
+  function toggleUse(i: number) {
+    if (!character) return
+    const isSpent = i < usesSpent
+    updateCharacter(characterId, {
+      featureUsesSpent: {
+        ...(character.featureUsesSpent ?? {}),
+        [featureKey]: isSpent ? i : i + 1,
+      },
+    })
+  }
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
@@ -378,7 +402,9 @@ function FeatureRow({
         </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-sm font-medium text-foreground">{feature.name}</span>
+            <span className={`text-sm font-medium ${hasUses && usesSpent >= usesMax ? 'text-muted-foreground/50' : 'text-foreground'}`}>
+              {feature.name}
+            </span>
             {actionLabel && (
               <Badge
                 variant="outline"
@@ -387,25 +413,51 @@ function FeatureRow({
                 {actionLabel}
               </Badge>
             )}
-            {feature.usesPerRest && (
-              <Badge variant="outline" className="text-[9px] h-4 px-1.5 text-muted-foreground">
-                {feature.usesMax ? `${feature.usesMax}×` : ''}
-                {feature.usesPerRest === 'short' ? ' Short Rest' : ' Long Rest'}
-              </Badge>
-            )}
             {sourceName && (
               <span className="text-[10px] text-muted-foreground/60 italic">({sourceName})</span>
             )}
           </div>
+
+          {/* Checkbox use tracker */}
+          {hasUses && (
+            <div className="flex items-center gap-1 mt-1.5">
+              {Array.from({ length: usesMax }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={e => { e.stopPropagation(); toggleUse(i) }}
+                  className={`w-4 h-4 rounded-sm border transition-colors ${
+                    i < usesSpent
+                      ? 'bg-foreground/70 border-foreground/70'
+                      : 'bg-transparent border-border hover:border-foreground/40'
+                  }`}
+                  aria-label={i < usesSpent ? 'Unspend use' : 'Spend use'}
+                />
+              ))}
+              <span className="text-[9px] text-muted-foreground ml-0.5">
+                / {feature.usesPerRest === 'short' ? 'Short Rest' : 'Long Rest'}
+              </span>
+            </div>
+          )}
+          {/* Fallback badge for features with usesPerRest but no trackable usesCount */}
+          {!hasUses && feature.usesPerRest && (
+            <div className="mt-1">
+              <Badge variant="outline" className="text-[9px] h-4 px-1.5 text-muted-foreground">
+                {feature.usesMax ? `${feature.usesMax}×` : ''}
+                {feature.usesPerRest === 'short' ? ' Short Rest' : ' Long Rest'}
+              </Badge>
+            </div>
+          )}
+
           <p className="text-[10px] text-muted-foreground mt-0.5">Lv. {feature.level}</p>
         </div>
       </CollapsibleTrigger>
 
       <CollapsibleContent>
-        <div className="px-7 pb-3 pt-0.5">
-          <p className="text-xs text-foreground/80 leading-relaxed whitespace-pre-wrap">
-            {feature.description}
-          </p>
+        <div className="px-7 pb-3 pt-0.5 text-xs text-foreground/80">
+          {renderDescription(
+            feature.description,
+            feature.name === 'Fighting Style' ? character?.fightingStyle : undefined,
+          )}
         </div>
       </CollapsibleContent>
     </Collapsible>
@@ -489,13 +541,14 @@ function ClassFeaturesSection({
       </p>
       <div className="divide-y divide-border/50">
         {clsResolved.map(({ feature, sourceName }) => (
-          <FeatureRow key={`cls-${feature.name}-${feature.level}`} feature={feature} sourceName={sourceName} />
+          <FeatureRow key={`cls-${feature.name}-${feature.level}`} feature={feature} sourceName={sourceName} characterId={characterId} />
         ))}
         {subResolved.map(({ feature, sourceName }) => (
           <FeatureRow
             key={`sub-${feature.name}-${feature.level}`}
             feature={feature}
             sourceName={sourceName}
+            characterId={characterId}
           />
         ))}
       </div>

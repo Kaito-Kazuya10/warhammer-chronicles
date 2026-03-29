@@ -46,6 +46,29 @@ interface Props {
   onClose: () => void
 }
 
+// ─── ExpandableFeatureCard ───────────────────────────────────────────────────
+
+function ExpandableFeatureCard({ feature, badge }: { feature: ClassFeature; badge: React.ReactNode }) {
+  const [expanded, setExpanded] = useState(false)
+  return (
+    <button
+      onClick={() => setExpanded(v => !v)}
+      className="w-full text-left rounded-md border border-border bg-muted/30 px-3 py-2 hover:bg-muted/40 transition-colors"
+    >
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <span className="text-sm font-semibold text-foreground">{feature.name}</span>
+        {badge}
+        <span className="ml-auto text-[10px] text-muted-foreground flex-shrink-0">
+          {expanded ? '▲ less' : '▼ more'}
+        </span>
+      </div>
+      <p className={`text-xs text-foreground/70 mt-0.5 leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
+        {feature.description}
+      </p>
+    </button>
+  )
+}
+
 // ─── LevelUpFlow ─────────────────────────────────────────────────────────────
 
 export default function LevelUpFlow({ characterId, onClose }: Props) {
@@ -229,7 +252,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
         <p className="text-3xl font-bold text-foreground">
           Level {character.level} → Level {targetLevel}
         </p>
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="text-sm text-foreground/70 mt-1">
           Here's what you gain at your new level.
         </p>
       </div>
@@ -239,8 +262,8 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
       {/* HP */}
       <div>
         <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-1">Wounds</p>
-        <p className="text-sm text-foreground">
-          Roll <span className="font-mono font-semibold">1d{hitDie}</span> + <span className="font-mono">{conMod >= 0 ? '+' : ''}{conMod}</span> CON modifier for new Wounds
+        <p className="text-sm text-foreground/70">
+          Roll <span className="font-mono font-semibold text-foreground">1d{hitDie}</span> + <span className="font-mono text-foreground">{conMod >= 0 ? '+' : ''}{conMod}</span> CON modifier for new Wounds
         </p>
         <p className="text-xs text-muted-foreground mt-0.5">
           Or take the average: <span className="font-mono font-semibold">{avgHPValue}</span> + <span className="font-mono">{conMod >= 0 ? '+' : ''}{conMod}</span> = <span className="font-mono font-semibold">{Math.max(1, avgHPValue + conMod)}</span>
@@ -255,7 +278,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
             Increases to +{newProf}!
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground">Stays at +{oldProf}</p>
+          <p className="text-sm text-foreground/80">Stays at +{oldProf}</p>
         )}
       </div>
 
@@ -265,16 +288,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
           <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-2">New Features</p>
           <div className="space-y-2">
             {allNewFeatures.map(f => (
-              <div key={f.name} className="flex items-start gap-2">
-                <span className="text-muted-foreground mt-0.5">•</span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-sm font-medium">{f.name}</span>
-                    {typeBadge(f.featureType)}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{f.description.split('\n')[0]}</p>
-                </div>
-              </div>
+              <ExpandableFeatureCard key={f.name} feature={f} badge={typeBadge(f.featureType)} />
             ))}
           </div>
         </div>
@@ -308,7 +322,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
     <div className="space-y-5">
       <div>
         <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-1">Increase Your Wounds</p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-foreground/70">
           Choose how to determine your Wound increase.
         </p>
       </div>
@@ -321,7 +335,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
           className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
             hpMethod === 'roll'
               ? 'border-primary bg-primary/5'
-              : 'border-border hover:border-primary/40 hover:bg-muted/30'
+              : 'border-border bg-muted/20 hover:border-primary/40 hover:bg-muted/30'
           }`}
         >
           <span className={`text-3xl ${isRolling ? 'animate-bounce' : ''}`}>🎲</span>
@@ -335,7 +349,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
           className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
             hpMethod === 'average'
               ? 'border-primary bg-primary/5'
-              : 'border-border hover:border-primary/40 hover:bg-muted/30'
+              : 'border-border bg-muted/20 hover:border-primary/40 hover:bg-muted/30'
           }`}
         >
           <span className="text-3xl">📊</span>
@@ -346,7 +360,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
 
       {/* Result */}
       {hpGain !== null && (
-        <div className="rounded-lg border border-border bg-muted/20 p-4 text-center space-y-2">
+        <div className="rounded-lg border border-primary/20 bg-muted/40 p-4 text-center space-y-2">
           {hpMethod === 'roll' && hpRollValue !== null && (
             <div className="flex items-center justify-center gap-2">
               <span className="text-sm text-muted-foreground">Rolled:</span>
@@ -386,7 +400,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
         <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-1">
           Ability Score Improvement
         </p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-foreground/70">
           Increase your ability scores or choose a feat.
         </p>
       </div>
@@ -429,7 +443,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
               const newVal = current + added
               return (
                 <div key={ab} className={`flex items-center justify-between p-2 rounded-md border transition-colors ${
-                  added > 0 ? 'border-primary/50 bg-primary/5' : 'border-border'
+                  added > 0 ? 'border-primary/50 bg-primary/5' : 'border-border bg-muted/20'
                 }`}>
                   <div>
                     <span className="text-xs font-semibold tracking-wider">{AB_LABEL[ab]}</span>
@@ -480,7 +494,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
                 className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
                   selectedFeat === feat.id
                     ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/30'
+                    : 'border-border bg-muted/15 hover:bg-muted/30 hover:border-primary/30'
                 }`}
               >
                 <p className="text-sm font-semibold">{feat.name}</p>
@@ -506,16 +520,18 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
           <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-2">New Features (Automatic)</p>
           <div className="space-y-2">
             {allNewFeatures.map(f => (
-              <div key={f.name} className="p-3 rounded-md border border-border bg-muted/10">
-                <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                  <span className="text-sm font-semibold">{f.name}</span>
-                  {typeBadge(f.featureType)}
-                  {f.actionType && (
-                    <Badge variant="outline" className="text-[9px] py-0 px-1">{ACTION_LABELS[f.actionType]}</Badge>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">{f.description.split('\n\n')[0]}</p>
-              </div>
+              <ExpandableFeatureCard
+                key={f.name}
+                feature={f}
+                badge={
+                  <span className="flex gap-1">
+                    {typeBadge(f.featureType)}
+                    {f.actionType && (
+                      <Badge variant="outline" className="text-[9px] py-0 px-1">{ACTION_LABELS[f.actionType]}</Badge>
+                    )}
+                  </span>
+                }
+              />
             ))}
           </div>
         </div>
@@ -539,10 +555,10 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
                 <button
                   key={opt.name}
                   onClick={() => setSelectedOption(optSlug)}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                  className={`w-full text-left p-4 rounded-lg border-2 transition-all shadow-sm ${
                     isSelected
                       ? 'border-primary bg-primary/5'
-                      : 'border-border hover:border-primary/30'
+                      : 'border-border bg-muted/20 hover:border-primary/30 hover:bg-muted/30'
                   }`}
                 >
                   {/* Header */}
@@ -607,9 +623,9 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
     return (
       <div className="space-y-4">
         {confirmed && (
-          <div className="rounded-lg border border-[var(--wh-success)]/30 bg-[var(--wh-success)]/5 p-4 text-center">
+          <div className="rounded-lg border border-[var(--wh-success)]/30 bg-[var(--wh-success)]/10 p-4 text-center shadow-sm">
             <p className="text-lg font-bold text-[var(--wh-success)]">Level Up Complete!</p>
-            <p className="text-sm text-muted-foreground mt-0.5">
+            <p className="text-sm text-foreground/60 mt-0.5">
               Level {showFromLevel} → Level {showToLevel}
             </p>
           </div>
@@ -618,23 +634,23 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
         {!confirmed && (
           <div className="text-center py-1">
             <p className="text-lg font-bold text-foreground">Confirm Level Up</p>
-            <p className="text-sm text-muted-foreground">Review your choices before confirming.</p>
+            <p className="text-sm text-foreground/70">Review your choices before confirming.</p>
           </div>
         )}
 
         <Separator />
 
         {/* Summary lines */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Level</span>
+        <div className="divide-y divide-border/40">
+          <div className="flex items-center justify-between py-2">
+            <span className="text-sm text-foreground/60">Level</span>
             <span className="text-sm font-mono font-semibold">
               {showFromLevel} → <span className="text-primary">{showToLevel}</span>
             </span>
           </div>
 
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Max Wounds</span>
+          <div className="flex items-center justify-between py-2">
+            <span className="text-sm text-foreground/60">Max Wounds</span>
             <span className="text-sm font-mono font-semibold">
               {character.maxHitPoints - (confirmed ? 0 : (hpGain ?? 0))} → <span className="text-[var(--wh-success)]">{confirmed ? character.maxHitPoints : character.maxHitPoints + (hpGain ?? 0)}</span>
               <span className="text-xs text-muted-foreground ml-1">(+{hpGain})</span>
@@ -642,8 +658,8 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
           </div>
 
           {profChanged && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Proficiency Bonus</span>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-foreground/60">Proficiency Bonus</span>
               <span className="text-sm font-mono font-semibold">
                 +{oldProf} → <span className="text-[var(--wh-gold)]">+{newProf}</span>
               </span>
@@ -651,8 +667,8 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
           )}
 
           {allNewFeatures.length > 0 && (
-            <div>
-              <span className="text-sm text-muted-foreground">New Features</span>
+            <div className="py-2">
+              <span className="text-sm text-foreground/60">New Features</span>
               <div className="mt-1 space-y-0.5">
                 {allNewFeatures.map(f => (
                   <div key={f.name} className="flex items-center gap-1.5 ml-2">
@@ -666,15 +682,15 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
           )}
 
           {chosenOption && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Chosen Option</span>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-foreground/60">Chosen Option</span>
               <span className="text-sm font-semibold">{chosenOption.name}</span>
             </div>
           )}
 
           {isASI && asiMode === 'asi' && asiPointsUsed > 0 && (
-            <div>
-              <span className="text-sm text-muted-foreground">Ability Score Increases</span>
+            <div className="py-2">
+              <span className="text-sm text-foreground/60">Ability Score Increases</span>
               <div className="mt-1 space-y-0.5">
                 {Object.entries(asiChanges).filter(([, v]) => v > 0).map(([ab, inc]) => (
                   <div key={ab} className="flex items-center gap-2 ml-2">
@@ -690,8 +706,8 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
           )}
 
           {isASI && asiMode === 'feat' && chosenFeat && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Feat</span>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-foreground/60">Feat</span>
               <span className="text-sm font-semibold">{chosenFeat.name}</span>
             </div>
           )}
@@ -705,9 +721,9 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-6 pt-6 pb-4 border-b border-border shrink-0">
+      <div className="px-6 pt-6 pb-4 border-b border-border border-t-4 border-t-[var(--wh-gold)] shrink-0">
         <div className="flex items-center justify-between mb-1">
-          <h2 className="text-lg font-bold text-foreground">
+          <h2 className="text-xl font-bold text-foreground">
             Level Up{levelUpCount > 0 ? ` #${levelUpCount + 1}` : ''}
           </h2>
           {!confirmed && (
@@ -717,7 +733,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
           )}
         </div>
         {!confirmed && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground/60">
             Level {character.level} → Level {targetLevel}
           </p>
         )}
@@ -727,8 +743,8 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
             {steps.map((s, i) => (
               <div
                 key={s}
-                className={`h-1 flex-1 rounded-full transition-colors ${
-                  i <= stepIdx ? 'bg-primary' : 'bg-muted'
+                className={`h-1.5 flex-1 rounded-full transition-colors ${
+                  i <= stepIdx ? 'bg-primary' : 'bg-border'
                 }`}
               />
             ))}
@@ -749,7 +765,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
       <div className="px-6 py-4 border-t border-border flex justify-between shrink-0">
         {!confirmed ? (
           <>
-            <Button variant="ghost" size="sm" onClick={stepIdx === 0 ? onClose : goBack}>
+            <Button variant="outline" size="sm" onClick={stepIdx === 0 ? onClose : goBack} className="text-foreground border-foreground/30 hover:bg-muted/40">
               {stepIdx === 0 ? 'Cancel' : '← Back'}
             </Button>
             {step === 'confirm' ? (
@@ -764,7 +780,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
           </>
         ) : (
           <>
-            <Button variant="ghost" size="sm" onClick={onClose}>Done</Button>
+            <Button variant="outline" size="sm" onClick={onClose} className="text-foreground border-foreground/30 hover:bg-muted/40">Done</Button>
             {character.level < 10 && (
               <Button size="sm" onClick={handleContinue}>
                 Continue to Level {character.level + 1} →

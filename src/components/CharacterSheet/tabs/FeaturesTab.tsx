@@ -4,6 +4,8 @@ import { Separator } from '@/components/ui/separator'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { useCharacterStore } from '../../../store/characterStore'
 import { getClassById } from '../../../modules/registry'
+import { resolveUsesCount } from '../../../utils/resolveUsesCount'
+import { renderDescription } from '../../../utils/renderDescription'
 import type { ClassFeature, FeatureActionType } from '../../../types/module'
 
 interface Props {
@@ -47,12 +49,39 @@ const TAG_BADGE: Record<string, { label: string; cls: string }> = {
 
 interface FeatureRowProps {
   feature: ClassFeature
-  source?: string   // 'Subclass' label when from a subclass
+  source?: string    // 'Subclass' label when from a subclass
   enhanced?: boolean // true if this feature was enhanced via featureChoices
+  characterId: string
 }
 
-function FeatureRow({ feature, source, enhanced }: FeatureRowProps) {
+function FeatureRow({ feature, source, enhanced, characterId }: FeatureRowProps) {
   const [open, setOpen] = useState(false)
+  const character       = useCharacterStore(s => s.characters.find(c => c.id === characterId))
+  const updateCharacter = useCharacterStore(s => s.updateCharacter)
+
+  // Resolve use tracking for limited-use features
+  const hasUses = !!(
+    feature.usesPerRest &&
+    feature.usesPerRest !== 'at-will' &&
+    feature.usesPerRest !== 'per-encounter' &&
+    feature.usesCount &&
+    character
+  )
+  const usesMax       = hasUses && character ? resolveUsesCount(feature.usesCount, character) : 0
+  const featureKey    = slugify(feature.name)
+  const usesSpent     = character?.featureUsesSpent?.[featureKey] ?? 0
+  const usesRemaining = Math.max(0, usesMax - usesSpent)
+
+  const handleUse = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (!character || usesRemaining <= 0) return
+    updateCharacter(characterId, {
+      featureUsesSpent: {
+        ...(character.featureUsesSpent ?? {}),
+        [featureKey]: usesSpent + 1,
+      },
+    })
+  }
 
   const tagBadges = (feature.tags ?? [])
     .filter(t => t in TAG_BADGE)
@@ -60,49 +89,82 @@ function FeatureRow({ feature, source, enhanced }: FeatureRowProps) {
 
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger className="w-full text-left">
-        <div className="flex items-start gap-2 py-2 px-3 rounded-md hover:bg-muted/30 transition-colors group">
-          {/* Chevron */}
-          <span
-            className="mt-0.5 flex-shrink-0 text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
-            style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 150ms' }}
-          >
-            ▶
-          </span>
+      <div className="flex items-start gap-1 rounded-md hover:bg-muted/30 transition-colors group">
+        <CollapsibleTrigger className="flex-1 text-left min-w-0">
+          <div className="flex items-start gap-2 py-2 pl-3 pr-1">
+            {/* Chevron */}
+            <span
+              className="mt-0.5 flex-shrink-0 text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
+              style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 150ms' }}
+            >
+              ▶
+            </span>
 
-          {/* Name */}
-          <span className="flex-1 min-w-0 font-medium text-sm">{feature.name}</span>
+            {/* Name */}
+            <span className={`flex-1 min-w-0 font-medium text-sm ${hasUses && usesRemaining === 0 ? 'text-muted-foreground/50' : ''}`}>
+              {feature.name}
+            </span>
 
-          {/* Badges */}
-          <div className="flex flex-wrap gap-1 flex-shrink-0">
-            {enhanced && (
-              <Badge className="text-[9px] py-0 px-1 bg-purple-500/15 text-purple-400 border-purple-500/30">⬆ ENHANCED</Badge>
-            )}
-            {tagBadges.map(({ label, cls }) => (
-              <Badge key={label} className={`text-[9px] py-0 px-1 ${cls}`}>{label}</Badge>
-            ))}
-            {source && (
-              <Badge className="text-[9px] py-0 px-1 bg-purple-500/10 text-purple-700 border-purple-500/30">
-                {source.toUpperCase()}
-              </Badge>
-            )}
-            {feature.actionType && (
-              <Badge className={`text-[9px] py-0 px-1 ${ACTION_COLOR[feature.actionType]}`}>
-                {ACTION_LABEL[feature.actionType]}
-              </Badge>
-            )}
-            {feature.usesMax != null && (
-              <Badge variant="outline" className="text-[9px] py-0 px-1">
-                {feature.usesMax}/{feature.usesPerRest === 'short' ? 'SR' : 'LR'}
-              </Badge>
-            )}
+            {/* Badges */}
+            <div className="flex flex-wrap gap-1 flex-shrink-0">
+              {enhanced && (
+                <Badge className="text-[9px] py-0 px-1 bg-purple-500/15 text-purple-400 border-purple-500/30">⬆ ENHANCED</Badge>
+              )}
+              {tagBadges.map(({ label, cls }) => (
+                <Badge key={label} className={`text-[9px] py-0 px-1 ${cls}`}>{label}</Badge>
+              ))}
+              {source && (
+                <Badge className="text-[9px] py-0 px-1 bg-purple-500/10 text-purple-700 border-purple-500/30">
+                  {source.toUpperCase()}
+                </Badge>
+              )}
+              {feature.actionType && (
+                <Badge className={`text-[9px] py-0 px-1 ${ACTION_COLOR[feature.actionType]}`}>
+                  {ACTION_LABEL[feature.actionType]}
+                </Badge>
+              )}
+              {/* Use count badge (new tracking system) */}
+              {hasUses && (
+                <Badge
+                  variant="outline"
+                  className={`text-[9px] py-0 px-1 ${usesRemaining === 0 ? 'opacity-40' : ''}`}
+                >
+                  {usesRemaining}/{usesMax} {feature.usesPerRest === 'short' ? 'SR' : 'LR'}
+                </Badge>
+              )}
+              {/* Legacy usesMax badge (for features without usesCount) */}
+              {!hasUses && feature.usesMax != null && (
+                <Badge variant="outline" className="text-[9px] py-0 px-1">
+                  {feature.usesMax}/{feature.usesPerRest === 'short' ? 'SR' : 'LR'}
+                </Badge>
+              )}
+            </div>
           </div>
-        </div>
-      </CollapsibleTrigger>
+        </CollapsibleTrigger>
+
+        {/* USE button — outside the trigger to avoid toggling collapsible */}
+        {hasUses && (
+          <button
+            onClick={handleUse}
+            disabled={usesRemaining <= 0}
+            className={`self-start mt-1.5 mr-2 text-[9px] px-1.5 py-0.5 rounded border transition-colors flex-shrink-0 ${
+              usesRemaining > 0
+                ? 'border-primary/30 text-primary hover:bg-primary/10 cursor-pointer'
+                : 'border-border text-muted-foreground/30 cursor-not-allowed'
+            }`}
+            title={usesRemaining > 0 ? `Use ${feature.name}` : 'No uses remaining'}
+          >
+            USE
+          </button>
+        )}
+      </div>
 
       <CollapsibleContent>
-        <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground border-l border-border leading-relaxed">
-          {feature.description}
+        <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground border-l border-border">
+          {renderDescription(
+            feature.description,
+            feature.name === 'Fighting Style' ? character?.fightingStyle : undefined,
+          )}
         </div>
       </CollapsibleContent>
     </Collapsible>
@@ -114,9 +176,10 @@ function FeatureRow({ feature, source, enhanced }: FeatureRowProps) {
 interface LevelGroupProps {
   level: number
   features: { feature: ClassFeature; source?: string; enhanced?: boolean }[]
+  characterId: string
 }
 
-function LevelGroup({ level, features }: LevelGroupProps) {
+function LevelGroup({ level, features, characterId }: LevelGroupProps) {
   return (
     <div className="space-y-0.5">
       {/* Level header */}
@@ -127,7 +190,7 @@ function LevelGroup({ level, features }: LevelGroupProps) {
         <Separator className="flex-1" />
       </div>
       {features.map(({ feature, source, enhanced }, i) => (
-        <FeatureRow key={i} feature={feature} source={source} enhanced={enhanced} />
+        <FeatureRow key={i} feature={feature} source={source} enhanced={enhanced} characterId={characterId} />
       ))}
     </div>
   )
@@ -222,7 +285,7 @@ export default function FeaturesTab({ characterId }: Props) {
       </p>
 
       {sortedLevels.map(level => (
-        <LevelGroup key={level} level={level} features={byLevel.get(level)!} />
+        <LevelGroup key={level} level={level} features={byLevel.get(level)!} characterId={characterId} />
       ))}
     </div>
   )

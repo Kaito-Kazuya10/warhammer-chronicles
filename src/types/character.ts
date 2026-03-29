@@ -118,6 +118,16 @@ export interface Character {
   sanctioningStatus?: 'sanctioned' | 'unsanctioned'
   preparedSpellIds?: string[]
 
+  // ── Feature Use Tracking ────────────────────────────────────────────────────
+  featureUsesSpent?: Record<string, number>
+  // Key: slugified feature name (e.g. "aimed-shot", "second-wind")
+  // Value: number of uses spent since last rest
+  // Cleared on short rest (for 'short' features) or long rest (all features)
+
+  // ── Rest History ─────────────────────────────────────────────────────────────
+  lastShortRest?: number              // Unix timestamp of last short rest
+  lastLongRest?: number               // Unix timestamp of last long rest
+
   // ── Meta ────────────────────────────────────────────────────────────────────
   notes: string
   createdAt: number

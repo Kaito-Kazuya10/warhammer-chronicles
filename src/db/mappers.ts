@@ -23,6 +23,9 @@ const CLASS_DATA_KEYS = [
   'psykerDiscipline',
   'sanctioningStatus',
   'preparedSpellIds',
+  'featureUsesSpent',
+  'lastShortRest',
+  'lastLongRest',
 ] as const
 
 // ─── Character → DB row ──────────────────────────────────────────────────────
@@ -166,6 +169,9 @@ export function rowToCharacter(row: DbCharacterRow): Character {
     ...(classData.psykerDiscipline !== undefined && { psykerDiscipline: classData.psykerDiscipline as Character['psykerDiscipline'] }),
     ...(classData.sanctioningStatus !== undefined && { sanctioningStatus: classData.sanctioningStatus as Character['sanctioningStatus'] }),
     ...(classData.preparedSpellIds !== undefined && { preparedSpellIds: classData.preparedSpellIds as string[] }),
+    ...(classData.featureUsesSpent !== undefined && { featureUsesSpent: classData.featureUsesSpent as Record<string, number> }),
+    ...(classData.lastShortRest !== undefined && { lastShortRest: classData.lastShortRest as number }),
+    ...(classData.lastLongRest !== undefined && { lastLongRest: classData.lastLongRest as number }),
 
     notes: row.notes,
     createdAt: new Date(row.created_at).getTime(),

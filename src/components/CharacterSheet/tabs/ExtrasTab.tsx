@@ -263,16 +263,55 @@ function Currency({ characterId }: Props) {
   )
 }
 
+// ─── Rest History ─────────────────────────────────────────────────────────────
+
+function RestHistory({ characterId }: Props) {
+  const character = useCharacterStore(s => s.characters.find(c => c.id === characterId))
+  if (!character || (!character.lastShortRest && !character.lastLongRest)) return null
+
+  function fmtTime(ts: number): string {
+    return new Date(ts).toLocaleString(undefined, {
+      month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    })
+  }
+
+  return (
+    <Card>
+      <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
+        <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+          Rest History
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-3 space-y-1.5">
+        {character.lastShortRest && (
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Last Short Rest</span>
+            <span className="text-xs font-mono text-foreground">{fmtTime(character.lastShortRest)}</span>
+          </div>
+        )}
+        {character.lastLongRest && (
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-muted-foreground">Last Long Rest</span>
+            <span className="text-xs font-mono text-foreground">{fmtTime(character.lastLongRest)}</span>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
 // ─── ExtrasTab ────────────────────────────────────────────────────────────────
 
 export default function ExtrasTab({ characterId }: Props) {
   return (
     <div className="space-y-3">
-      <DeathSaves characterId={characterId} />
-      <HitDice    characterId={characterId} />
-      <Languages  characterId={characterId} />
-      <Feats      characterId={characterId} />
-      <Currency   characterId={characterId} />
+      <DeathSaves  characterId={characterId} />
+      <HitDice     characterId={characterId} />
+      <RestHistory characterId={characterId} />
+      <Languages   characterId={characterId} />
+      <Feats       characterId={characterId} />
+      <Currency    characterId={characterId} />
     </div>
   )
 }
