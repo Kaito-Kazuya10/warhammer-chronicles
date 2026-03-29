@@ -1,4 +1,4 @@
-import type { WarhamerModule, Spell, Item, Race, CharacterClass, Feat, NPC, Background } from '../types/module'
+import type { WarhamerModule, Spell, Item, Race, CharacterClass, Feat, NPC, Background, Augment, GeneModification } from '../types/module'
 
 // ─── Module Registry ──────────────────────────────────────────────────────────
 // Holds all loaded modules and provides lookup helpers.
@@ -79,6 +79,22 @@ export function getAllBackgrounds(): Background[] {
 
 export function getBackgroundById(id: string): Background | undefined {
   return getAllBackgrounds().find(b => b.id === id)
+}
+
+export function getAllAugments(): Augment[] {
+  return getLoadedModules().flatMap(m => m.content.augments ?? [])
+}
+
+export function getAugmentById(id: string): Augment | undefined {
+  return getAllAugments().find(a => a.id === id)
+}
+
+export function getAllGeneModifications(): GeneModification[] {
+  return getLoadedModules().flatMap(m => m.content.geneModifications ?? [])
+}
+
+export function getGeneModificationById(id: string): GeneModification | undefined {
+  return getAllGeneModifications().find(g => g.id === id)
 }
 
 // ─── Load a module from a JSON file (browser file picker) ────────────────────

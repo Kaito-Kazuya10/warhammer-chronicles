@@ -339,6 +339,24 @@ export interface Feat {
   usesCount?: ScalingValue
 }
 
+// ─── Augmenticist: Augments ───────────────────────────────────────────────────
+
+export interface Augment {
+  id: string
+  name: string
+  description: string
+  slotCost: 1 | 2 | 3
+  category: 'minor' | 'major' | 'extreme'
+  specialization?: string        // subclass id, e.g. 'tech-integrator'; undefined = universal
+  isWeapon?: boolean
+  weaponProperties?: string[]
+  powerCellCost?: number
+  actionType?: FeatureActionType
+  usesPerRest?: 'short' | 'long'
+  usesCount?: string             // ScalingValue format: 'proficiency', 'wisdom', '1', etc.
+  tags?: string[]
+}
+
 // ─── Gene-Fighter: Gene Modifications ────────────────────────────────────────
 
 export interface GeneModification {
@@ -442,7 +460,7 @@ export interface NPC {
 export type ModuleContentType =
   | 'spells' | 'items' | 'races' | 'classes'
   | 'feats' | 'npcs' | 'backgrounds'
-  | 'geneModifications' | 'commands' | 'tricks'
+  | 'augments' | 'geneModifications' | 'commands' | 'tricks'
 
 export interface ModuleContent {
   races?: Race[]
@@ -452,6 +470,7 @@ export interface ModuleContent {
   items?: Item[]
   feats?: Feat[]
   npcs?: NPC[]
+  augments?: Augment[]
   geneModifications?: GeneModification[]
   commands?: Command[]
   tricks?: Trick[]

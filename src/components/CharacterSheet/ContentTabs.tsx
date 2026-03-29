@@ -5,9 +5,19 @@ import { getAllClasses } from '../../modules/registry'
 import ActionsTab    from './tabs/ActionsTab'
 import InventoryTab  from './tabs/InventoryTab'
 import FeaturesTab   from './tabs/FeaturesTab'
+import LoadoutTab    from './tabs/LoadoutTab'
+import PrayersTab   from './tabs/PrayersTab'
+import GeneModTab   from './tabs/GeneModTab'
 import BackgroundTab from './tabs/BackgroundTab'
 import NotesTab      from './tabs/NotesTab'
 import ExtrasTab     from './tabs/ExtrasTab'
+
+// Classes that use the loadout system instead of FeaturesTab
+const LOADOUT_CLASSES = new Set(['augmenticist'])
+// Classes that use the prayer system instead of FeaturesTab
+const PRAYER_CLASSES  = new Set(['zealot'])
+// Classes that use the gene modification system instead of FeaturesTab
+const GENE_MOD_CLASSES = new Set(['gene-fighter'])
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
 
@@ -35,6 +45,10 @@ export default function ContentTabs({ characterId }: Props) {
     const cls = getAllClasses().find(c => c.id === character.class)
     return cls?.featureTabName?.toUpperCase() ?? 'FEATURES & TRAITS'
   })()
+
+  const usesLoadout  = character?.class ? LOADOUT_CLASSES.has(character.class) : false
+  const usesPrayers  = character?.class ? PRAYER_CLASSES.has(character.class) : false
+  const usesGeneMods = character?.class ? GENE_MOD_CLASSES.has(character.class) : false
 
   return (
     <Card className="h-fit">
@@ -90,7 +104,14 @@ export default function ContentTabs({ characterId }: Props) {
             <InventoryTab  characterId={characterId} />
           </TabsContent>
           <TabsContent value="features">
-            <FeaturesTab   characterId={characterId} />
+            {usesLoadout
+              ? <LoadoutTab    characterId={characterId} />
+              : usesPrayers
+                ? <PrayersTab  characterId={characterId} />
+                : usesGeneMods
+                  ? <GeneModTab characterId={characterId} />
+                  : <FeaturesTab characterId={characterId} />
+            }
           </TabsContent>
           <TabsContent value="background">
             <BackgroundTab characterId={characterId} />

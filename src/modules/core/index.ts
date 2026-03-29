@@ -2,11 +2,15 @@ import type { WarhamerModule } from '../../types/module'
 import { coreRaces } from './races'
 import { imperialGuardsman } from './classes/imperialGuardsman'
 import { augmenticist } from './classes/augmenticist'
+import { zealot } from './classes/zealot'
+import { geneFighter } from './classes/geneFighter'
+import { allGeneModifications } from './geneModifications/geneModifications'
 import { allSpells } from './spells'
 import { allItems } from './items'
 import { coreFeats } from './feats'
 import { coreNPCs } from './npcs'
 import { coreBackgrounds } from './backgrounds'
+import { allAugments } from './augments/augments'
 
 // ─── Core Module ──────────────────────────────────────────────────────────────
 // Assembles all core content from subfolders.
@@ -21,11 +25,13 @@ export const coreModule: WarhamerModule = {
   author: 'Homebrew',
   content: {
     races: coreRaces,
-    classes: [imperialGuardsman, augmenticist],
+    classes: [imperialGuardsman, augmenticist, zealot, geneFighter],
     spells: allSpells,
     items: allItems,
     feats: coreFeats,
     npcs: coreNPCs,
     backgrounds: coreBackgrounds,
+    augments: allAugments,
+    geneModifications: allGeneModifications,
   },
 }
