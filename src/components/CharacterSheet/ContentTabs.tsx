@@ -6,9 +6,10 @@ import ActionsTab    from './tabs/ActionsTab'
 import InventoryTab  from './tabs/InventoryTab'
 import FeaturesTab   from './tabs/FeaturesTab'
 import LoadoutTab    from './tabs/LoadoutTab'
-import PrayersTab   from './tabs/PrayersTab'
-import GeneModTab   from './tabs/GeneModTab'
-import BackgroundTab from './tabs/BackgroundTab'
+import PrayersTab          from './tabs/PrayersTab'
+import GeneModTab          from './tabs/GeneModTab'
+import WarpDisciplinesTab  from './tabs/WarpDisciplinesTab'
+import BackgroundTab       from './tabs/BackgroundTab'
 import NotesTab      from './tabs/NotesTab'
 import ExtrasTab     from './tabs/ExtrasTab'
 
@@ -18,6 +19,8 @@ const LOADOUT_CLASSES = new Set(['augmenticist'])
 const PRAYER_CLASSES  = new Set(['zealot'])
 // Classes that use the gene modification system instead of FeaturesTab
 const GENE_MOD_CLASSES = new Set(['gene-fighter'])
+// Classes that use the warp disciplines system instead of FeaturesTab
+const WARP_CLASSES = new Set(['psyker'])
 
 // ─── Tab definitions ──────────────────────────────────────────────────────────
 
@@ -49,6 +52,7 @@ export default function ContentTabs({ characterId }: Props) {
   const usesLoadout  = character?.class ? LOADOUT_CLASSES.has(character.class) : false
   const usesPrayers  = character?.class ? PRAYER_CLASSES.has(character.class) : false
   const usesGeneMods = character?.class ? GENE_MOD_CLASSES.has(character.class) : false
+  const usesWarp     = character?.class ? WARP_CLASSES.has(character.class) : false
 
   return (
     <Card className="h-fit">
@@ -105,12 +109,14 @@ export default function ContentTabs({ characterId }: Props) {
           </TabsContent>
           <TabsContent value="features">
             {usesLoadout
-              ? <LoadoutTab    characterId={characterId} />
+              ? <LoadoutTab           characterId={characterId} />
               : usesPrayers
-                ? <PrayersTab  characterId={characterId} />
+                ? <PrayersTab         characterId={characterId} />
                 : usesGeneMods
-                  ? <GeneModTab characterId={characterId} />
-                  : <FeaturesTab characterId={characterId} />
+                  ? <GeneModTab       characterId={characterId} />
+                  : usesWarp
+                    ? <WarpDisciplinesTab characterId={characterId} />
+                    : <FeaturesTab    characterId={characterId} />
             }
           </TabsContent>
           <TabsContent value="background">

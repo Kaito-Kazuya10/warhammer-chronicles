@@ -19,7 +19,9 @@
       "Bash(powershell -Command \"Start-Process ''http://localhost:5173''\")",
       "Bash(node_modules/.bin/tsc --noEmit)",
       "Bash(node_modules/.bin/vite build:*)",
-      "Bash(find /c/Users/austi/Desktop/Warhammer/warhammer-chronicles -type f -name *.sql)"
+      "Bash(find /c/Users/austi/Desktop/Warhammer/warhammer-chronicles -type f -name *.sql)",
+      "Bash(python3:*)",
+      "Bash(start http://localhost:5173)"
     ]
   }
 }

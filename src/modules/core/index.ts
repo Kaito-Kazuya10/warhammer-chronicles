@@ -4,6 +4,7 @@ import { imperialGuardsman } from './classes/imperialGuardsman'
 import { augmenticist } from './classes/augmenticist'
 import { zealot } from './classes/zealot'
 import { geneFighter } from './classes/geneFighter'
+import { psyker } from './classes/psyker'
 import { allGeneModifications } from './geneModifications/geneModifications'
 import { allSpells } from './spells'
 import { allItems } from './items'
@@ -25,7 +26,7 @@ export const coreModule: WarhamerModule = {
   author: 'Homebrew',
   content: {
     races: coreRaces,
-    classes: [imperialGuardsman, augmenticist, zealot, geneFighter],
+    classes: [imperialGuardsman, augmenticist, zealot, geneFighter, psyker],
     spells: allSpells,
     items: allItems,
     feats: coreFeats,
