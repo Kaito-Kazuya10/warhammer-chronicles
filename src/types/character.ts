@@ -1,4 +1,4 @@
-import type { AbilityScore, SkillName, PsychicDiscipline } from './module'
+import type { AbilityScore, SkillName, PsychicDiscipline, ItemTier } from './module'
 
 // Re-export SkillName so existing imports from this file continue to work
 export type { SkillName }
@@ -18,6 +18,10 @@ export interface InventoryItem {
   quantity: number
   equipped?: boolean
   notes?: string
+  tierOverride?: ItemTier                          // set when item has been upgraded
+  rolledTrait?: { name: string; effect: string }   // trait rolled at Artificer/Relic/Heroic tier
+  packsRemaining?: number                          // for 'pack' ammo: packs left this session
+  ammoRemaining?: number                           // for 'shot'/'belt' ammo: shots left
 }
 
 // ─── Spell Slots ─────────────────────────────────────────────────────────────

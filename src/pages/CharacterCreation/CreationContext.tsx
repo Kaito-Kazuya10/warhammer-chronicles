@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
 import { getAllClasses, getAllRaces, getAllBackgrounds } from '../../modules/registry'
-import type { CharacterClass } from '../../types/module'
+import type { CharacterClass, SkillName } from '../../types/module'
 import type { Character } from '../../types/character'
 
 // ─── Draft state shape ────────────────────────────────────────────────────────
@@ -82,7 +82,7 @@ function hydrateDraftFromCharacter(char: Character): CreationDraft {
   const selectedSkills: string[] = []
   if (char.skills) {
     for (const [skill, proficient] of Object.entries(char.skills)) {
-      if (proficient && !bgSkillSet.has(skill)) {
+      if (proficient && !bgSkillSet.has(skill as SkillName)) {
         selectedSkills.push(skill)
       }
     }

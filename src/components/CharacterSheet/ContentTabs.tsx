@@ -22,17 +22,6 @@ const GENE_MOD_CLASSES = new Set(['gene-fighter'])
 // Classes that use the warp disciplines system instead of FeaturesTab
 const WARP_CLASSES = new Set(['psyker'])
 
-// ─── Tab definitions ──────────────────────────────────────────────────────────
-
-const STATIC_TABS = [
-  { value: 'actions',    label: 'ACTIONS'    },
-  { value: 'inventory',  label: 'INVENTORY'  },
-  // features label resolved dynamically
-  { value: 'background', label: 'BACKGROUND' },
-  { value: 'notes',      label: 'NOTES'      },
-  { value: 'extras',     label: 'EXTRAS'     },
-] as const
-
 // ─── ContentTabs ─────────────────────────────────────────────────────────────
 
 interface Props {

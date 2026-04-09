@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Toggle } from '@/components/ui/toggle'
 import { useCharacterStore, getModifier, getProficiencyBonus } from '../../store/characterStore'
-import { getAllRaces, getAllClasses } from '../../modules/registry'
+import { getAllRaces, getAllClasses, getItemById } from '../../modules/registry'
+import { armorTierDefinitions } from '../../modules/core/items/armor'
 import { useDiceStore } from '../../store/diceStore'
 import { rollCheck, fmtMod } from '../../utils/dice'
 import type { AbilityScores } from '../../types/character'
@@ -383,6 +384,53 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
   const dexMod    = getModifier(character.abilityScores.dexterity)
   const dexModStr = dexMod >= 0 ? `+${dexMod}` : String(dexMod)
 
+  // ── Effective AC computation ──────────────────────────────────────────────
+  // Find all equipped items
+  const equippedItems = character.inventory
+    .filter(inv => inv.equipped !== false)
+    .map(inv => ({ inv, item: getItemById(inv.itemId) }))
+    .filter((e): e is { inv: typeof e.inv; item: NonNullable<typeof e.item> } => !!e.item)
+
+  // Body armor (armorType: light/medium/heavy)
+  const bodyArmor = equippedItems.find(e =>
+    e.item.type === 'armor' &&
+    (e.item.armorType === 'light' || e.item.armorType === 'medium' || e.item.armorType === 'heavy')
+  )
+
+  // Compute tier bonusAC for body armor
+  const bodyTierOverride = bodyArmor?.inv.tierOverride ?? bodyArmor?.item.tier ?? 'standard'
+  const bodyArmorTierDef = armorTierDefinitions.find(d => d.tier === bodyTierOverride)
+
+  // Sum bonusAC from non-body equipped items (shields, helmets, accessories, named body armor bonusAC)
+  const bonusACFromOther = equippedItems.reduce((sum, { item }) => {
+    if (item === bodyArmor?.item) return sum
+    return sum + (item.bonusAC ?? 0)
+  }, 0)
+
+  let effectiveAC: number
+  let acBreakdown: string
+
+  if (bodyArmor) {
+    const baseAC = bodyArmor.item.armorClass ?? 10
+    const maxDex = bodyArmor.item.maxDexBonus ?? Infinity
+    const dexContrib = Math.min(dexMod, maxDex)
+    const tierBonus = bodyArmorTierDef?.bonusAC ?? 0
+    // Named body armor also has bonusAC on the item itself
+    const namedBonus = bodyArmor.item.isNamed ? (bodyArmor.item.bonusAC ?? 0) : 0
+    effectiveAC = baseAC + dexContrib + tierBonus + namedBonus + bonusACFromOther
+    acBreakdown = `${bodyArmor.item.name} ${baseAC}` +
+      (dexContrib !== 0 ? ` + DEX ${dexContrib > 0 ? '+' : ''}${dexContrib}` : '') +
+      (tierBonus > 0 ? ` + ${bodyTierOverride === 'master-crafted' ? 'MC' : bodyTierOverride} +${tierBonus}` : '') +
+      (namedBonus > 0 ? ` + named +${namedBonus}` : '') +
+      (bonusACFromOther > 0 ? ` + items +${bonusACFromOther}` : '')
+  } else {
+    // Unarmored: 10 + DEX + any bonus items
+    effectiveAC = 10 + dexMod + bonusACFromOther
+    acBreakdown = `Unarmored 10 + DEX ${dexMod >= 0 ? '+' : ''}${dexMod}` +
+      (bonusACFromOther > 0 ? ` + items +${bonusACFromOther}` : '')
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   const rollInitiative = () => {
     addRoll(rollCheck('Initiative', 'initiative', dexMod, `${fmtMod(dexMod)} DEX`))
   }
@@ -441,15 +489,12 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
             <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">INITIATIVE</span>
           </div>
 
-          {/* Armor class */}
-          <div className="flex flex-col items-center justify-center border border-border bg-muted/20 rounded-md p-3 gap-1.5">
-            <input
-              type="number"
-              value={character.armorClass}
-              onChange={e => updateCharacter(characterId, { armorClass: Number(e.target.value) || 10 })}
-              onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }}
-              className="text-2xl font-bold font-mono text-foreground bg-transparent border-none outline-none w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            />
+          {/* Armor class — auto-computed from equipped armor */}
+          <div
+            className="flex flex-col items-center justify-center border border-border bg-muted/20 rounded-md p-3 gap-1.5"
+            title={acBreakdown}
+          >
+            <span className="text-2xl font-bold font-mono text-foreground leading-none">{effectiveAC}</span>
             <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">AC</span>
           </div>
 

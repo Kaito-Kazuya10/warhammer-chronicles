@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCharacterStore } from '../store/characterStore'
 import {
@@ -12,21 +12,10 @@ import {
   AlertDialogCancel,
 } from '@/components/ui/alert-dialog'
 
-interface ImportPreview {
-  name: string
-  level: number
-  race: string
-  class: string
-  data: Record<string, unknown>
-}
-
 export default function Characters() {
   const navigate = useNavigate()
-  const { characters, setActiveCharacter, deleteCharacter, loadCharacters, importCharacter } = useCharacterStore()
+  const { characters, setActiveCharacter, deleteCharacter, loadCharacters } = useCharacterStore()
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
-  const [importPreview, setImportPreview] = useState<ImportPreview | null>(null)
-  const [importError, setImportError] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { loadCharacters() }, [loadCharacters])
 
@@ -40,53 +29,6 @@ export default function Characters() {
       deleteCharacter(deleteTarget)
       setDeleteTarget(null)
     }
-  }
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    // Reset input so same file can be re-selected
-    e.target.value = ''
-
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      try {
-        const raw = JSON.parse(ev.target?.result as string)
-
-        if (!raw || typeof raw !== 'object') {
-          setImportError("This file doesn't appear to be a valid character export.")
-          return
-        }
-        if (raw.app !== 'warhammer-chronicles') {
-          setImportError('This file was exported from a different app.')
-          return
-        }
-        if (!raw.character || typeof raw.character !== 'object' || !raw.character.name) {
-          setImportError('This character file is incomplete or corrupted.')
-          return
-        }
-
-        const c = raw.character
-        setImportPreview({
-          name: c.name ?? 'Unknown',
-          level: c.level ?? 1,
-          race: c.race ?? '',
-          class: c.class ?? '',
-          data: c,
-        })
-      } catch {
-        setImportError("This file doesn't appear to be a valid character export.")
-      }
-    }
-    reader.readAsText(file)
-  }
-
-  const handleImportConfirm = () => {
-    if (!importPreview) return
-    const { id: _id, createdAt: _c, updatedAt: _u, ...rest } = importPreview.data as Record<string, unknown>
-    importCharacter(rest as Parameters<typeof importCharacter>[0])
-    setImportPreview(null)
-    navigate('/sheet')
   }
 
   const targetChar = deleteTarget ? characters.find(c => c.id === deleteTarget) : null

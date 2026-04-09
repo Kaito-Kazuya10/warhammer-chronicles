@@ -39,7 +39,7 @@ const RECENT_ENTRIES = [
 
 export default function Landing() {
   const navigate = useNavigate()
-  const { characters, setActiveCharacter, loadCharacters, loading } = useCharacterStore()
+  const { characters, setActiveCharacter, loadCharacters } = useCharacterStore()
   const { profile, signOut } = useAuth()
   const [showAccount, setShowAccount] = useState(false)
 

@@ -11,12 +11,6 @@ import type { Augment } from '../../../types/module'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const CATEGORY_LABEL: Record<Augment['category'], string> = {
-  minor:   'Minor · 1 Slot',
-  major:   'Major · 2 Slots',
-  extreme: 'Extreme · 3 Slots',
-}
-
 const CATEGORY_COLOR: Record<Augment['category'], string> = {
   minor:   'bg-green-500/10 text-green-700 border-green-500/30',
   major:   'bg-blue-500/10 text-blue-700 border-blue-500/30',

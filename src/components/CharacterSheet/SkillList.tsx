@@ -7,8 +7,7 @@ import {
 import { useCharacterStore, getModifier } from '../../store/characterStore'
 import { useDiceStore } from '../../store/diceStore'
 import { rollCheck, fmtMod } from '../../utils/dice'
-import type { Skills } from '../../types/character'
-import type { AbilityScore } from '../../types/module'
+import type { AbilityScore, SkillName } from '../../types/module'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -22,7 +21,7 @@ const ABILITY_ABBR: Record<AbilityScore, string> = {
 }
 
 // Sorted alphabetically by label
-const SKILLS: { key: keyof Skills; label: string; ability: AbilityScore }[] = [
+const SKILLS_RAW: { key: SkillName; label: string; ability: AbilityScore }[] = [
   { key: 'acrobatics',     label: 'Acrobatics',      ability: 'dexterity'    },
   { key: 'animalHandling', label: 'Animal Handling',  ability: 'wisdom'       },
   { key: 'arcana',         label: 'Arcana',           ability: 'intelligence' },
@@ -44,7 +43,8 @@ const SKILLS: { key: keyof Skills; label: string; ability: AbilityScore }[] = [
   { key: 'technology',     label: 'Technology',       ability: 'intelligence' },
   { key: 'warpControl',    label: 'Warp Control',     ability: 'wisdom'       },
   { key: 'xenology',       label: 'Xenology',         ability: 'intelligence' },
-].sort((a, b) => a.label.localeCompare(b.label))
+]
+const SKILLS = SKILLS_RAW.slice().sort((a, b) => a.label.localeCompare(b.label))
 
 // ─── SkillList ────────────────────────────────────────────────────────────────
 

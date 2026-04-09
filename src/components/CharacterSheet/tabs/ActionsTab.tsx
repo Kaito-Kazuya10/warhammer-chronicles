@@ -10,7 +10,8 @@ import { useCharacterStore, getModifier } from '../../../store/characterStore'
 import { resolveUsesCount } from '../../../utils/resolveUsesCount'
 import { renderDescription } from '../../../utils/renderDescription'
 import { getItemById, getAllClasses } from '../../../modules/registry'
-import type { ClassFeature, FeatureActionType, Item } from '../../../types/module'
+import { tierDefinitions } from '../../../modules/core/items/weapons'
+import type { ClassFeature, FeatureActionType, Item, ItemTier } from '../../../types/module'
 import type { InventoryItem } from '../../../types/character'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -52,9 +53,19 @@ const ACTION_TYPE_BADGE_CLASS: Partial<Record<FeatureActionType, string>> = {
 
 const TIER_BADGE: Record<string, string> = {
   'master-crafted': 'bg-green-100  text-green-800  border-green-300',
-  'artificer':      'bg-blue-100   text-blue-800   border-blue-300',
+  'artificer':      'bg-purple-100 text-purple-800 border-purple-300',
   'relic':          'bg-amber-100  text-amber-800  border-amber-300',
-  'heroic':         'bg-purple-100 text-purple-800 border-purple-300',
+  'heroic':         'bg-red-100    text-red-800    border-red-300',
+}
+
+// ─── Tier helpers ─────────────────────────────────────────────────────────────
+
+function getEffectiveTier(invItem: InventoryItem, item: Item): ItemTier {
+  return invItem.tierOverride ?? item.tier ?? 'standard'
+}
+
+function getTierDef(tier: ItemTier) {
+  return tierDefinitions.find(t => t.tier === tier) ?? tierDefinitions[0]
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -70,12 +81,13 @@ function getAttackMod(item: Item, strMod: number, dexMod: number): number {
   return strMod
 }
 
-function buildDamageStr(item: Item, abilityMod: number): string {
+function buildDamageStr(item: Item, abilityMod: number, tierBonusDamage: string): string {
   if (!item.damage) return '—'
-  const totalMod = abilityMod + (item.bonusDamage ?? 0)
-  const modPart  = totalMod > 0 ? ` + ${totalMod}` : totalMod < 0 ? ` − ${Math.abs(totalMod)}` : ''
-  const typePart = item.damageType ? ` ${item.damageType}` : ''
-  return `${item.damage}${modPart}${typePart}`
+  const numericBonus = (item.bonusDamage ?? 0) + abilityMod
+  const modPart   = numericBonus > 0 ? ` + ${numericBonus}` : numericBonus < 0 ? ` − ${Math.abs(numericBonus)}` : ''
+  const dicePart  = tierBonusDamage ? ` ${tierBonusDamage}` : ''
+  const typePart  = item.damageType ? ` ${item.damageType}` : ''
+  return `${item.damage}${modPart}${dicePart}${typePart}`
 }
 
 function buildRangeStr(item: Item): string {
@@ -124,6 +136,137 @@ function FilterBar({
   )
 }
 
+// ─── AmmoStrip ────────────────────────────────────────────────────────────────
+
+function AmmoStrip({
+  invItem,
+  item,
+  characterId,
+}: {
+  invItem: InventoryItem
+  item: Item
+  characterId: string
+}) {
+  const [misfire, setMisfire] = useState(false)
+  const updateCharacter = useCharacterStore(s => s.updateCharacter)
+  const inventory = useCharacterStore(s => s.characters.find(c => c.id === characterId)?.inventory ?? [])
+
+  if (!item.ammoType || item.ammoType === 'unlimited') return null
+
+  const isPack   = item.ammoType === 'pack'
+  const capacity = item.ammoCapacity ?? 1
+  const current  = isPack
+    ? (invItem.packsRemaining ?? capacity)
+    : (invItem.ammoRemaining  ?? capacity)
+  const pct = current / capacity
+  const low = pct <= 0.25
+
+  function patch(delta: number, isMisfire = false) {
+    const next = Math.max(0, current + delta)
+    updateCharacter(characterId, {
+      inventory: inventory.map(e =>
+        e.itemId === invItem.itemId
+          ? isPack
+            ? { ...e, packsRemaining: next }
+            : { ...e, ammoRemaining: next }
+          : e
+      ),
+    })
+    if (isMisfire) {
+      setMisfire(true)
+      setTimeout(() => setMisfire(false), 2000)
+    }
+  }
+
+  function reload() {
+    updateCharacter(characterId, {
+      inventory: inventory.map(e =>
+        e.itemId === invItem.itemId
+          ? isPack
+            ? { ...e, packsRemaining: capacity }
+            : { ...e, ammoRemaining: capacity }
+          : e
+      ),
+    })
+  }
+
+  return (
+    <div className="flex items-center gap-2 mt-1.5 px-1 flex-wrap">
+      <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold shrink-0">AMMO</span>
+      {item.ammoName && (
+        <span className="text-[10px] text-muted-foreground shrink-0">{item.ammoName}</span>
+      )}
+
+      {/* Pack type: pip dots */}
+      {isPack ? (
+        <div className="flex gap-0.5 items-center">
+          {Array.from({ length: capacity }).map((_, i) => (
+            <span
+              key={i}
+              className={`inline-block w-2.5 h-2.5 rounded-full border transition-colors ${
+                i < current
+                  ? low ? 'bg-destructive border-destructive' : 'bg-foreground border-foreground'
+                  : 'bg-transparent border-border'
+              }`}
+            />
+          ))}
+          <span className="text-[10px] font-mono ml-1 text-muted-foreground">{current}/{capacity}</span>
+        </div>
+      ) : (
+        /* Shot/belt type: fill bar */
+        <div className="flex items-center gap-1.5">
+          <span className={`text-xs font-mono tabular-nums ${low ? 'text-destructive' : 'text-foreground'}`}>
+            {current}/{capacity}
+          </span>
+          <div className="w-20 h-1.5 rounded-full bg-muted overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all ${low ? 'bg-destructive' : 'bg-foreground'}`}
+              style={{ width: `${Math.round(pct * 100)}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Misfire flash */}
+      {misfire && (
+        <span className="text-[10px] font-bold text-destructive animate-pulse">MISFIRE!</span>
+      )}
+
+      {/* Buttons */}
+      {!isPack && (
+        <button
+          className="text-[10px] px-1.5 py-0.5 rounded border border-border hover:bg-muted transition-colors font-mono"
+          onClick={() => patch(-1)}
+          disabled={current === 0}
+        >
+          −1 FIRE
+        </button>
+      )}
+      <button
+        className="text-[10px] px-1.5 py-0.5 rounded border border-destructive/50 text-destructive hover:bg-destructive/10 transition-colors font-bold"
+        onClick={() => patch(-1, true)}
+        disabled={current === 0}
+      >
+        NAT 1!
+      </button>
+      <button
+        className="text-[10px] px-1.5 py-0.5 rounded border border-border hover:bg-muted transition-colors"
+        onClick={reload}
+      >
+        RELOAD
+      </button>
+      {item.rechargeable && (
+        <button
+          className="text-[10px] px-1.5 py-0.5 rounded border border-border text-muted-foreground hover:bg-muted transition-colors"
+          onClick={reload}
+        >
+          ⚡ RECHARGE
+        </button>
+      )}
+    </div>
+  )
+}
+
 // ─── WeaponRow ────────────────────────────────────────────────────────────────
 
 function WeaponRow({
@@ -132,20 +275,28 @@ function WeaponRow({
   strMod,
   dexMod,
   profBonus,
+  characterId,
 }: {
   invItem: InventoryItem
   item: Item
   strMod: number
   dexMod: number
   profBonus: number
+  characterId: string
 }) {
   const [abOpen, setAbOpen] = useState(false)
-  const abilityMod = getAttackMod(item, strMod, dexMod)
-  const hitBonus   = profBonus + abilityMod + (item.bonusAttack ?? 0)
-  const damage     = buildDamageStr(item, abilityMod)
-  const range      = buildRangeStr(item)
-  const notes      = (item.properties ?? []).join(', ')
-  const activeAbilities = item.itemAbilities?.filter(a => a.actionType !== 'passive') ?? []
+  const effectiveTier    = getEffectiveTier(invItem, item)
+  const tierDef          = item.isNamed ? null : getTierDef(effectiveTier)
+  const abilityMod       = getAttackMod(item, strMod, dexMod)
+  const hitBonus         = profBonus + abilityMod + (item.bonusAttack ?? 0) + (tierDef?.bonusAttack ?? 0)
+  const tierBonusDmg     = item.isNamed
+    ? (item.bonusDamageDice ?? '')
+    : (tierDef?.bonusDamage ?? '')
+  const damage           = buildDamageStr(item, abilityMod, tierBonusDmg)
+  const range            = buildRangeStr(item)
+  const notes            = (item.properties ?? []).join(', ')
+  const activeAbilities  = item.itemAbilities?.filter(a => a.actionType !== 'passive') ?? []
+  const hasAmmo          = !!item.ammoType && item.ammoType !== 'unlimited'
 
   return (
     <>
@@ -155,12 +306,17 @@ function WeaponRow({
             <span className="font-medium text-foreground text-xs">
               {item.rangeType === 'ranged' ? '🏹' : '⚔'} {item.name}
             </span>
-            {item.tier && item.tier !== 'standard' && (
+            {effectiveTier !== 'standard' && (
               <Badge
                 variant="outline"
-                className={`text-[9px] h-4 px-1 ${TIER_BADGE[item.tier] ?? ''}`}
+                className={`text-[9px] h-4 px-1 ${TIER_BADGE[effectiveTier] ?? ''}`}
               >
-                {item.tier}
+                {effectiveTier === 'master-crafted' ? 'MC' : effectiveTier}
+              </Badge>
+            )}
+            {invItem.rolledTrait && (
+              <Badge variant="outline" className="text-[9px] h-4 px-1 bg-muted/40 text-muted-foreground border-border cursor-help" title={invItem.rolledTrait.effect}>
+                ✦ {invItem.rolledTrait.name}
               </Badge>
             )}
             {invItem.quantity > 1 && (
@@ -170,6 +326,10 @@ function WeaponRow({
           <p className="text-[10px] text-muted-foreground capitalize mt-0.5">
             {item.rangeType ?? (item.range ? 'ranged' : 'melee')} weapon
           </p>
+          {/* Ammo strip */}
+          {hasAmmo && (
+            <AmmoStrip invItem={invItem} item={item} characterId={characterId} />
+          )}
         </td>
         <td className="py-2 pr-3 text-right text-xs tabular-nums whitespace-nowrap text-foreground/80">
           {range}
@@ -210,9 +370,9 @@ function WeaponRow({
                         {ACTION_TYPE_LABELS[ab.actionType]}
                       </Badge>
                     )}
-                    {ab.usesPerRest && ab.usesMax && (
+                    {ab.usesPerRest && (
                       <Badge variant="outline" className="text-[9px] h-4 px-1">
-                        {ab.usesMax}×/{ab.usesPerRest} rest
+                        {ab.usesPerRest} rest
                       </Badge>
                     )}
                   </div>
@@ -239,11 +399,10 @@ function AttackSection({
   const character = useCharacterStore(s => s.characters.find(c => c.id === characterId))
   if (!character || !show) return null
 
-  const strMod   = getModifier(character.abilityScores.strength)
-  const dexMod   = getModifier(character.abilityScores.dexterity)
+  const strMod    = getModifier(character.abilityScores.strength)
+  const dexMod    = getModifier(character.abilityScores.dexterity)
   const profBonus = character.proficiencyBonus
 
-  // Weapons: not explicitly un-equipped
   const weapons: { invItem: InventoryItem; item: Item }[] = character.inventory
     .filter(inv => inv.equipped !== false)
     .flatMap(inv => {
@@ -251,7 +410,6 @@ function AttackSection({
       return item && item.type === 'weapon' ? [{ invItem: inv, item }] : []
     })
 
-  // Extra Attack detection
   const cls = getAllClasses().find(c => c.id === character.class)
   const subclass = cls?.subclasses?.find(s => s.id === character.subclass)
   const allFeatures = [
@@ -282,9 +440,12 @@ function AttackSection({
           {/* Mobile: card layout */}
           <div className="sm:hidden space-y-2">
             {weapons.map(({ invItem, item }) => {
+              const effectiveTier = getEffectiveTier(invItem, item)
+              const tierDef   = item.isNamed ? null : getTierDef(effectiveTier)
               const abilityMod = getAttackMod(item, strMod, dexMod)
-              const hitBonus   = profBonus + abilityMod + (item.bonusAttack ?? 0)
-              const damage     = buildDamageStr(item, abilityMod)
+              const hitBonus   = profBonus + abilityMod + (item.bonusAttack ?? 0) + (tierDef?.bonusAttack ?? 0)
+              const mobileBonusDmg = item.isNamed ? (item.bonusDamageDice ?? '') : (tierDef?.bonusDamage ?? '')
+              const damage     = buildDamageStr(item, abilityMod, mobileBonusDmg)
               const range      = buildRangeStr(item)
               return (
                 <div
@@ -295,9 +456,9 @@ function AttackSection({
                     <span className="font-medium text-sm">
                       {item.rangeType === 'ranged' ? '🏹' : '⚔'} {item.name}
                     </span>
-                    {item.tier && item.tier !== 'standard' && (
-                      <Badge variant="outline" className={`text-[9px] h-4 px-1 ${TIER_BADGE[item.tier] ?? ''}`}>
-                        {item.tier}
+                    {effectiveTier !== 'standard' && (
+                      <Badge variant="outline" className={`text-[9px] h-4 px-1 ${TIER_BADGE[effectiveTier] ?? ''}`}>
+                        {effectiveTier === 'master-crafted' ? 'MC' : effectiveTier}
                       </Badge>
                     )}
                   </div>
@@ -317,6 +478,9 @@ function AttackSection({
                   </div>
                   {item.properties && item.properties.length > 0 && (
                     <p className="text-[10px] text-muted-foreground">{item.properties.join(', ')}</p>
+                  )}
+                  {item.ammoType && item.ammoType !== 'unlimited' && (
+                    <AmmoStrip invItem={invItem} item={item} characterId={characterId} />
                   )}
                 </div>
               )
@@ -344,6 +508,7 @@ function AttackSection({
                     strMod={strMod}
                     dexMod={dexMod}
                     profBonus={profBonus}
+                    characterId={characterId}
                   />
                 ))}
               </tbody>
@@ -373,7 +538,6 @@ function FeatureRow({
   const actionLabel = feature.actionType ? ACTION_TYPE_LABELS[feature.actionType] : undefined
   const badgeClass  = feature.actionType ? ACTION_TYPE_BADGE_CLASS[feature.actionType] : undefined
 
-  // Use tracking
   const hasUses   = !!(feature.usesPerRest && feature.usesPerRest !== 'at-will' && feature.usesCount && character)
   const featureKey = slugify(feature.name)
   const usesMax    = hasUses && character ? resolveUsesCount(feature.usesCount!, character) : 0
@@ -418,7 +582,6 @@ function FeatureRow({
             )}
           </div>
 
-          {/* Checkbox use tracker */}
           {hasUses && (
             <div className="flex items-center gap-1 mt-1.5">
               {Array.from({ length: usesMax }).map((_, i) => (
@@ -438,7 +601,6 @@ function FeatureRow({
               </span>
             </div>
           )}
-          {/* Fallback badge for features with usesPerRest but no trackable usesCount */}
           {!hasUses && feature.usesPerRest && (
             <div className="mt-1">
               <Badge variant="outline" className="text-[9px] h-4 px-1.5 text-muted-foreground">
@@ -484,7 +646,6 @@ function ClassFeaturesSection({
   const subclass = cls?.subclasses?.find(s => s.id === character.subclass)
   const choices  = character.featureChoices ?? {}
 
-  // Determine which originals are replaced by ENHANCE options
   const enhancedOriginals = new Set<string>()
   const enhancementMap = new Map<string, ClassFeature>()
   for (const [optGroup, chosenSlug] of Object.entries(choices)) {
@@ -497,20 +658,15 @@ function ClassFeaturesSection({
     }
   }
 
-  // Filter features: apply choices logic then filter
   const resolveFeatures = (features: ClassFeature[], source?: string) => {
     const resolved: { feature: ClassFeature; sourceName?: string }[] = []
     for (const f of features) {
       if (f.level > character.level) continue
-
-      // Options: only show chosen
       if (f.featureType === 'option' && f.optionGroup) {
         const chosen = choices[f.optionGroup]
         if (!chosen || slugify(f.name) !== chosen) continue
-        if (f.sourceFeature) continue // ENHANCE shown as replacement
+        if (f.sourceFeature) continue
       }
-
-      // Replace enhanced originals
       const fSlug = slugify(f.name)
       if (enhancedOriginals.has(fSlug)) {
         const enhanced = enhancementMap.get(fSlug)!
@@ -519,7 +675,6 @@ function ClassFeaturesSection({
         }
         continue
       }
-
       if (featureMatchesFilter(f, filter)) {
         resolved.push({ feature: f, sourceName: source })
       }
@@ -529,7 +684,7 @@ function ClassFeaturesSection({
 
   const clsResolved = resolveFeatures(cls?.features ?? [])
   const subResolved = resolveFeatures(subclass?.features ?? [], subclass?.name)
-  const totalCount = clsResolved.length + subResolved.length
+  const totalCount  = clsResolved.length + subResolved.length
 
   return (
     <div>

@@ -74,6 +74,12 @@ export type WeaponCategory = 'simple' | 'martial' | 'heavy' | 'exotic'
 
 export type WeaponRangeType = 'melee' | 'ranged' | 'thrown'
 
+export type AmmoType =
+  | 'pack'       // session-based — start with ammoCapacity packs; natural 1 expends one pack
+  | 'shot'       // individual tracking — ammoCapacity is total shots before empty
+  | 'belt'       // per-attack tracking — ammoCapacity is total shots, each attack uses 1
+  | 'unlimited'  // no tracking needed (slings, throwing knives)
+
 export type ItemType =
   | 'weapon'
   | 'armor'
@@ -159,7 +165,8 @@ export interface Item {
   isNamed?: boolean                   // named item — no trait table stacking
   lore?: string                       // flavor/backstory for named items
   bonusAttack?: number                // +1/+2/+3 to attack rolls
-  bonusDamage?: number                // +1/+2/+3 to damage rolls
+  bonusDamage?: number                // +1 flat damage bonus (MC named items)
+  bonusDamageDice?: string            // '+1d6', '+2d4', '+2d6' — named items at Artificer/Relic/Heroic
   bonusAC?: number                    // flat AC bonus beyond base
 
   // ── Item Abilities / Traits ────────────────────────────────────────────────
@@ -171,12 +178,17 @@ export interface Item {
   range?: { normal: number; long?: number }
   attackAbility?: AbilityScore | 'finesse'
   versatileDamage?: string            // two-handed damage: "1d10"
+  ammoType?: AmmoType                 // undefined = no tracker shown
+  ammoCapacity?: number               // packs per session (pack) OR total shots (shot/belt)
+  ammoName?: string                   // "Power Pack", "Bolt Magazine", "Plasma Flask"
+  rechargeable?: boolean              // can recharge during long rest (las weapons, tau cells)
 
   // ── Armor Fields ───────────────────────────────────────────────────────────
   armorType?: 'light' | 'medium' | 'heavy' | 'shield'
   maxDexBonus?: number                // medium: 2, heavy: 0, light: not set
   stealthDisadvantage?: boolean
   strengthRequirement?: number        // min STR to avoid speed penalty
+  equipmentSlot?: 'body' | 'shield' | 'helmet' | 'cloak-backpack' | 'accessory' | 'clothing'
 
   // ── Augment Fields (type: 'augment') ───────────────────────────────────────
   augmentSlotCost?: number            // 1 (minor), 2 (major), 3 (extreme)
@@ -196,6 +208,20 @@ export interface Item {
   consumableSaveAbility?: AbilityScore
   consumableDamage?: string           // "3d6", "2d6"
   consumableDamageType?: DamageType
+}
+
+// ─── Armor Set ────────────────────────────────────────────────────────────────
+
+export interface ArmorSet {
+  id: string
+  name: string
+  tier?: ItemTier
+  isNamed?: boolean
+  description: string
+  pieces: string[]              // item IDs of required pieces
+  setBonus: ItemAbility
+  totalCost: string
+  tags?: string[]
 }
 
 // ─── Race ─────────────────────────────────────────────────────────────────────

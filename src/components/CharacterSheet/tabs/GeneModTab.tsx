@@ -13,12 +13,6 @@ type TierFilter = 'all' | 'minor' | 'major' | 'extreme'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TIER_LABEL: Record<GeneModification['tier'], string> = {
-  minor:   'Minor · 1 SP',
-  major:   'Major · 2 SP',
-  extreme: 'Extreme · 3 SP',
-}
-
 const TIER_COLOR: Record<GeneModification['tier'], string> = {
   minor:   'bg-green-500/10 text-green-700 border-green-500/30',
   major:   'bg-blue-500/10 text-blue-700 border-blue-500/30',

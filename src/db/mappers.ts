@@ -34,7 +34,7 @@ export function characterToRow(char: Character, userId: string): DbCharacterRow 
   // Pack class-specific fields
   const classData: Record<string, unknown> = {}
   for (const key of CLASS_DATA_KEYS) {
-    const val = (char as Record<string, unknown>)[key]
+    const val = (char as unknown as Record<string, unknown>)[key]
     if (val !== undefined) classData[key] = val
   }
 
