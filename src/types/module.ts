@@ -306,6 +306,15 @@ export interface CharacterClass {
   weaponProficiencies?: string[]
   toolProficiencies?: string[]
   startingEquipmentOptions?: string[]
+  /** Maps each option index to real item IDs for inventory resolution.
+   *  Keys are the index in startingEquipmentOptions.
+   *  `a`/`b`/`c` hold item IDs for each choice; `grant` holds auto-granted IDs. */
+  startingEquipmentResolved?: Record<number, {
+    a?: string[]
+    b?: string[]
+    c?: string[]
+    grant?: string[]
+  }>
   features: ClassFeature[]
   subclasses?: Subclass[]
   tags?: string[]

@@ -31,6 +31,13 @@ export const psyker: CharacterClass = {
     'A Psychic Focus crystal (worth 50 Thrones)',
     'Sanctioning brand (if Sanctioned) or concealment tools (if Unsanctioned)',
   ],
+  startingEquipmentResolved: {
+    0: { a: ['laspistol'],    b: ['stub-pistol'] },
+    1: { a: ['quarterstaff'], b: ['combat-knife'] },
+    2: { a: [],               b: [] },
+    3: { grant: [] },
+    4: { grant: [] },
+  },
   startingWealthFormula: '3d4 × 10 Thrones',
 
   featureTabName: 'Warp Disciplines',

@@ -50,6 +50,13 @@ export const geneFighter: CharacterClass = {
     "(a) Explorer's pack or (b) Underhive pack",
     'Gene-treatment scars, injectable port (cosmetic), combat stimm injector',
   ],
+  startingEquipmentResolved: {
+    0: { a: ['guard-flak'],                                      b: ['flak-jacket'] },
+    1: { a: ['chainsword', 'combat-shield'], b: ['combat-knife', 'combat-knife'], c: ['power-maul'] },
+    2: { a: ['autopistol'],                                      b: ['frag-grenade', 'frag-grenade', 'frag-grenade'] },
+    3: { a: [],                                                  b: [] },
+    4: { grant: [] },
+  },
   startingWealthFormula: '5d4 × 10 Thrones',
 
   featureTabName: 'Bio Modifications',

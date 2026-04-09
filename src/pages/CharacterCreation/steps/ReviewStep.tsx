@@ -50,14 +50,27 @@ function resolveInventory(
 ): InventoryItem[] {
   const items: InventoryItem[] = []
   if (!draft.useStartingWealth && cls) {
+    const resolved = cls.startingEquipmentResolved ?? {}
     ;(cls.startingEquipmentOptions ?? []).forEach((opt, i) => {
-      const m = opt.match(CHOICE_RE)
-      if (m) {
-        const choice = draft.equipmentChoices[String(i)]
-        if (choice === 'a') items.push({ itemId: m[1].trim(), quantity: 1 })
-        else if (choice === 'b') items.push({ itemId: m[2].trim(), quantity: 1 })
+      const res = resolved[i]
+      if (res) {
+        const m = opt.match(CHOICE_RE)
+        if (m) {
+          const choice = draft.equipmentChoices[String(i)]
+          const ids = choice === 'a' ? res.a : choice === 'b' ? res.b : choice === 'c' ? res.c : undefined
+          ids?.forEach(id => items.push({ itemId: id, quantity: 1 }))
+        } else {
+          res.grant?.forEach(id => items.push({ itemId: id, quantity: 1 }))
+        }
       } else {
-        items.push({ itemId: opt, quantity: 1 })
+        // Fallback for options without resolved IDs
+        const m = opt.match(CHOICE_RE)
+        if (m) {
+          const choice = draft.equipmentChoices[String(i)]
+          if (choice === 'a') items.push({ itemId: m[1].trim(), quantity: 1 })
+          else if (choice === 'b') items.push({ itemId: m[2].trim(), quantity: 1 })
+        }
+        // auto-granted text strings with no real item ID are intentionally skipped
       }
     })
   }

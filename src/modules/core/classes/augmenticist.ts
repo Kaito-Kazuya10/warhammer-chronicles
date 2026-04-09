@@ -49,6 +49,13 @@ export const augmenticist: CharacterClass = {
     "(a) Dungeoneer's pack or (b) Explorer's pack",
     'Starting augments (see Augmentation System)',
   ],
+  startingEquipmentResolved: {
+    0: { a: ['armored-bodyglove'], b: ['armored-bodyglove'] },
+    1: { a: ['combat-knife', 'combat-knife'], b: [] },
+    2: { grant: [] },
+    3: { a: [], b: [] },
+    4: { grant: [] },
+  },
   startingWealthFormula: '4d4 × 10 Thrones',
 
   featureTabName: 'Augment Loadout',
