@@ -1,6 +1,6 @@
 # Warhammer Chronicles
 
-A homebrew companion app for a **Warhammer 40K D20** tabletop RPG. Create and manage characters, track stats, and load custom content through the module system.
+A homebrew companion app for a **Warhammer 40K D20** tabletop RPG. Create and manage characters, manage campaigns, track stats, and load custom content through the module system.
 
 ---
 
