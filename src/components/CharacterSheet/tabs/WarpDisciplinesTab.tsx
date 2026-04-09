@@ -312,7 +312,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
     .map(([lvl]) => Number(lvl))
     .sort((a, b) => a - b)
 
-  function useSlot(level: number) {
+  function consumeSlot(level: number) {
     const slotData = slots[level]
     if (!slotData || slotData.used >= slotData.total) return
     updateCharacter(characterId, {
@@ -408,7 +408,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
                 availableSlots={availableSlots}
                 onPrepare={() => {}}
                 onUnprepare={() => {}}
-                onCast={lvl => useSlot(lvl)}
+                onCast={lvl => consumeSlot(lvl)}
               />
             ))}
           </div>
@@ -432,7 +432,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
                 availableSlots={availableSlots}
                 onPrepare={() => {}}
                 onUnprepare={() => unprepare(p)}
-                onCast={lvl => useSlot(lvl)}
+                onCast={lvl => consumeSlot(lvl)}
               />
             ))}
           </div>

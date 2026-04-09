@@ -377,10 +377,9 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
   const character         = useCharacterStore(s => s.characters.find(c => c.id === characterId))
   const updateCharacter   = useCharacterStore(s => s.updateCharacter)
   const updateAbilityScore = useCharacterStore(s => s.updateAbilityScore)
+  const addRoll           = useDiceStore(s => s.addRoll)
 
   if (!character) return null
-
-  const addRoll   = useDiceStore(s => s.addRoll)
   const dexMod    = getModifier(character.abilityScores.dexterity)
   const dexModStr = dexMod >= 0 ? `+${dexMod}` : String(dexMod)
 
