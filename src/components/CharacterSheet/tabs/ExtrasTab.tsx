@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { useCharacterStore } from '../../../store/characterStore'
+import { useDiceStore } from '../../../store/diceStore'
+import { rollGeneral } from '../../../utils/dice'
 import { getClassById, getFeatById } from '../../../modules/registry'
 
 interface Props {
@@ -74,6 +76,7 @@ function DeathSaves({ characterId }: Props) {
 function HitDice({ characterId }: Props) {
   const character    = useCharacterStore(s => s.characters.find(c => c.id === characterId))
   const updateCharacter = useCharacterStore(s => s.updateCharacter)
+  const addRoll      = useDiceStore(s => s.addRoll)
   if (!character) return null
 
   const cls    = character.class ? getClassById(character.class) : undefined
@@ -81,6 +84,12 @@ function HitDice({ characterId }: Props) {
   const total  = character.level
   const used   = character.hitDiceUsed
   const avail  = Math.max(0, total - used)
+
+  function handleRollHitDie() {
+    if (avail === 0) return
+    const result = rollGeneral(1, hitDie)
+    addRoll({ ...result, rollType: 'general', label: `Hit Die (d${hitDie})` })
+  }
 
   function useOne() {
     if (used >= total) return
@@ -103,7 +112,14 @@ function HitDice({ characterId }: Props) {
         <div className="flex items-center justify-between">
           <div>
             <span className="text-2xl font-bold font-mono">{avail}</span>
-            <span className="text-sm text-muted-foreground">/{total} d{hitDie}</span>
+            <button
+              className="text-sm text-muted-foreground hover:text-primary hover:underline transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+              title={avail > 0 ? `Click to roll hit die (d${hitDie})` : 'No hit dice remaining'}
+              onClick={handleRollHitDie}
+              disabled={avail === 0}
+            >
+              /{total} d{hitDie}
+            </button>
           </div>
           <div className="flex gap-2">
             <Button

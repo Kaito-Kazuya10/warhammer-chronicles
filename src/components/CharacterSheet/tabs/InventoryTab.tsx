@@ -18,11 +18,26 @@ import {
   tierDefinitions, TIER_ORDER,
   artificerTraits, relicTraits, heroicAbilities,
   type RollableTrait,
+  weaponProperties,
 } from '../../../modules/core/items/weapons'
 import { armorTierDefinitions } from '../../../modules/core/items/armor'
 import ItemBrowserModal from '../ItemBrowserModal'
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '@/components/ui/tooltip'
 import type { Item, FeatureActionType, ItemTier } from '../../../types/module'
 import type { InventoryItem } from '../../../types/character'
+
+// ─── Property tooltip lookup ─────────────────────────────────────────────────
+
+const INV_PROP_MAP = new Map(weaponProperties.map(p => [p.name.toLowerCase(), p]))
+function findInvPropTooltip(propName: string) {
+  const key = propName.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim()
+  return INV_PROP_MAP.get(key) ?? weaponProperties.find(p => key.startsWith(p.id))
+}
 
 interface Props {
   characterId: string
@@ -325,11 +340,28 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
           <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground space-y-2 border-l border-border">
             {item?.description && <p>{item.description}</p>}
             {item?.properties && item.properties.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {item.properties.map(p => (
-                  <Badge key={p} variant="outline" className="text-[10px]">{p}</Badge>
-                ))}
-              </div>
+              <TooltipProvider>
+                <div className="flex flex-wrap gap-1">
+                  {item.properties.map(p => {
+                    const tip = findInvPropTooltip(p)
+                    return tip ? (
+                      <Tooltip key={p}>
+                        <TooltipTrigger>
+                          <span>
+                            <Badge variant="outline" className="text-[10px] cursor-help">{p}</Badge>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="font-semibold text-xs mb-0.5">{tip.name}</p>
+                          <p className="text-xs opacity-90 max-w-[220px]">{tip.shortDescription}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <Badge key={p} variant="outline" className="text-[10px]">{p}</Badge>
+                    )
+                  })}
+                </div>
+              </TooltipProvider>
             )}
             {/* Rolled trait */}
             {entry.rolledTrait && (

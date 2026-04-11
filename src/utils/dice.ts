@@ -101,6 +101,51 @@ export function rollGeneral(count: number, sides: number): DiceRollResult {
   }
 }
 
+// ─── Damage Roll ─────────────────────────────────────────────────────────────
+
+export function rollDamage(
+  baseDice: string,
+  modifier: number,
+  bonusDice: string,
+  label: string,
+  modBreakdown: string,
+): DiceRollResult {
+  const id = typeof crypto !== 'undefined' && crypto.randomUUID
+    ? crypto.randomUUID()
+    : String(Date.now() + Math.random())
+
+  const baseMatch = baseDice.match(/(\d+)d(\d+)/)
+  const baseRolls = baseMatch
+    ? rollDice(Number(baseMatch[1]), Number(baseMatch[2]))
+    : []
+
+  const bonusStr = bonusDice.replace(/^\+/, '').trim()
+  const bonusMatch = bonusStr.match(/(\d+)d(\d+)/)
+  const bonusRolls = bonusMatch
+    ? rollDice(Number(bonusMatch[1]), Number(bonusMatch[2]))
+    : []
+
+  const total = baseRolls.reduce((a, b) => a + b, 0)
+    + bonusRolls.reduce((a, b) => a + b, 0)
+    + modifier
+
+  const modPart = modifier > 0 ? `+${modifier}` : modifier < 0 ? String(modifier) : ''
+  const bonusPart = bonusStr ? `+${bonusStr}` : ''
+  const diceExpression = `${baseDice}${modPart}${bonusPart}`
+
+  return {
+    id,
+    timestamp: Date.now(),
+    label: `${label} Damage`,
+    rollType: 'damage',
+    diceExpression,
+    rolls: [...baseRolls, ...bonusRolls],
+    modifier,
+    modifierBreakdown: modBreakdown,
+    total,
+  }
+}
+
 // ─── Formatting Helpers ───────────────────────────────────────────────────────
 
 export function fmtMod(n: number): string {
