@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '@/auth/useAuth'
 
 type Mode = 'login' | 'signup'
@@ -7,6 +7,8 @@ type Role = 'player' | 'dm'
 
 export default function AuthPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get('redirect') ?? '/'
   const { signIn, signUp, user } = useAuth()
 
   const [mode, setMode] = useState<Mode>('login')
@@ -20,7 +22,7 @@ export default function AuthPage() {
 
   // If already logged in, redirect
   if (user) {
-    navigate('/', { replace: true })
+    navigate(redirectTo, { replace: true })
     return null
   }
 
@@ -32,7 +34,7 @@ export default function AuthPage() {
     if (mode === 'login') {
       const { error: err } = await signIn(email, password)
       if (err) setError(err)
-      else navigate('/', { replace: true })
+      else navigate(redirectTo, { replace: true })
     } else {
       if (!displayName.trim()) {
         setError('Display name is required.')

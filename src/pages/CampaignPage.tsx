@@ -113,8 +113,8 @@ export default function CampaignPage() {
   // ── Copy invite code ────────────────────────────────────────────────────────
 
   const [copied, setCopied] = useState<string | null>(null)
-  const copyCode = (code: string) => {
-    navigator.clipboard.writeText(code)
+  const copyLink = (code: string) => {
+    navigator.clipboard.writeText(`${window.location.origin}/join/${code}`)
     setCopied(code)
     setTimeout(() => setCopied(null), 2000)
   }
@@ -211,10 +211,10 @@ export default function CampaignPage() {
                         <span className="text-[11px] font-mono text-amber-400/70">{c.invite_code}</span>
                         <button
                           type="button"
-                          onClick={e => { e.stopPropagation(); copyCode(c.invite_code) }}
-                          className="text-[9px] text-slate-600 hover:text-slate-400 tracking-wider transition-colors"
+                          onClick={e => { e.stopPropagation(); copyLink(c.invite_code) }}
+                          className="text-[9px] text-slate-600 hover:text-amber-400/70 tracking-wider transition-colors"
                         >
-                          {copied === c.invite_code ? 'COPIED' : 'COPY'}
+                          {copied === c.invite_code ? 'COPIED ✓' : 'COPY LINK'}
                         </button>
                       </div>
                     )}

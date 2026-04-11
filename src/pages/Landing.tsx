@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCharacterStore } from '../store/characterStore'
 import { useAuth } from '../auth/useAuth'
+import { getAllItems } from '../modules/registry'
 import {
   AlertDialog,
   AlertDialogContent,
@@ -19,20 +20,11 @@ const MAIN_NAV = [
   { label: 'Create', route: '/create', available: true },
   { label: 'Campaign', route: '/campaign', available: true },
   { label: 'Modules', route: '/modules', available: false },
-  { label: 'Compendium', route: '/compendium', available: false },
+  { label: 'Compendium', route: '/compendium', available: true },
 ]
 
 const BOTTOM_NAV = [
   { label: 'Settings', route: '/settings', available: false },
-]
-
-// ─── Placeholder compendium entries ──────────────────────────────────────────
-
-const RECENT_ENTRIES = [
-  { label: 'Lasgun', type: 'Weapon' },
-  { label: 'Flak Armour', type: 'Armour' },
-  { label: 'Smite', type: 'Psychic Power' },
-  { label: 'Frag Grenade', type: 'Wargear' },
 ]
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -42,6 +34,7 @@ export default function Landing() {
   const { characters, setActiveCharacter, loadCharacters } = useCharacterStore()
   const { profile, signOut } = useAuth()
   const [showAccount, setShowAccount] = useState(false)
+  const recentItems = useMemo(() => getAllItems().slice(0, 4), [])
 
   useEffect(() => { loadCharacters() }, [loadCharacters])
 
@@ -231,23 +224,27 @@ export default function Landing() {
           <div className="max-w-3xl mx-auto">
             <div className="flex items-center gap-3 mb-3">
               <h3 className="text-xs tracking-[0.2em] text-slate-500 uppercase font-semibold">
-                Recent Compendium
+                Compendium
               </h3>
               <div className="h-px flex-1 bg-slate-800/60" />
-              <span className="text-[9px] text-slate-600 border border-slate-700/40 rounded px-1.5 py-0.5 tracking-wider">
-                soon
-              </span>
+              <button
+                onClick={() => navigate('/compendium')}
+                className="text-[9px] text-amber-500/60 hover:text-amber-400 border border-amber-500/20 hover:border-amber-500/40 rounded px-1.5 py-0.5 tracking-wider transition-colors"
+              >
+                VIEW ALL →
+              </button>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {RECENT_ENTRIES.map(entry => (
-                <div
-                  key={entry.label}
-                  className="border border-slate-700/20 rounded-md bg-slate-800/15 px-3 py-2.5 opacity-40 cursor-not-allowed"
+              {recentItems.map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => navigate('/compendium')}
+                  className="border border-slate-700/20 rounded-md bg-slate-800/15 px-3 py-2.5 text-left hover:bg-slate-700/20 hover:border-slate-600/30 transition-colors"
                 >
-                  <p className="text-xs text-slate-300/60 font-medium truncate">{entry.label}</p>
-                  <p className="text-[10px] text-slate-600">{entry.type}</p>
-                </div>
+                  <p className="text-xs text-slate-300 font-medium truncate">{item.name}</p>
+                  <p className="text-[10px] text-slate-600 capitalize">{item.type}</p>
+                </button>
               ))}
             </div>
           </div>

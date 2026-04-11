@@ -9,6 +9,8 @@ import Characters from './pages/Characters'
 import CharacterCreation from './pages/CharacterCreation/index'
 import CharacterSheetPage from './pages/CharacterSheetPage'
 import CampaignPage from './pages/CampaignPage'
+import JoinPage from './pages/JoinPage'
+import CompendiumPage from './pages/CompendiumPage'
 
 // Register the core module once on app load
 registerModule(coreModule)
@@ -24,6 +26,8 @@ export default function App() {
           <Route path="/create" element={<ProtectedRoute><CharacterCreation /></ProtectedRoute>} />
           <Route path="/sheet" element={<ProtectedRoute><CharacterSheetPage /></ProtectedRoute>} />
           <Route path="/campaign" element={<ProtectedRoute><CampaignPage /></ProtectedRoute>} />
+          <Route path="/join/:code" element={<ProtectedRoute><JoinPage /></ProtectedRoute>} />
+          <Route path="/compendium" element={<ProtectedRoute><CompendiumPage /></ProtectedRoute>} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
