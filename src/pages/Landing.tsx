@@ -1,17 +1,8 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCharacterStore } from '../store/characterStore'
 import { useAuth } from '../auth/useAuth'
 import { getAllItems } from '../modules/registry'
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogCancel,
-} from '@/components/ui/alert-dialog'
 
 // ─── Sidebar nav items ───────────────────────────────────────────────────────
 
@@ -19,12 +10,12 @@ const MAIN_NAV = [
   { label: 'Characters', route: '/characters', available: true },
   { label: 'Create', route: '/create', available: true },
   { label: 'Campaign', route: '/campaign', available: true },
-  { label: 'Modules', route: '/modules', available: false },
+  { label: 'Modules', route: '/modules', available: true },
   { label: 'Compendium', route: '/compendium', available: true },
 ]
 
 const BOTTOM_NAV = [
-  { label: 'Settings', route: '/settings', available: false },
+  { label: 'Settings', route: '/settings', available: true },
 ]
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -32,8 +23,7 @@ const BOTTOM_NAV = [
 export default function Landing() {
   const navigate = useNavigate()
   const { characters, setActiveCharacter, loadCharacters } = useCharacterStore()
-  const { profile, signOut } = useAuth()
-  const [showAccount, setShowAccount] = useState(false)
+  const { profile } = useAuth()
   const recentItems = useMemo(() => getAllItems().slice(0, 4), [])
 
   useEffect(() => { loadCharacters() }, [loadCharacters])
@@ -47,9 +37,9 @@ export default function Landing() {
     <div className="min-h-screen bg-[#131519] flex">
       {/* ── Sidebar ──────────────────────────────────────────────────────── */}
       <aside className="w-56 shrink-0 bg-[#0f1115] border-r border-slate-700/30 flex flex-col">
-        {/* Account button (top) */}
+        {/* Account button (top) → navigate to Settings */}
         <button
-          onClick={() => setShowAccount(true)}
+          onClick={() => navigate('/settings')}
           className="px-4 py-3 border-b border-slate-700/25 flex items-center gap-2 hover:bg-slate-700/15 transition-colors text-left"
         >
           <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700/40 flex items-center justify-center shrink-0">
@@ -251,38 +241,6 @@ export default function Landing() {
         </section>
       </main>
 
-      {/* ── Account Settings Dialog ──────────────────────────────────────── */}
-      <AlertDialog open={showAccount} onOpenChange={(open) => { if (!open) setShowAccount(false) }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Account Settings</AlertDialogTitle>
-            <AlertDialogDescription>
-              Manage your account preferences.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <div className="flex flex-col gap-3 py-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Display Name</span>
-              <span className="text-sm text-slate-200">{profile?.displayName || 'User'}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Role</span>
-              <span className="text-sm text-slate-200 capitalize">{profile?.role || 'player'}</span>
-            </div>
-          </div>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Close</AlertDialogCancel>
-            <button
-              onClick={() => { setShowAccount(false); signOut().then(() => navigate('/auth')) }}
-              className="px-4 py-2 rounded-md bg-red-500/15 border border-red-500/30 text-red-400 text-sm hover:bg-red-500/25 transition-colors"
-            >
-              Sign Out
-            </button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

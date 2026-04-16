@@ -89,7 +89,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
   const [asiChanges, setAsiChanges] = useState<Record<string, number>>({})
   const [asiPointsUsed, setAsiPointsUsed] = useState(0)
   const [selectedFeat, setSelectedFeat] = useState<string | null>(null)
-  const [selectedOption, setSelectedOption] = useState<string | null>(null)
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({})
 
   if (!character) return null
 
@@ -106,13 +106,23 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
 
   // Features at new level
   const baseFeatures = (cls?.features ?? []).filter(f => f.level === targetLevel)
-  const nonASIBase = baseFeatures.filter(f => f.name !== 'Ability Score Improvement')
-  const subFeatures = (subclass?.features ?? []).filter(f => f.level === targetLevel)
+  const subFeatures  = (subclass?.features ?? []).filter(f => f.level === targetLevel)
   const coreFeatures = subFeatures.filter(f => f.featureType === 'core')
   const mainFeatures = subFeatures.filter(f => f.featureType === 'main')
-  const optionFeatures = subFeatures.filter(f => f.featureType === 'option')
-  const optionGroup = optionFeatures[0]?.optionGroup ?? null
-  const hasOptions = optionFeatures.length > 0
+  // Option features from BOTH base class and subclass
+  const optionFeatures = [
+    ...baseFeatures.filter(f => f.featureType === 'option'),
+    ...subFeatures.filter(f => f.featureType === 'option'),
+  ]
+  // Unique option groups (preserving order)
+  const optionGroups = [...new Set(
+    optionFeatures.map(f => f.optionGroup).filter((g): g is string => !!g)
+  )]
+  const hasOptions = optionGroups.length > 0
+  // Automatic (non-choice) features — exclude option-type and ASI entries
+  const nonASIBase = baseFeatures.filter(
+    f => f.name !== 'Ability Score Improvement' && f.featureType !== 'option'
+  )
   const allNewFeatures = [...nonASIBase, ...coreFeatures, ...mainFeatures]
 
   // All features for finding originals of ENHANCE options
@@ -141,7 +151,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
       case 'summary': return true
       case 'hp': return hpGain !== null
       case 'asi': return asiMode === 'feat' ? selectedFeat !== null : asiPointsUsed === 2
-      case 'features': return !hasOptions || selectedOption !== null
+      case 'features': return !hasOptions || optionGroups.every(g => selectedOptions[g] !== undefined)
       case 'confirm': return true
     }
   })()
@@ -199,7 +209,7 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
     setAsiChanges({})
     setAsiPointsUsed(0)
     setSelectedFeat(null)
-    setSelectedOption(null)
+    setSelectedOptions({})
   }
 
   const handleConfirm = () => {
@@ -222,8 +232,12 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
     if (isASI && asiMode === 'feat' && selectedFeat) {
       patch.featIds = [...(character.featIds ?? []), selectedFeat]
     }
-    if (hasOptions && selectedOption && optionGroup) {
-      patch.featureChoices = { ...(character.featureChoices ?? {}), [optionGroup]: selectedOption }
+    if (hasOptions && optionGroups.length > 0) {
+      const newChoices = { ...(character.featureChoices ?? {}) }
+      for (const [group, optSlug] of Object.entries(selectedOptions)) {
+        if (optSlug) newChoices[group] = optSlug
+      }
+      patch.featureChoices = newChoices
     }
 
     updateCharacter(characterId, patch)
@@ -307,9 +321,13 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
       {/* Options notice */}
       {hasOptions && (
         <div className="rounded-md border border-primary/30 bg-primary/5 p-3">
-          <p className="text-sm font-semibold text-primary">Choice Required</p>
+          <p className="text-sm font-semibold text-primary">
+            {optionGroups.length > 1 ? `${optionGroups.length} Choices Required` : 'Choice Required'}
+          </p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            You must choose one of {optionFeatures.length} options at this level.
+            {optionGroups.length > 1
+              ? `You must make ${optionGroups.length} separate choices at this level.`
+              : `You must choose one of ${optionFeatures.length} options at this level.`}
           </p>
         </div>
       )}
@@ -537,30 +555,34 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
         </div>
       )}
 
-      {/* Option selection */}
-      {hasOptions && (
-        <div>
-          <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-1">Choose One</p>
-          <p className="text-xs text-muted-foreground mb-3">Select one of the following options.</p>
+      {/* Option selection — one section per group */}
+      {hasOptions && optionGroups.map(group => {
+        const groupFeatures = optionFeatures.filter(f => f.optionGroup === group)
+        return (
+          <div key={group}>
+            <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-1">
+              {optionGroups.length > 1 ? `Choose One — ${group}` : 'Choose One'}
+            </p>
+            <p className="text-xs text-muted-foreground mb-3">Select one of the following options.</p>
 
-          <div className="space-y-3">
-            {optionFeatures.map((opt, i) => {
-              const isEnhance = !!opt.sourceFeature
-              const original = isEnhance ? findOriginal(opt.sourceFeature!) : null
-              const optSlug = slugify(opt.name)
-              const isSelected = selectedOption === optSlug
-              const letter = String.fromCharCode(65 + i) // A, B, C...
+            <div className="space-y-3">
+              {groupFeatures.map((opt, i) => {
+                const isEnhance = !!opt.sourceFeature
+                const original = isEnhance ? findOriginal(opt.sourceFeature!) : null
+                const optSlug = slugify(opt.name)
+                const isSelected = selectedOptions[group] === optSlug
+                const letter = String.fromCharCode(65 + i) // A, B, C...
 
-              return (
-                <button
-                  key={opt.name}
-                  onClick={() => setSelectedOption(optSlug)}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition-all shadow-sm ${
-                    isSelected
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border bg-muted/20 hover:border-primary/30 hover:bg-muted/30'
-                  }`}
-                >
+                return (
+                  <button
+                    key={opt.name}
+                    onClick={() => setSelectedOptions(prev => ({ ...prev, [group]: optSlug }))}
+                    className={`w-full text-left p-4 rounded-lg border-2 transition-all shadow-sm ${
+                      isSelected
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border bg-muted/20 hover:border-primary/30 hover:bg-muted/30'
+                    }`}
+                  >
                   {/* Header */}
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
@@ -601,9 +623,10 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
                 </button>
               )
             })}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      })}
     </div>
   )
 
@@ -613,9 +636,9 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
     const showFromLevel = confirmed ? confirmedFromLevel ?? character.level - 1 : character.level
     const showToLevel = showFromLevel + 1
 
-    const chosenOption = selectedOption
-      ? optionFeatures.find(f => slugify(f.name) === selectedOption)
-      : null
+    const chosenOptionEntries = optionGroups
+      .map(g => ({ group: g, feature: optionFeatures.find(f => selectedOptions[g] && slugify(f.name) === selectedOptions[g]) }))
+      .filter((x): x is { group: string; feature: NonNullable<typeof x.feature> } => !!x.feature)
     const chosenFeat = selectedFeat
       ? availableFeats.find(f => f.id === selectedFeat)
       : null
@@ -681,12 +704,14 @@ export default function LevelUpFlow({ characterId, onClose }: Props) {
             </div>
           )}
 
-          {chosenOption && (
-            <div className="flex items-center justify-between py-2">
-              <span className="text-sm text-foreground/60">Chosen Option</span>
-              <span className="text-sm font-semibold">{chosenOption.name}</span>
+          {chosenOptionEntries.map(({ group, feature }) => (
+            <div key={group} className="flex items-center justify-between py-2">
+              <span className="text-sm text-foreground/60">
+                {chosenOptionEntries.length > 1 ? `Choice (${group})` : 'Chosen Option'}
+              </span>
+              <span className="text-sm font-semibold">{feature.name}</span>
             </div>
-          )}
+          ))}
 
           {isASI && asiMode === 'asi' && asiPointsUsed > 0 && (
             <div className="py-2">

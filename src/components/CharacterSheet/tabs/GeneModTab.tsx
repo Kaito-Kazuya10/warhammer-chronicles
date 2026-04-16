@@ -3,8 +3,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { useCharacterStore } from '../../../store/characterStore'
+import { useDiceStore } from '../../../store/diceStore'
 import { getAllGeneModifications, getGeneModificationById, getAllClasses } from '../../../modules/registry'
 import { renderDescription } from '../../../utils/renderDescription'
+import { rollCheck } from '../../../utils/dice'
 import type { GeneModification } from '../../../types/module'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -170,6 +172,7 @@ interface Props {
 export default function GeneModTab({ characterId }: Props) {
   const character       = useCharacterStore(s => s.characters.find(c => c.id === characterId))
   const updateCharacter = useCharacterStore(s => s.updateCharacter)
+  const addRoll         = useDiceStore(s => s.addRoll)
   const [filter, setFilter] = useState<TierFilter>('all')
 
   if (!character) return null
@@ -183,6 +186,28 @@ export default function GeneModTab({ characterId }: Props) {
     .map(id => getGeneModificationById(id))
     .filter((m): m is GeneModification => m !== undefined)
   const stabilityUsed = installedMods.reduce((sum, m) => sum + m.stabilityCost, 0)
+
+  // Gene-Surge state
+  const isInSurge = character.isInGeneSurge ?? false
+
+  function toggleSurge() {
+    updateCharacter(characterId, { isInGeneSurge: !isInSurge })
+  }
+
+  // Stability Check roll:
+  // freeSlots = stabilityMax - stabilityUsed
+  //   > 0 → bonus (more free = easier)
+  //   = 0 → flat
+  //   < 0 → penalty (over limit)
+  function rollStabilityCheck() {
+    const freeSlots = stabilityMax - stabilityUsed
+    const breakdown = freeSlots === 0
+      ? 'No free stability (at max)'
+      : freeSlots > 0
+        ? `+${freeSlots} free stability slots`
+        : `${freeSlots} over stability threshold`
+    addRoll(rollCheck('Gene Stability Check', 'general', freeSlots, breakdown))
+  }
 
   // Archetype name for section header
   const cls        = getAllClasses().find(c => c.id === character.class)
@@ -221,22 +246,53 @@ export default function GeneModTab({ characterId }: Props) {
   return (
     <div className="space-y-4">
 
-      {/* ── Stability Score ── */}
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
-            Genetic Stability
-          </p>
-          <span className="text-[9px] text-muted-foreground italic">
-            CON mod + proficiency × 2
-          </span>
+      {/* ── Stability + Gene-Surge row ── */}
+      <div className="rounded-md border border-green-500/20 bg-green-500/5 p-3 space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+              Genetic Stability
+              <span className="ml-1 text-muted-foreground/50 normal-case tracking-normal font-normal">
+                (CON mod + prof × 2)
+              </span>
+            </p>
+          </div>
+          {/* Gene-Surge toggle */}
+          <button
+            onClick={toggleSurge}
+            className={`shrink-0 text-[9px] px-2 py-1 rounded border transition-colors font-semibold tracking-widest ${
+              isInSurge
+                ? 'border-green-500/60 bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                : 'border-border text-muted-foreground/60 hover:border-green-500/40 hover:text-green-400/70'
+            }`}
+            title={isInSurge ? 'End Gene-Surge' : 'Activate Gene-Surge'}
+          >
+            {isInSurge ? '🧬 SURGING' : 'GENE-SURGE'}
+          </button>
         </div>
+
         <StabilityBar used={stabilityUsed} max={stabilityMax} />
-        {overThreshold && (
-          <p className="text-[9px] text-[var(--wh-crimson)] font-semibold">
-            ⚠ Over threshold by {stabilityUsed - stabilityMax} SP — penalties active
-          </p>
-        )}
+
+        <div className="flex items-center justify-between gap-2">
+          {overThreshold ? (
+            <p className="text-[9px] text-[var(--wh-crimson)] font-semibold">
+              ⚠ Over threshold by {stabilityUsed - stabilityMax} SP — stability check penalty active
+            </p>
+          ) : (
+            <p className="text-[9px] text-muted-foreground/50 italic">
+              {stabilityMax - stabilityUsed > 0
+                ? `+${stabilityMax - stabilityUsed} bonus to stability check`
+                : 'At limit — no bonus or penalty'}
+            </p>
+          )}
+          <button
+            onClick={rollStabilityCheck}
+            className="shrink-0 text-[9px] px-2 py-1 rounded border border-border text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-colors tracking-wider"
+            title="Roll Gene Stability Check (d20 ± free stability slots)"
+          >
+            🎲 STABILITY CHECK
+          </button>
+        </div>
       </div>
 
       {/* ── Installed Modifications ── */}
@@ -290,7 +346,7 @@ export default function GeneModTab({ characterId }: Props) {
                   key={mod.id}
                   mod={mod}
                   installed={false}
-                  canInstall={stabilityUsed + mod.stabilityCost <= stabilityMax}
+                  canInstall={true}
                   onInstall={() => install(mod)}
                   onUninstall={() => {}}
                 />
@@ -315,7 +371,7 @@ export default function GeneModTab({ characterId }: Props) {
                   key={mod.id}
                   mod={mod}
                   installed={false}
-                  canInstall={stabilityUsed + mod.stabilityCost <= stabilityMax}
+                  canInstall={true}
                   onInstall={() => install(mod)}
                   onUninstall={() => {}}
                 />

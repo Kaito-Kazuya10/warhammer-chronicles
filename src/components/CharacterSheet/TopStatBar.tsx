@@ -138,33 +138,29 @@ function AbilityScoreBlock({
   onChange: (v: number) => void
 }) {
   const [editing, setEditing] = useState(false)
-  const addRoll = useDiceStore(s => s.addRoll)
+  const addRoll        = useDiceStore(s => s.addRoll)
+  const showRollContext = useDiceStore(s => s.showRollContext)
   const mod    = getModifier(score)
   const modStr = mod >= 0 ? `+${mod}` : String(mod)
 
-  const handleRoll = () => {
-    const result = rollCheck(
-      `${label} Check`,
-      'ability',
-      mod,
-      `${fmtMod(mod)} ${label}`,
-    )
-    addRoll(result)
+  const doRoll = (mode?: 'advantage' | 'disadvantage') => {
+    addRoll(rollCheck(`${label} Check`, 'ability', mod, `${fmtMod(mod)} ${label}`, mode))
   }
 
   return (
     <div className="flex flex-col items-center justify-between border border-border bg-muted/20 rounded-md p-2 gap-0.5 min-w-0">
       <span className="text-[8px] uppercase tracking-[0.08em] text-muted-foreground font-medium text-center leading-tight">{label}</span>
 
-      {/* Modifier — clickable to roll */}
+      {/* Modifier — left-click to roll, right-click for adv/dis */}
       <span
         className="text-2xl font-bold text-foreground leading-none font-mono cursor-pointer hover:text-primary hover:scale-110 active:scale-95 transition-all select-none group"
         role="button"
         tabIndex={0}
         aria-label={`Roll ${label} check (${modStr})`}
-        onClick={handleRoll}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRoll() } }}
-        title={`Click to roll ${label} check`}
+        onClick={() => doRoll()}
+        onContextMenu={e => { e.preventDefault(); showRollContext(e.clientX, e.clientY, doRoll) }}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doRoll() } }}
+        title={`Left-click to roll · Right-click for Advantage/Disadvantage`}
       >
         {modStr}
       </span>
@@ -378,6 +374,7 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
   const updateCharacter   = useCharacterStore(s => s.updateCharacter)
   const updateAbilityScore = useCharacterStore(s => s.updateAbilityScore)
   const addRoll           = useDiceStore(s => s.addRoll)
+  const showRollContext   = useDiceStore(s => s.showRollContext)
 
   if (!character) return null
   const dexMod    = getModifier(character.abilityScores.dexterity)
@@ -430,8 +427,8 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
   }
   // ─────────────────────────────────────────────────────────────────────────
 
-  const rollInitiative = () => {
-    addRoll(rollCheck('Initiative', 'initiative', dexMod, `${fmtMod(dexMod)} DEX`))
+  const rollInitiative = (mode?: 'advantage' | 'disadvantage') => {
+    addRoll(rollCheck('Initiative', 'initiative', dexMod, `${fmtMod(dexMod)} DEX`, mode))
   }
 
   return (
@@ -480,9 +477,10 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
             role="button"
             tabIndex={0}
             aria-label={`Roll Initiative (${dexModStr})`}
-            onClick={rollInitiative}
+            onClick={() => rollInitiative()}
+            onContextMenu={e => { e.preventDefault(); showRollContext(e.clientX, e.clientY, rollInitiative) }}
             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); rollInitiative() } }}
-            title="Click to roll Initiative"
+            title="Left-click to roll · Right-click for Advantage/Disadvantage"
           >
             <span className="text-2xl font-bold font-mono text-foreground leading-none">{dexModStr}</span>
             <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">INITIATIVE</span>

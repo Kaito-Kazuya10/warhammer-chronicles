@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCharacterStore } from '../store/characterStore'
 import CharacterSheet from '../components/CharacterSheet'
 import { Badge } from '@/components/ui/badge'
 import { useDiceStore } from '../store/diceStore'
 import { useAuth } from '@/auth/useAuth'
-import { Download, Copy, Pencil, Plus, Dice6, ChevronLeft, Sun, Moon } from 'lucide-react'
+import { Download, Copy, Pencil, Plus, Dice6, ChevronLeft } from 'lucide-react'
 
 function exportCharacter(character: ReturnType<typeof useCharacterStore.getState>['characters'][number]) {
   const exportData = {
@@ -29,12 +28,6 @@ export default function CharacterSheetPage() {
   const { history, toggleHistory } = useDiceStore()
   const { profile } = useAuth()
   const isDm = profile?.role === 'dm'
-
-  const [isDark, setIsDark] = useState(() => localStorage.getItem('darkMode') === 'true')
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark)
-    localStorage.setItem('darkMode', String(isDark))
-  }, [isDark])
 
   if (!activeCharacterId) {
     navigate('/characters')
@@ -134,15 +127,6 @@ export default function CharacterSheetPage() {
                 {history.length > 99 ? '99+' : history.length}
               </Badge>
             )}
-          </button>
-
-          {/* Dark mode toggle */}
-          <button
-            onClick={() => setIsDark(d => !d)}
-            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="flex items-center gap-1.5 px-3 h-12 text-slate-400 hover:text-amber-300 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
-          >
-            {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
           </button>
 
           {/* Export */}

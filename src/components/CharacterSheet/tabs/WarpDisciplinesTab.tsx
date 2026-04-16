@@ -9,8 +9,6 @@ import type { Spell, PsychicDiscipline } from '../../../types/module'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const WARP_MAX = 20
-
 const LEVEL_LABEL: Record<number, string> = {
   0: 'Cantrip', 1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: '5th', 6: '6th',
 }
@@ -149,6 +147,7 @@ function PowerRow({
   onPrepare,
   onUnprepare,
   onCast,
+  onCastCantrip,
 }: {
   power: Spell
   prepared: boolean
@@ -158,6 +157,7 @@ function PowerRow({
   onPrepare: () => void
   onUnprepare: () => void
   onCast: (level: number) => void
+  onCastCantrip?: () => void
 }) {
   const [open, setOpen] = useState(false)
   const isCantrip = power.level === 0
@@ -208,6 +208,17 @@ function PowerRow({
         </CollapsibleTrigger>
 
         <div className="self-start mt-1.5 mr-2 flex-shrink-0 flex items-center gap-1">
+          {/* Cast button for cantrips */}
+          {isCantrip && (prepared || alwaysPrepared) && onCastCantrip && (
+            <button
+              onClick={onCastCantrip}
+              className="text-[9px] px-1.5 py-0.5 rounded border border-purple-500/30 text-purple-600 hover:bg-purple-500/10 transition-colors"
+              title={`Cast (costs ${power.warpCost ?? 1} warp)`}
+            >
+              CAST
+            </button>
+          )}
+
           {/* Cast buttons (for prepared non-cantrip powers) */}
           {(prepared || alwaysPrepared) && !isCantrip && availableSlots.filter(l => l >= power.level).slice(0, 2).map(slotLevel => (
             <button
@@ -285,6 +296,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
   const slots           = character.spellSlots ?? {}
 
   // ── Warp Bar ────────────────────────────────────────────────────────────────
+  const warpMax     = character.level >= 10 ? 25 : 20
   const warpCurrent = character.warpBar ?? 0
 
   function setWarpBar(v: number) {
@@ -318,6 +330,23 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
     updateCharacter(characterId, {
       spellSlots: { ...slots, [level]: { ...slotData, used: slotData.used + 1 } },
     })
+  }
+
+  function handleCast(power: Spell, level: number) {
+    const slotData = slots[level]
+    if (!slotData || slotData.used >= slotData.total) return
+    const cost    = power.warpCost ?? (power.level + 1)
+    const newWarp = Math.min(warpMax, warpCurrent + cost)
+    updateCharacter(characterId, {
+      warpBar: newWarp,
+      spellSlots: { ...slots, [level]: { ...slotData, used: slotData.used + 1 } },
+    })
+  }
+
+  function handleCastCantrip(power: Spell) {
+    const cost    = power.warpCost ?? 1
+    const newWarp = Math.min(warpMax, warpCurrent + cost)
+    updateCharacter(characterId, { warpBar: newWarp })
   }
 
   function toggleSlot(level: number, newUsed: number) {
@@ -364,7 +393,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
 
       {/* ── Warp Bar ── */}
       <div className="rounded-md border border-purple-500/20 bg-purple-500/5 p-3">
-        <WarpBar current={warpCurrent} max={WARP_MAX} onChange={setWarpBar} />
+        <WarpBar current={warpCurrent} max={warpMax} onChange={setWarpBar} />
       </div>
 
       {/* ── Power Slots ── */}
@@ -408,7 +437,8 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
                 availableSlots={availableSlots}
                 onPrepare={() => {}}
                 onUnprepare={() => {}}
-                onCast={lvl => consumeSlot(lvl)}
+                onCast={lvl => handleCast(p, lvl)}
+                onCastCantrip={() => handleCastCantrip(p)}
               />
             ))}
           </div>
@@ -432,7 +462,8 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
                 availableSlots={availableSlots}
                 onPrepare={() => {}}
                 onUnprepare={() => unprepare(p)}
-                onCast={lvl => consumeSlot(lvl)}
+                onCast={lvl => handleCast(p, lvl)}
+                onCastCantrip={() => handleCastCantrip(p)}
               />
             ))}
           </div>
