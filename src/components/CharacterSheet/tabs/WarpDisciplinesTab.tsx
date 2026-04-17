@@ -324,14 +324,6 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
     .map(([lvl]) => Number(lvl))
     .sort((a, b) => a - b)
 
-  function consumeSlot(level: number) {
-    const slotData = slots[level]
-    if (!slotData || slotData.used >= slotData.total) return
-    updateCharacter(characterId, {
-      spellSlots: { ...slots, [level]: { ...slotData, used: slotData.used + 1 } },
-    })
-  }
-
   function handleCast(power: Spell, level: number) {
     const slotData = slots[level]
     if (!slotData || slotData.used >= slotData.total) return
