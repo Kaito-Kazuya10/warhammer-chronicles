@@ -53,9 +53,10 @@ interface Props {
 }
 
 export default function SkillList({ characterId }: Props) {
-  const character   = useCharacterStore(s => s.characters.find(c => c.id === characterId))
-  const toggleSkill = useCharacterStore(s => s.toggleSkill)
-  const addRoll     = useDiceStore(s => s.addRoll)
+  const character         = useCharacterStore(s => s.characters.find(c => c.id === characterId))
+  const toggleSkill       = useCharacterStore(s => s.toggleSkill)
+  const addRoll           = useDiceStore(s => s.addRoll)
+  const showRollContext    = useDiceStore(s => s.showRollContext)
 
   if (!character) return null
 
@@ -85,11 +86,11 @@ export default function SkillList({ characterId }: Props) {
             const bonus       = abilityMod + profBonus
             const bonusStr    = bonus >= 0 ? `+${bonus}` : String(bonus)
 
-            const handleRoll = () => {
+            const doRoll = (mode?: 'advantage' | 'disadvantage') => {
               const breakdown = proficient
                 ? `${fmtMod(abilityMod)} ${ABILITY_ABBR[ability]}  +${profBonus} Prof`
                 : `${fmtMod(abilityMod)} ${ABILITY_ABBR[ability]}`
-              addRoll(rollCheck(label, 'skill', bonus, breakdown))
+              addRoll(rollCheck(label, 'skill', bonus, breakdown, mode))
             }
 
             return (
@@ -124,9 +125,10 @@ export default function SkillList({ characterId }: Props) {
                   role="button"
                   tabIndex={0}
                   aria-label={`Roll ${label} check (${bonusStr})`}
-                  onClick={handleRoll}
-                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRoll() } }}
-                  title={`Click to roll ${label}`}
+                  onClick={() => doRoll()}
+                  onContextMenu={e => { e.preventDefault(); showRollContext(e.clientX, e.clientY, doRoll) }}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doRoll() } }}
+                  title={`Left-click to roll · Right-click for Advantage/Disadvantage`}
                 >
                   <span className="w-7 text-[10px] uppercase text-muted-foreground flex-shrink-0 group-hover:text-muted-foreground/80">
                     {ABILITY_ABBR[ability]}

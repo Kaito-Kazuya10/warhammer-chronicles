@@ -5,6 +5,7 @@ import SkillList from './SkillList'
 import ContentTabs from './ContentTabs'
 import RollToast from './RollToast'
 import RollHistoryPanel from './RollHistoryPanel'
+import RollContextMenu from './RollContextMenu'
 import LevelUpFlow from './LevelUp/LevelUpFlow'
 import {
   Sheet,
@@ -25,6 +26,9 @@ export default function CharacterSheet({ characterId }: Props) {
     <div className="min-h-screen bg-[var(--background)] p-4 space-y-4">
       {/* Floating roll toast — shows on every new roll */}
       <RollToast />
+
+      {/* Right-click roll context menu (advantage / disadvantage) */}
+      <RollContextMenu />
 
       {/* Slide-out roll history panel */}
       <RollHistoryPanel />

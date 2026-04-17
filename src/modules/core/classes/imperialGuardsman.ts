@@ -44,6 +44,13 @@ export const imperialGuardsman: CharacterClass = {
     "(a) Explorer's pack or (b) Military pack (bedroll, mess kit, rations for 5 days, waterskin, 50 feet of rope, flashlight, 2 batteries)",
     'Regimental insignia, dog tags, photo of loved ones or the Emperor',
   ],
+  startingEquipmentResolved: {
+    0: { a: ['flak-armor-full'],                         b: ['mesh-armor'] },
+    1: { a: ['lasgun'],                                  b: ['autogun'] },
+    2: { a: ['combat-knife', 'frag-grenade', 'frag-grenade'], b: ['chainsword'] },
+    3: { a: [],                                          b: ['military-pack'] },
+    4: { grant: [] },
+  },
   startingWealthFormula: '5d4 × 10 Thrones',
 
   featureTabName: 'Regimental Doctrine',

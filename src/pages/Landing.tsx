@@ -1,16 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCharacterStore } from '../store/characterStore'
 import { useAuth } from '../auth/useAuth'
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogCancel,
-} from '@/components/ui/alert-dialog'
+import { getAllItems } from '../modules/registry'
 
 // ─── Sidebar nav items ───────────────────────────────────────────────────────
 
@@ -18,21 +10,12 @@ const MAIN_NAV = [
   { label: 'Characters', route: '/characters', available: true },
   { label: 'Create', route: '/create', available: true },
   { label: 'Campaign', route: '/campaign', available: true },
-  { label: 'Modules', route: '/modules', available: false },
-  { label: 'Compendium', route: '/compendium', available: false },
+  { label: 'Modules', route: '/modules', available: true },
+  { label: 'Compendium', route: '/compendium', available: true },
 ]
 
 const BOTTOM_NAV = [
-  { label: 'Settings', route: '/settings', available: false },
-]
-
-// ─── Placeholder compendium entries ──────────────────────────────────────────
-
-const RECENT_ENTRIES = [
-  { label: 'Lasgun', type: 'Weapon' },
-  { label: 'Flak Armour', type: 'Armour' },
-  { label: 'Smite', type: 'Psychic Power' },
-  { label: 'Frag Grenade', type: 'Wargear' },
+  { label: 'Settings', route: '/settings', available: true },
 ]
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -40,8 +23,8 @@ const RECENT_ENTRIES = [
 export default function Landing() {
   const navigate = useNavigate()
   const { characters, setActiveCharacter, loadCharacters } = useCharacterStore()
-  const { profile, signOut } = useAuth()
-  const [showAccount, setShowAccount] = useState(false)
+  const { profile } = useAuth()
+  const recentItems = useMemo(() => getAllItems().slice(0, 4), [])
 
   useEffect(() => { loadCharacters() }, [loadCharacters])
 
@@ -54,9 +37,9 @@ export default function Landing() {
     <div className="min-h-screen bg-[#131519] flex">
       {/* ── Sidebar ──────────────────────────────────────────────────────── */}
       <aside className="w-56 shrink-0 bg-[#0f1115] border-r border-slate-700/30 flex flex-col">
-        {/* Account button (top) */}
+        {/* Account button (top) → navigate to Settings */}
         <button
-          onClick={() => setShowAccount(true)}
+          onClick={() => navigate('/settings')}
           className="px-4 py-3 border-b border-slate-700/25 flex items-center gap-2 hover:bg-slate-700/15 transition-colors text-left"
         >
           <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700/40 flex items-center justify-center shrink-0">
@@ -231,61 +214,33 @@ export default function Landing() {
           <div className="max-w-3xl mx-auto">
             <div className="flex items-center gap-3 mb-3">
               <h3 className="text-xs tracking-[0.2em] text-slate-500 uppercase font-semibold">
-                Recent Compendium
+                Compendium
               </h3>
               <div className="h-px flex-1 bg-slate-800/60" />
-              <span className="text-[9px] text-slate-600 border border-slate-700/40 rounded px-1.5 py-0.5 tracking-wider">
-                soon
-              </span>
+              <button
+                onClick={() => navigate('/compendium')}
+                className="text-[9px] text-amber-500/60 hover:text-amber-400 border border-amber-500/20 hover:border-amber-500/40 rounded px-1.5 py-0.5 tracking-wider transition-colors"
+              >
+                VIEW ALL →
+              </button>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {RECENT_ENTRIES.map(entry => (
-                <div
-                  key={entry.label}
-                  className="border border-slate-700/20 rounded-md bg-slate-800/15 px-3 py-2.5 opacity-40 cursor-not-allowed"
+              {recentItems.map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => navigate('/compendium')}
+                  className="border border-slate-700/20 rounded-md bg-slate-800/15 px-3 py-2.5 text-left hover:bg-slate-700/20 hover:border-slate-600/30 transition-colors"
                 >
-                  <p className="text-xs text-slate-300/60 font-medium truncate">{entry.label}</p>
-                  <p className="text-[10px] text-slate-600">{entry.type}</p>
-                </div>
+                  <p className="text-xs text-slate-300 font-medium truncate">{item.name}</p>
+                  <p className="text-[10px] text-slate-600 capitalize">{item.type}</p>
+                </button>
               ))}
             </div>
           </div>
         </section>
       </main>
 
-      {/* ── Account Settings Dialog ──────────────────────────────────────── */}
-      <AlertDialog open={showAccount} onOpenChange={(open) => { if (!open) setShowAccount(false) }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Account Settings</AlertDialogTitle>
-            <AlertDialogDescription>
-              Manage your account preferences.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <div className="flex flex-col gap-3 py-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Display Name</span>
-              <span className="text-sm text-slate-200">{profile?.displayName || 'User'}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">Role</span>
-              <span className="text-sm text-slate-200 capitalize">{profile?.role || 'player'}</span>
-            </div>
-          </div>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Close</AlertDialogCancel>
-            <button
-              onClick={() => { setShowAccount(false); signOut().then(() => navigate('/auth')) }}
-              className="px-4 py-2 rounded-md bg-red-500/15 border border-red-500/30 text-red-400 text-sm hover:bg-red-500/25 transition-colors"
-            >
-              Sign Out
-            </button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

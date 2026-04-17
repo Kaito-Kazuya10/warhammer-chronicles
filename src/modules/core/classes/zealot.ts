@@ -48,6 +48,13 @@ export const zealot: CharacterClass = {
     "(a) Priest's pack or (b) Explorer's pack",
     'Holy symbol, prayer beads, devotional texts',
   ],
+  startingEquipmentResolved: {
+    0: { a: ['flak-armor-full', 'combat-shield'], b: ['carapace-armor'] },
+    1: { a: ['chainsword'],                       b: ['power-maul', 'laspistol'] },
+    2: { a: [],                                   b: [] },
+    3: { a: [],                                   b: [] },
+    4: { grant: [] },
+  },
   startingWealthFormula: '5d4 × 10 Thrones',
 
   featureTabName: 'Acts of Faith',

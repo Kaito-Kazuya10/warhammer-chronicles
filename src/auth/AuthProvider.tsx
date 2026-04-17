@@ -17,6 +17,7 @@ export interface AuthContextValue {
   signUp: (email: string, password: string, displayName: string, role: 'player' | 'dm') => Promise<{ error: string | null }>
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
+  updateProfile: (patch: { displayName?: string }) => Promise<{ error: string | null }>
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
@@ -102,8 +103,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile(null)
   }, [])
 
+  const updateProfile = useCallback(async (patch: { displayName?: string }): Promise<{ error: string | null }> => {
+    const { data: { user: u } } = await supabase.auth.getUser()
+    if (!u) return { error: 'Not authenticated' }
+    const update: Record<string, string> = {}
+    if (patch.displayName !== undefined) update.display_name = patch.displayName
+    const { error } = await supabase.from('profiles').update(update).eq('id', u.id)
+    if (error) return { error: error.message }
+    setProfile(prev => prev ? { ...prev, ...patch } : prev)
+    return { error: null }
+  }, [])
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, profile, loading, signUp, signIn, signOut, updateProfile }}>
       {children}
     </AuthContext.Provider>
   )

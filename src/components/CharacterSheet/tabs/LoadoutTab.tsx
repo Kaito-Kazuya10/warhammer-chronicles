@@ -275,6 +275,15 @@ export default function LoadoutTab({ characterId }: Props) {
     { value: 'extreme', label: 'EXTREME' },
   ]
 
+  const powerCells    = character.powerCells ?? { current: 0, max: 0 }
+  const hasPowerCells = powerCells.max > 0
+
+  function setPowerCells(current: number) {
+    updateCharacter(characterId, {
+      powerCells: { ...powerCells, current: Math.max(0, Math.min(powerCells.max, current)) },
+    })
+  }
+
   return (
     <div className="space-y-4">
 
@@ -288,6 +297,51 @@ export default function LoadoutTab({ characterId }: Props) {
         </div>
         <SlotBar used={slotsUsed} max={slotsMax} />
       </div>
+
+      {/* ── Power Cells (if the class resource is configured) ── */}
+      {hasPowerCells && (
+        <div className="rounded-md border border-[var(--wh-gold)]/20 bg-[var(--wh-gold)]/5 p-3 space-y-1.5">
+          <div className="flex items-center justify-between">
+            <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+              Power Cells
+            </p>
+            <span className="text-[9px] text-muted-foreground italic">Recharge on long rest</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPowerCells(powerCells.current - 1)}
+              disabled={powerCells.current <= 0}
+              className="text-[10px] w-5 h-5 rounded border border-border text-muted-foreground hover:bg-muted/50 flex items-center justify-center flex-shrink-0 disabled:opacity-30"
+            >
+              −
+            </button>
+            <div className="flex-1 flex gap-1 flex-wrap">
+              {Array.from({ length: powerCells.max }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setPowerCells(i < powerCells.current ? i : i + 1)}
+                  className={`w-4 h-4 rounded-sm border transition-colors ${
+                    i < powerCells.current
+                      ? 'border-[var(--wh-gold)]/60 bg-[var(--wh-gold)]/40'
+                      : 'border-border/60 bg-transparent hover:bg-muted/40'
+                  }`}
+                  title={i < powerCells.current ? 'Expend cell' : 'Restore cell'}
+                />
+              ))}
+            </div>
+            <button
+              onClick={() => setPowerCells(powerCells.current + 1)}
+              disabled={powerCells.current >= powerCells.max}
+              className="text-[10px] w-5 h-5 rounded border border-border text-muted-foreground hover:bg-muted/50 flex items-center justify-center flex-shrink-0 disabled:opacity-30"
+            >
+              +
+            </button>
+            <span className="text-sm font-mono font-bold tabular-nums flex-shrink-0 min-w-[3rem] text-right">
+              {powerCells.current} / {powerCells.max}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* ── Installed augments ── */}
       {installedAugments.length > 0 && (

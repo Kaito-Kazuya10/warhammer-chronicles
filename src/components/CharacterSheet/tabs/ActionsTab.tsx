@@ -6,13 +6,39 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from '@/components/ui/collapsible'
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '@/components/ui/tooltip'
 import { useCharacterStore, getModifier } from '../../../store/characterStore'
+import { useDiceStore } from '../../../store/diceStore'
+import { rollDamage } from '../../../utils/dice'
 import { resolveUsesCount } from '../../../utils/resolveUsesCount'
 import { renderDescription } from '../../../utils/renderDescription'
 import { getItemById, getAllClasses } from '../../../modules/registry'
-import { tierDefinitions } from '../../../modules/core/items/weapons'
+import { tierDefinitions, weaponProperties } from '../../../modules/core/items/weapons'
 import type { ClassFeature, FeatureActionType, Item, ItemTier } from '../../../types/module'
 import type { InventoryItem } from '../../../types/character'
+
+// ─── Property tooltip lookup ─────────────────────────────────────────────────
+
+const PROP_MAP = new Map(weaponProperties.map(p => [p.name.toLowerCase(), p]))
+function findPropTooltip(propName: string) {
+  const key = propName.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim()
+  return PROP_MAP.get(key) ?? weaponProperties.find(p => key.startsWith(p.id))
+}
+
+function tierTooltipText(tier: ItemTier): string {
+  const def = tierDefinitions.find(t => t.tier === tier)
+  if (!def) return tier
+  const parts: string[] = []
+  if (def.bonusAttack) parts.push(`+${def.bonusAttack} to hit`)
+  if (def.bonusDamage) parts.push(`${def.bonusDamage} bonus damage`)
+  if (def.hasTraitSlot) parts.push('has trait slot')
+  return parts.length ? `${tier}: ${parts.join(', ')}` : tier
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -285,6 +311,7 @@ function WeaponRow({
   characterId: string
 }) {
   const [abOpen, setAbOpen] = useState(false)
+  const addRoll            = useDiceStore(s => s.addRoll)
   const effectiveTier    = getEffectiveTier(invItem, item)
   const tierDef          = item.isNamed ? null : getTierDef(effectiveTier)
   const abilityMod       = getAttackMod(item, strMod, dexMod)
@@ -294,9 +321,20 @@ function WeaponRow({
     : (tierDef?.bonusDamage ?? '')
   const damage           = buildDamageStr(item, abilityMod, tierBonusDmg)
   const range            = buildRangeStr(item)
-  const notes            = (item.properties ?? []).join(', ')
   const activeAbilities  = item.itemAbilities?.filter(a => a.actionType !== 'passive') ?? []
   const hasAmmo          = !!item.ammoType && item.ammoType !== 'unlimited'
+
+  function handleRollDamage() {
+    if (!item.damage) return
+    const mod = abilityMod + (item.bonusDamage ?? 0)
+    const isFinesse = item.attackAbility === 'finesse' || item.properties?.includes('finesse')
+    const abilityLabel = isFinesse
+      ? `+${mod} (${abilityMod >= 0 ? '+' : ''}${abilityMod} finesse)`
+      : item.rangeType === 'ranged'
+        ? `+${mod} DEX`
+        : `+${mod} STR`
+    addRoll(rollDamage(item.damage, mod, tierBonusDmg, item.name, abilityLabel))
+  }
 
   return (
     <>
@@ -307,12 +345,23 @@ function WeaponRow({
               {item.rangeType === 'ranged' ? '🏹' : '⚔'} {item.name}
             </span>
             {effectiveTier !== 'standard' && (
-              <Badge
-                variant="outline"
-                className={`text-[9px] h-4 px-1 ${TIER_BADGE[effectiveTier] ?? ''}`}
-              >
-                {effectiveTier === 'master-crafted' ? 'MC' : effectiveTier}
-              </Badge>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <span>
+                      <Badge
+                        variant="outline"
+                        className={`text-[9px] h-4 px-1 cursor-help ${TIER_BADGE[effectiveTier] ?? ''}`}
+                      >
+                        {effectiveTier === 'master-crafted' ? 'MC' : effectiveTier}
+                      </Badge>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs max-w-[200px] capitalize">{tierTooltipText(effectiveTier)}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
             {invItem.rolledTrait && (
               <Badge variant="outline" className="text-[9px] h-4 px-1 bg-muted/40 text-muted-foreground border-border cursor-help" title={invItem.rolledTrait.effect}>
@@ -338,10 +387,39 @@ function WeaponRow({
           {fmtBonus(hitBonus)}
         </td>
         <td className="py-2 pr-3 text-right text-xs tabular-nums text-foreground/80 whitespace-nowrap">
-          {damage}
+          {item.damage ? (
+            <button
+              className="font-mono hover:text-primary hover:underline cursor-pointer transition-colors"
+              title={`Click to roll damage (${item.damage})`}
+              onClick={handleRollDamage}
+            >
+              {damage}
+            </button>
+          ) : damage}
         </td>
         <td className="py-2 text-right text-[10px] text-muted-foreground max-w-[100px]">
-          {notes || '—'}
+          {(item.properties ?? []).length === 0 ? '—' : (
+            <TooltipProvider>
+              <div className="flex flex-wrap gap-x-1 gap-y-0.5 justify-end">
+                {(item.properties ?? []).map(p => {
+                  const tip = findPropTooltip(p)
+                  return tip ? (
+                    <Tooltip key={p}>
+                      <TooltipTrigger>
+                        <span className="underline decoration-dotted cursor-help">{p}</span>
+                      </TooltipTrigger>
+                      <TooltipContent side="left">
+                        <p className="font-semibold text-xs mb-0.5">{tip.name}</p>
+                        <p className="text-xs opacity-90 max-w-[220px]">{tip.shortDescription}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <span key={p}>{p}</span>
+                  )
+                })}
+              </div>
+            </TooltipProvider>
+          )}
           {activeAbilities.length > 0 && (
             <button
               className="ml-1.5 text-primary hover:underline text-[10px]"
@@ -397,6 +475,7 @@ function AttackSection({
   show: boolean
 }) {
   const character = useCharacterStore(s => s.characters.find(c => c.id === characterId))
+  const addRoll   = useDiceStore(s => s.addRoll)
   if (!character || !show) return null
 
   const strMod    = getModifier(character.abilityScores.strength)
@@ -457,9 +536,20 @@ function AttackSection({
                       {item.rangeType === 'ranged' ? '🏹' : '⚔'} {item.name}
                     </span>
                     {effectiveTier !== 'standard' && (
-                      <Badge variant="outline" className={`text-[9px] h-4 px-1 ${TIER_BADGE[effectiveTier] ?? ''}`}>
-                        {effectiveTier === 'master-crafted' ? 'MC' : effectiveTier}
-                      </Badge>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <span>
+                              <Badge variant="outline" className={`text-[9px] h-4 px-1 cursor-help ${TIER_BADGE[effectiveTier] ?? ''}`}>
+                                {effectiveTier === 'master-crafted' ? 'MC' : effectiveTier}
+                              </Badge>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs max-w-[200px] capitalize">{tierTooltipText(effectiveTier)}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-xs">
@@ -469,7 +559,22 @@ function AttackSection({
                     </div>
                     <div>
                       <p className="text-[9px] uppercase tracking-wide text-muted-foreground">DAMAGE</p>
-                      <p className="font-mono">{damage}</p>
+                      {item.damage ? (
+                        <button
+                          className="font-mono hover:text-primary hover:underline cursor-pointer transition-colors"
+                          title={`Click to roll damage (${item.damage})`}
+                          onClick={() => {
+                            const mod = abilityMod + (item.bonusDamage ?? 0)
+                            const isFinesse = item.attackAbility === 'finesse' || item.properties?.includes('finesse')
+                            const modLabel = isFinesse ? `+${mod} finesse` : item.rangeType === 'ranged' ? `+${mod} DEX` : `+${mod} STR`
+                            addRoll(rollDamage(item.damage!, mod, mobileBonusDmg, item.name, modLabel))
+                          }}
+                        >
+                          {damage}
+                        </button>
+                      ) : (
+                        <p className="font-mono">{damage}</p>
+                      )}
                     </div>
                     <div>
                       <p className="text-[9px] uppercase tracking-wide text-muted-foreground">RANGE</p>
@@ -477,7 +582,26 @@ function AttackSection({
                     </div>
                   </div>
                   {item.properties && item.properties.length > 0 && (
-                    <p className="text-[10px] text-muted-foreground">{item.properties.join(', ')}</p>
+                    <TooltipProvider>
+                      <div className="flex flex-wrap gap-x-1 gap-y-0.5 text-[10px] text-muted-foreground">
+                        {item.properties.map(p => {
+                          const tip = findPropTooltip(p)
+                          return tip ? (
+                            <Tooltip key={p}>
+                              <TooltipTrigger>
+                                <span className="underline decoration-dotted cursor-help">{p}</span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top">
+                                <p className="font-semibold text-xs mb-0.5">{tip.name}</p>
+                                <p className="text-xs opacity-90 max-w-[220px]">{tip.shortDescription}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            <span key={p}>{p}</span>
+                          )
+                        })}
+                      </div>
+                    </TooltipProvider>
                   )}
                   {item.ammoType && item.ammoType !== 'unlimited' && (
                     <AmmoStrip invItem={invItem} item={item} characterId={characterId} />
