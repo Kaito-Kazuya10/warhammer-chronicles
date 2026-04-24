@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { useCharacterStore, getModifier } from '../../store/characterStore'
-import { getClassById } from '../../modules/registry'
+import { getClassById, getGeneModificationById } from '../../modules/registry'
 import { resolveUsesCount } from '../../utils/resolveUsesCount'
 import type { Character, SpellSlots } from '../../types/character'
 
@@ -138,11 +138,15 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
           patch.trickUsesRemaining = 2 * character.proficiencyBonus
         }
         if (character.classResourceCurrent !== undefined && classResource.type === 'pool') {
-          // Generic pool resource — reset to proficiency bonus as safe default
           patch.classResourceCurrent = character.proficiencyBonus
         }
         if (character.classResourceDiceRemaining !== undefined) {
           patch.classResourceDiceRemaining = character.proficiencyBonus
+        }
+        // Warp Bar: reduce by 1d6 on short rest (does not reset to 0)
+        if (character.warpBar !== undefined) {
+          const roll = Math.floor(Math.random() * 6) + 1
+          patch.warpBar = Math.max(0, character.warpBar - roll)
         }
       }
 
@@ -150,6 +154,13 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
       const newSpent = { ...(character.featureUsesSpent ?? {}) }
       for (const f of shortRestFeatures) {
         delete newSpent[slugify(f.name)]
+      }
+      // Clear short-rest gene mod uses
+      for (const modId of character.installedModIds ?? []) {
+        const mod = getGeneModificationById(modId)
+        if (mod?.surgeUsesPerRest === 'short') {
+          delete newSpent[`mod-${slugify(mod.name)}`]
+        }
       }
       patch.featureUsesSpent = newSpent
       patch.lastShortRest    = Date.now()
@@ -176,7 +187,11 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
         patch.classResourceDiceRemaining = character.proficiencyBonus
       }
       if (character.geneSurgesRemaining !== undefined) {
-        patch.geneSurgesRemaining = 3
+        patch.geneSurgesRemaining = character.level <= 5 ? 3 : 4
+      }
+      // Warp Bar resets to 0 on long rest
+      if (character.warpBar !== undefined) {
+        patch.warpBar = 0
       }
 
       // Reset spell/prayer slots

@@ -161,10 +161,7 @@ function FeatureRow({ feature, source, enhanced, characterId }: FeatureRowProps)
 
       <CollapsibleContent>
         <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground border-l border-border">
-          {renderDescription(
-            feature.description,
-            feature.name === 'Fighting Style' ? character?.fightingStyle : undefined,
-          )}
+          {renderDescription(feature.description)}
         </div>
       </CollapsibleContent>
     </Collapsible>

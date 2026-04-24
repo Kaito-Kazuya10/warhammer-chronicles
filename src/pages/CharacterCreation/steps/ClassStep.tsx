@@ -40,20 +40,18 @@ export function hasFightingStyleFeature(cls: CharacterClass): boolean {
   return cls.features.some(f => f.level === 1 && f.name.toLowerCase().includes('fighting style'))
 }
 
-function parseFightingStyles(cls: CharacterClass): { name: string; desc: string }[] {
-  const feature = cls.features.find(
-    f => f.level === 1 && f.name.toLowerCase().includes('fighting style'),
-  )
-  if (!feature) return []
-  return feature.description
-    .split('\n\n')
-    .filter(chunk => chunk.trimStart().startsWith('**'))
-    .map(chunk => {
-      const match = chunk.match(/^\*\*([^*]+)\.\*\*\s*([\s\S]+)$/)
-      if (!match) return null
-      return { name: match[1].trim(), desc: match[2].trim() }
-    })
-    .filter((x): x is { name: string; desc: string } => x !== null)
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+}
+
+function parseFightingStyles(cls: CharacterClass): { name: string; desc: string; slug: string }[] {
+  return cls.features
+    .filter(f => f.level === 1 && f.optionGroup === 'fighting-style')
+    .map(f => ({
+      name: f.name.replace(/^Fighting Style:\s*/, ''),
+      desc: f.description,
+      slug: slugify(f.name),
+    }))
 }
 
 // ─── Class card ────────────────────────────────────────────────────────────────
@@ -272,16 +270,16 @@ function FightingStylePicker({ cls }: { cls: CharacterClass }) {
       </p>
       <div className="fighting-style-list" role="radiogroup">
         {styles.map(style => {
-          const isSelected = draft.fightingStyle === style.name
+          const isSelected = draft.fightingStyle === style.slug
           return (
             <div
-              key={style.name}
+              key={style.slug}
               className={`fighting-style-option${isSelected ? ' fighting-style-option--selected' : ''}`}
-              onClick={() => updateDraft({ fightingStyle: style.name })}
+              onClick={() => updateDraft({ fightingStyle: style.slug })}
               role="radio"
               aria-checked={isSelected}
               tabIndex={0}
-              onKeyDown={e => e.key === 'Enter' && updateDraft({ fightingStyle: style.name })}
+              onKeyDown={e => e.key === 'Enter' && updateDraft({ fightingStyle: style.slug })}
             >
               <div className="fighting-style-option__radio">
                 <div className={`radio-dot${isSelected ? ' radio-dot--active' : ''}`} />

@@ -9,7 +9,6 @@ export const psyker: CharacterClass = {
   primaryAbility: ['intelligence', 'wisdom'],
   savingThrows: ['intelligence', 'wisdom'],
   skillChoices: [
-    'arcana',
     'deception',
     'history',
     'insight',
@@ -47,9 +46,10 @@ export const psyker: CharacterClass = {
     name: 'Warp Bar',
     type: 'bar',
     maxFormula: '20',
+    resetOn: 'short',
     playerVisible: true,
     description:
-      'Every psychic power fills the Warp Bar. Cantrips add +1; leveled powers add level + 1. At 20 (25 at level 10), you must roll on the Perils of the Warp table. The bar resets to 0 after Perils triggers.',
+      'Every psychic power fills the Warp Bar. Cantrips add +1; leveled powers add level + 1. At 20 (25 at level 10), you must roll on the Perils of the Warp table. The bar resets to 0 after Perils triggers. Reduces by 1d6 on short rest.',
   },
 
   features: [
