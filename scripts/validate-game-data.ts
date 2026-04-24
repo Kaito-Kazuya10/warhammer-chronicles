@@ -251,6 +251,57 @@ for (const item of items) {
   }
 }
 
+// ─── 10. Feature formula and uses consistency ───────────────────────────────
+
+console.log('\n── Feature Formulas & Uses ─────────────────────────────────')
+
+const KNOWN_TOKENS = new Set([
+  'proficiency', 'strength', 'dexterity', 'constitution',
+  'intelligence', 'wisdom', 'charisma', 'gene-surge',
+])
+
+function isValidToken(token: string): boolean {
+  if (KNOWN_TOKENS.has(token)) return true
+  return !isNaN(parseInt(token, 10))
+}
+
+for (const cls of classes) {
+  const allFeatures = [
+    ...(cls.features ?? []),
+    ...(cls.subclasses ?? []).flatMap(s => s.features ?? []),
+  ]
+  for (const f of allFeatures) {
+    if (f.usesCount) {
+      const tokens = f.usesCount.toLowerCase().trim().split('+').map(t => t.trim())
+      for (const token of tokens) {
+        if (!isValidToken(token)) {
+          warn(`Class "${cls.id}" feature "${f.name}": usesCount contains unrecognized token "${token}" in "${f.usesCount}"`)
+        }
+      }
+    }
+    if (f.usesPerRest && f.usesPerRest !== 'at-will' && f.usesPerRest !== 'per-encounter' && !f.usesCount) {
+      warn(`Class "${cls.id}" feature "${f.name}": has usesPerRest="${f.usesPerRest}" but no usesCount`)
+    }
+    if (f.usesCount && !f.usesPerRest) {
+      warn(`Class "${cls.id}" feature "${f.name}": has usesCount="${f.usesCount}" but no usesPerRest`)
+    }
+  }
+
+  if (cls.classResource && !cls.classResource.resetOn) {
+    const name = cls.classResource.name
+    if (cls.classResource.type !== 'bar') {
+      warn(`Class "${cls.id}": classResource "${name}" has no resetOn (pool/dice resources usually reset on rest)`)
+    }
+  }
+
+  const deprecated = ['arcana']
+  for (const skill of cls.skillChoices ?? []) {
+    if (deprecated.includes(skill)) {
+      warn(`Class "${cls.id}": skillChoices contains deprecated skill "${skill}"`)
+    }
+  }
+}
+
 // ─── Final report ─────────────────────────────────────────────────────────────
 
 console.log('\n' + '═'.repeat(60))

@@ -740,10 +740,7 @@ function FeatureRow({
 
       <CollapsibleContent>
         <div className="px-7 pb-3 pt-0.5 text-xs text-foreground/80">
-          {renderDescription(
-            feature.description,
-            feature.name === 'Fighting Style' ? character?.fightingStyle : undefined,
-          )}
+          {renderDescription(feature.description)}
         </div>
       </CollapsibleContent>
     </Collapsible>

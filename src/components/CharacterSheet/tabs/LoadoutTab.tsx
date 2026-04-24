@@ -305,7 +305,7 @@ export default function LoadoutTab({ characterId }: Props) {
             <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
               Power Cells
             </p>
-            <span className="text-[9px] text-muted-foreground italic">Recharge on long rest</span>
+            <span className="text-[9px] text-muted-foreground italic">Recharge on short rest</span>
           </div>
           <div className="flex items-center gap-2">
             <button

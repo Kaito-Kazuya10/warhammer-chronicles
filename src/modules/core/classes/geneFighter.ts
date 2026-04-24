@@ -111,7 +111,7 @@ export const geneFighter: CharacterClass = {
       featureType: 'base',
       actionType: 'bonus-action',
       usesPerRest: 'long',
-      usesCount: '3',
+      usesCount: 'gene-surge',
       tags: ['damage', 'defensive'],
     },
     {

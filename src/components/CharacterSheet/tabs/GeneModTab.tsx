@@ -7,7 +7,9 @@ import { useDiceStore } from '../../../store/diceStore'
 import { getAllGeneModifications, getGeneModificationById, getAllClasses } from '../../../modules/registry'
 import { renderDescription } from '../../../utils/renderDescription'
 import { rollCheck } from '../../../utils/dice'
+import { resolveUsesCount } from '../../../utils/resolveUsesCount'
 import type { GeneModification } from '../../../types/module'
+import type { Character } from '../../../types/character'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -22,6 +24,10 @@ const TIER_COLOR: Record<GeneModification['tier'], string> = {
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+}
 
 function calcStabilityScore(conScore: number, proficiencyBonus: number): number {
   const conMod = Math.floor((conScore - 10) / 2)
@@ -73,18 +79,67 @@ function StabPips({ cost, installed }: { cost: number; installed?: boolean }) {
 
 // ─── GeneModRow ───────────────────────────────────────────────────────────────
 
+function ModUsePips({
+  mod,
+  character,
+  characterId,
+  updateCharacter,
+}: {
+  mod: GeneModification
+  character: Character
+  characterId: string
+  updateCharacter: (id: string, patch: Partial<Character>) => void
+}) {
+  if (!mod.surgeUsesCount) return null
+  const max  = resolveUsesCount(mod.surgeUsesCount, character)
+  const slug = `mod-${slugify(mod.name)}`
+  const spent = character.featureUsesSpent?.[slug] ?? 0
+  const remaining = Math.max(0, max - spent)
+
+  function toggle() {
+    const newSpent = { ...(character.featureUsesSpent ?? {}) }
+    if (remaining > 0) {
+      newSpent[slug] = spent + 1
+    } else {
+      newSpent[slug] = 0
+    }
+    updateCharacter(characterId, { featureUsesSpent: newSpent })
+  }
+
+  return (
+    <button onClick={toggle} className="flex gap-0.5 items-center flex-shrink-0" title={`${remaining}/${max} uses (${mod.surgeUsesPerRest} rest) — click to toggle`}>
+      {Array.from({ length: max }).map((_, i) => (
+        <div
+          key={i}
+          className={`w-2 h-2 rounded-full border ${
+            i < remaining
+              ? 'bg-green-500/70 border-green-500/70'
+              : 'bg-transparent border-border/50'
+          }`}
+        />
+      ))}
+    </button>
+  )
+}
+
 function GeneModRow({
   mod,
   installed,
   canInstall,
   onInstall,
   onUninstall,
+  character,
+  characterId,
+  updateCharacter,
 }: {
   mod: GeneModification
   installed: boolean
   canInstall: boolean
   onInstall: () => void
   onUninstall: () => void
+  character?: Character
+  characterId?: string
+  updateCharacter?: (id: string, patch: Partial<Character>) => void
 }) {
   const [open, setOpen] = useState(false)
 
@@ -105,6 +160,9 @@ function GeneModRow({
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span className="text-sm font-medium text-foreground">{mod.name}</span>
                 <StabPips cost={mod.stabilityCost} installed={installed} />
+                {installed && character && characterId && updateCharacter && (
+                  <ModUsePips mod={mod} character={character} characterId={characterId} updateCharacter={updateCharacter} />
+                )}
                 <Badge variant="outline" className={`text-[9px] py-0 px-1 ${TIER_COLOR[mod.tier]}`}>
                   {mod.tier}
                 </Badge>
@@ -189,9 +247,18 @@ export default function GeneModTab({ characterId }: Props) {
 
   // Gene-Surge state
   const isInSurge = character.isInGeneSurge ?? false
+  const surgesMax = character.level <= 5 ? 3 : 4
+  const surgesRemaining = character.geneSurgesRemaining ?? null
 
   function toggleSurge() {
-    updateCharacter(characterId, { isInGeneSurge: !isInSurge })
+    if (!isInSurge && surgesRemaining !== null) {
+      updateCharacter(characterId, {
+        isInGeneSurge: true,
+        geneSurgesRemaining: Math.max(0, surgesRemaining - 1),
+      })
+    } else {
+      updateCharacter(characterId, { isInGeneSurge: !isInSurge })
+    }
   }
 
   // Stability Check roll:
@@ -257,18 +324,28 @@ export default function GeneModTab({ characterId }: Props) {
               </span>
             </p>
           </div>
-          {/* Gene-Surge toggle */}
-          <button
-            onClick={toggleSurge}
-            className={`shrink-0 text-[9px] px-2 py-1 rounded border transition-colors font-semibold tracking-widest ${
-              isInSurge
-                ? 'border-green-500/60 bg-green-500/20 text-green-400 hover:bg-green-500/30'
-                : 'border-border text-muted-foreground/60 hover:border-green-500/40 hover:text-green-400/70'
-            }`}
-            title={isInSurge ? 'End Gene-Surge' : 'Activate Gene-Surge'}
-          >
-            {isInSurge ? '🧬 SURGING' : 'GENE-SURGE'}
-          </button>
+          {/* Gene-Surge toggle + remaining counter */}
+          <div className="flex items-center gap-2 shrink-0">
+            {surgesRemaining !== null && (
+              <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
+                {surgesRemaining}/{surgesMax}
+              </span>
+            )}
+            <button
+              onClick={toggleSurge}
+              disabled={!isInSurge && surgesRemaining !== null && surgesRemaining <= 0}
+              className={`text-[9px] px-2 py-1 rounded border transition-colors font-semibold tracking-widest ${
+                isInSurge
+                  ? 'border-green-500/60 bg-green-500/20 text-green-400 hover:bg-green-500/30'
+                  : surgesRemaining !== null && surgesRemaining <= 0
+                    ? 'border-border text-muted-foreground/30 cursor-not-allowed'
+                    : 'border-border text-muted-foreground/60 hover:border-green-500/40 hover:text-green-400/70'
+              }`}
+              title={isInSurge ? 'End Gene-Surge' : surgesRemaining !== null && surgesRemaining <= 0 ? 'No surges remaining' : 'Activate Gene-Surge'}
+            >
+              {isInSurge ? '🧬 SURGING' : 'GENE-SURGE'}
+            </button>
+          </div>
         </div>
 
         <StabilityBar used={stabilityUsed} max={stabilityMax} />
@@ -310,6 +387,9 @@ export default function GeneModTab({ characterId }: Props) {
                 canInstall={false}
                 onInstall={() => {}}
                 onUninstall={() => uninstall(mod)}
+                character={character}
+                characterId={characterId}
+                updateCharacter={updateCharacter}
               />
             ))}
           </div>

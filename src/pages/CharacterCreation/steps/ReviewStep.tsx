@@ -223,7 +223,9 @@ export default function ReviewStep() {
         proficiencies,
         languages:    allLanguages,
         portrait:     draft.portrait ?? null,
-        fightingStyle: draft.fightingStyle ?? undefined,
+        ...(draft.fightingStyle ? {
+          featureChoices: { 'fighting-style': draft.fightingStyle },
+        } : {}),
         updatedAt:    Date.now(),
       })
 
@@ -264,7 +266,9 @@ export default function ReviewStep() {
         proficiencies,
         languages:    allLanguages,
         portrait:     draft.portrait ?? null,
-        fightingStyle: draft.fightingStyle ?? undefined,
+        ...(draft.fightingStyle ? {
+          featureChoices: { 'fighting-style': draft.fightingStyle },
+        } : {}),
       })
 
       setActiveCharacter(id)
@@ -371,7 +375,7 @@ export default function ReviewStep() {
               {draft.fightingStyle && (
                 <div className="review-feature-item">
                   <span className="review-feature-item__name">
-                    Fighting Style: {draft.fightingStyle}
+                    {cls?.features.find(f => f.optionGroup === 'fighting-style' && draft.fightingStyle === f.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''))?.name ?? `Fighting Style: ${draft.fightingStyle}`}
                   </span>
                 </div>
               )}

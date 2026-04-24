@@ -95,7 +95,7 @@ function hydrateDraftFromCharacter(char: Character): CreationDraft {
     abilityScoreChoices: {},
     classId: char.class || null,
     subclassId: char.subclass || null,
-    fightingStyle: char.fightingStyle ?? null,
+    fightingStyle: char.featureChoices?.['fighting-style'] ?? char.fightingStyle ?? null,
     backgroundId: char.background || null,
     abilityScoreMethod: 'manual',
     baseAbilityScores: baseScores,

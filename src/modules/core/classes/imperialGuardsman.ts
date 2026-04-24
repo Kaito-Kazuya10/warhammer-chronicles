@@ -62,16 +62,56 @@ export const imperialGuardsman: CharacterClass = {
     // ─── Level 1 ────────────────────────────────────────────────────────────
     {
       level: 1,
-      name: 'Fighting Style',
+      name: 'Fighting Style: Archery',
       description:
-        "[CHOOSE ONE] You adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again.\n\n" +
-        '**Archery.** You gain a +2 bonus to attack rolls you make with ranged weapons.\n\n' +
-        '**Defense.** While you are wearing armor, you gain a +1 bonus to AC.\n\n' +
-        '**Dueling.** When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon.\n\n' +
-        "**Two-Weapon Fighting.** When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack.\n\n" +
-        "**Marksman.** When you make a ranged weapon attack, you ignore half cover and three-quarters cover. Additionally, attacking at long range doesn't impose disadvantage on your ranged weapon attack rolls.\n\n" +
-        "**Close Quarters Battle.** When you make a ranged weapon attack against a creature within 10 feet of you, you don't have disadvantage on the attack roll. Additionally, if you hit a creature within 10 feet of you with a ranged weapon attack on your turn, that creature can't take reactions until the end of this turn.",
-      featureType: 'base',
+        "You gain a +2 bonus to attack rolls you make with ranged weapons.",
+      featureType: 'option',
+      optionGroup: 'fighting-style',
+      actionType: 'passive',
+    },
+    {
+      level: 1,
+      name: 'Fighting Style: Defense',
+      description:
+        "While you are wearing armor, you gain a +1 bonus to AC.",
+      featureType: 'option',
+      optionGroup: 'fighting-style',
+      actionType: 'passive',
+    },
+    {
+      level: 1,
+      name: 'Fighting Style: Dueling',
+      description:
+        "When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon.",
+      featureType: 'option',
+      optionGroup: 'fighting-style',
+      actionType: 'passive',
+    },
+    {
+      level: 1,
+      name: 'Fighting Style: Two-Weapon Fighting',
+      description:
+        "When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack.",
+      featureType: 'option',
+      optionGroup: 'fighting-style',
+      actionType: 'passive',
+    },
+    {
+      level: 1,
+      name: 'Fighting Style: Marksman',
+      description:
+        "When you make a ranged weapon attack, you ignore half cover and three-quarters cover. Additionally, attacking at long range doesn't impose disadvantage on your ranged weapon attack rolls.",
+      featureType: 'option',
+      optionGroup: 'fighting-style',
+      actionType: 'passive',
+    },
+    {
+      level: 1,
+      name: 'Fighting Style: Close Quarters Battle',
+      description:
+        "When you make a ranged weapon attack against a creature within 10 feet of you, you don't have disadvantage on the attack roll. Additionally, if you hit a creature within 10 feet of you with a ranged weapon attack on your turn, that creature can't take reactions until the end of this turn.",
+      featureType: 'option',
+      optionGroup: 'fighting-style',
       actionType: 'passive',
     },
 
