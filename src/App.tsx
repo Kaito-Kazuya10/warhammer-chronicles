@@ -10,6 +10,7 @@ import Characters from './pages/Characters'
 import CharacterCreation from './pages/CharacterCreation/index'
 import CharacterSheetPage from './pages/CharacterSheetPage'
 import CampaignPage from './pages/CampaignPage'
+import CampaignDetailPage from './pages/Campaign/CampaignDetailPage'
 import JoinPage from './pages/JoinPage'
 import CompendiumPage from './pages/CompendiumPage'
 import ModulesPage from './pages/ModulesPage'
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/create" element={<ProtectedRoute><CharacterCreation /></ProtectedRoute>} />
           <Route path="/sheet" element={<ProtectedRoute><CharacterSheetPage /></ProtectedRoute>} />
           <Route path="/campaign" element={<ProtectedRoute><CampaignPage /></ProtectedRoute>} />
+          <Route path="/campaigns/:id" element={<ProtectedRoute><CampaignDetailPage /></ProtectedRoute>} />
           <Route path="/join/:code" element={<ProtectedRoute><JoinPage /></ProtectedRoute>} />
           <Route path="/compendium" element={<ProtectedRoute><CompendiumPage /></ProtectedRoute>} />
           <Route path="/modules" element={<ProtectedRoute><ModulesPage /></ProtectedRoute>} />

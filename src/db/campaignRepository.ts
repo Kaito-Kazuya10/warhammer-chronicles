@@ -66,6 +66,39 @@ export async function fetchMyCampaigns(): Promise<DbCampaignRow[]> {
   return (data ?? []) as DbCampaignRow[]
 }
 
+// ─── Fetch a single campaign by ID ──────────────────────────────────────────
+
+export async function fetchCampaignById(id: string): Promise<DbCampaignRow | null> {
+  const { data, error } = await supabase
+    .from('campaigns')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (error) {
+    if (error.code === 'PGRST116') return null
+    throw new Error(`Failed to load campaign: ${error.message}`)
+  }
+  return data as DbCampaignRow
+}
+
+// ─── Check if a user is a member of a campaign ─────────────────────────────
+
+export async function checkCampaignMembership(
+  campaignId: string,
+  userId: string,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('campaign_members')
+    .select('user_id')
+    .eq('campaign_id', campaignId)
+    .eq('user_id', userId)
+    .maybeSingle()
+
+  if (error) throw new Error(`Failed to check membership: ${error.message}`)
+  return data !== null
+}
+
 // ─── Fetch members of a campaign ─────────────────────────────────────────────
 
 export async function fetchCampaignMembers(campaignId: string): Promise<CampaignMember[]> {
