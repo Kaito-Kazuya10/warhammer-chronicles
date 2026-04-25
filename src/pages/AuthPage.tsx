@@ -83,7 +83,7 @@ export default function AuthPage() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img
-            src="/warhammer_chronicles_logo.jpg"
+            src="/warhammer_chronicles_logo.png"
             alt="Warhammer Chronicles"
             className="w-56 object-contain drop-shadow-[0_0_20px_rgba(196,164,74,0.25)]"
           />

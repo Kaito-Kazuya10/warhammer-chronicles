@@ -116,7 +116,7 @@ export default function Landing() {
         {/* ── Title area ───────────────────────────────────────────────── */}
         <header className="pt-8 pb-6 flex justify-center">
           <img
-            src="/warhammer_chronicles_logo.jpg"
+            src="/warhammer_chronicles_logo.png"
             alt="Warhammer Chronicles"
             className="landing-logo w-72 sm:w-80 md:w-96 object-contain drop-shadow-[0_0_30px_rgba(196,164,74,0.3)]"
           />
