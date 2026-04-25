@@ -284,6 +284,14 @@ export default function CampaignPage() {
                             </div>
                           </div>
                         )}
+
+                        {/* View campaign detail */}
+                        <button
+                          onClick={() => navigate(`/campaigns/${c.id}`)}
+                          className="mt-4 w-full py-2 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-300/80 hover:text-amber-200 border border-amber-500/20 hover:border-amber-500/35 text-xs tracking-widest transition-all"
+                        >
+                          VIEW CAMPAIGN
+                        </button>
                       </>
                     )}
                   </div>
