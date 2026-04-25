@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import type { CharacterClass, Subclass } from '../../../types/module'
-import { getAllClasses } from '../../../modules/registry'
+import { getAllClasses, getAllRaces } from '../../../modules/registry'
 import { useCreation } from '../CreationContext'
 import CardPicker from '../components/CardPicker'
 
@@ -300,9 +300,26 @@ function FightingStylePicker({ cls }: { cls: CharacterClass }) {
 
 export default function ClassStep() {
   const { draft, updateDraft } = useCreation()
-  const classes = getAllClasses()
+  const allClasses = getAllClasses()
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [query, setQuery] = useState('')
+
+  const selectedRace = draft.raceId ? getAllRaces().find(r => r.id === draft.raceId) ?? null : null
+  const blockedClassIds = useMemo(
+    () => selectedRace?.incompatibleClasses ?? [],
+    [selectedRace],
+  )
+  const classes = allClasses.filter(cls => !blockedClassIds.includes(cls.id))
+
+  const prevRaceRef = useRef(draft.raceId)
+  useEffect(() => {
+    if (prevRaceRef.current !== draft.raceId) {
+      prevRaceRef.current = draft.raceId
+      if (draft.classId && blockedClassIds.includes(draft.classId)) {
+        updateDraft({ classId: null, subclassId: null, fightingStyle: null })
+      }
+    }
+  }, [draft.raceId, draft.classId, blockedClassIds, updateDraft])
 
   const selectedClass = draft.classId
     ? classes.find(c => c.id === draft.classId) ?? null
