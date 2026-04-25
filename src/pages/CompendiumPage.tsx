@@ -28,7 +28,7 @@ const TABS: { value: Tab; label: string }[] = [
 ]
 
 const TIER_BADGE: Record<string, string> = {
-  'standard':       'bg-slate-500/15 text-slate-400 border-slate-500/30',
+  'standard':       'bg-stone-500/15 text-stone-400 border-stone-500/30',
   'master-crafted': 'bg-green-500/15 text-green-400 border-green-500/30',
   'artificer':      'bg-purple-500/15 text-purple-400 border-purple-500/30',
   'relic':          'bg-amber-500/15 text-amber-400 border-amber-500/30',
@@ -93,7 +93,7 @@ function FilterPills<T extends string>({
           className={`px-2 py-0.5 rounded text-[10px] tracking-wider border transition-colors ${
             value === o.value
               ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-              : 'bg-slate-800/40 text-slate-500 border-slate-700/30 hover:text-slate-300 hover:border-slate-600/40'
+              : 'bg-stone-800/40 text-stone-500 border-stone-700/30 hover:text-stone-300 hover:border-stone-600/40'
           }`}
         >
           {o.label}
@@ -130,7 +130,7 @@ function ItemsTab() {
         placeholder="Search by name or description…"
         value={search}
         onChange={e => setSearch(e.target.value)}
-        className="w-full px-3 py-2 rounded-md bg-slate-800/50 border border-slate-700/40 text-slate-100 text-sm placeholder:text-slate-600 focus:outline-none focus:border-amber-500/40 transition-colors"
+        className="w-full px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors"
       />
       {/* Filters */}
       <div className="space-y-1.5">
@@ -141,7 +141,7 @@ function ItemsTab() {
         )}
       </div>
       {/* Count */}
-      <p className="text-[10px] text-slate-600 tracking-wider">{items.length} entries</p>
+      <p className="text-[10px] text-stone-600 tracking-wider">{items.length} entries</p>
       {/* Item cards */}
       <div className="space-y-1">
         {items.map(item => <ItemCard key={item.id} item={item} />)}
@@ -163,27 +163,27 @@ function ItemCard({ item }: { item: Item }) {
         : ''
 
   return (
-    <div className="border border-slate-700/25 rounded-md overflow-hidden bg-slate-800/20">
+    <div className="border border-stone-700/25 rounded-md overflow-hidden bg-stone-800/20">
       <button
-        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-700/20 transition-colors text-left"
+        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-stone-700/20 transition-colors text-left"
         onClick={() => setOpen(o => !o)}
       >
-        <span className="text-[10px] text-slate-600 shrink-0 transition-transform duration-150"
+        <span className="text-[10px] text-stone-600 shrink-0 transition-transform duration-150"
           style={{ transform: open ? 'rotate(90deg)' : undefined }}>▶</span>
         <span className="flex-1 min-w-0">
-          <span className="font-medium text-sm text-slate-100">{item.name}</span>
-          {statLine && <span className="ml-2 text-xs text-slate-500">{statLine}</span>}
+          <span className="font-medium text-sm text-stone-100">{item.name}</span>
+          {statLine && <span className="ml-2 text-xs text-stone-500">{statLine}</span>}
         </span>
         <Badge className={`text-[9px] py-0 px-1.5 border shrink-0 ${TIER_BADGE[tier]}`}>
           {tier === 'master-crafted' ? 'MC' : tier.toUpperCase()}
         </Badge>
-        {item.cost && <span className="text-[10px] text-slate-600 shrink-0">{item.cost}</span>}
+        {item.cost && <span className="text-[10px] text-stone-600 shrink-0">{item.cost}</span>}
       </button>
 
       {open && (
-        <div className="px-3 pb-3 pt-1 border-t border-slate-700/20 space-y-2 bg-slate-800/10">
+        <div className="px-3 pb-3 pt-1 border-t border-stone-700/20 space-y-2 bg-stone-800/10">
           {item.description && (
-            <p className="text-xs text-slate-400 leading-relaxed">{item.description}</p>
+            <p className="text-xs text-stone-400 leading-relaxed">{item.description}</p>
           )}
           {item.properties && item.properties.length > 0 && (
             <TooltipProvider>
@@ -193,7 +193,7 @@ function ItemCard({ item }: { item: Item }) {
                   return tip ? (
                     <Tooltip key={p}>
                       <TooltipTrigger>
-                        <span><Badge variant="outline" className="text-[10px] cursor-help border-slate-600/40 text-slate-400">{p}</Badge></span>
+                        <span><Badge variant="outline" className="text-[10px] cursor-help border-stone-600/40 text-stone-400">{p}</Badge></span>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p className="font-semibold text-xs mb-0.5">{tip.name}</p>
@@ -201,14 +201,14 @@ function ItemCard({ item }: { item: Item }) {
                       </TooltipContent>
                     </Tooltip>
                   ) : (
-                    <Badge key={p} variant="outline" className="text-[10px] border-slate-600/40 text-slate-400">{p}</Badge>
+                    <Badge key={p} variant="outline" className="text-[10px] border-stone-600/40 text-stone-400">{p}</Badge>
                   )
                 })}
               </div>
             </TooltipProvider>
           )}
           {item.ammoType && item.ammoType !== 'unlimited' && item.ammoName && (
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-stone-500">
               Ammo: {item.ammoName} · {item.ammoType === 'pack' ? `${item.ammoCapacity} packs/session` : `${item.ammoCapacity} shots`}
               {item.rechargeable ? ' · Rechargeable' : ''}
             </p>
@@ -216,9 +216,9 @@ function ItemCard({ item }: { item: Item }) {
           {item.itemAbilities && item.itemAbilities.length > 0 && (
             <div className="space-y-1">
               {item.itemAbilities.map((ab, i) => (
-                <div key={i} className="rounded border border-slate-700/30 px-2 py-1.5 bg-slate-800/30">
-                  <p className="text-[11px] font-semibold text-slate-200 mb-0.5">{ab.name}</p>
-                  <p className="text-[10px] text-slate-400 leading-relaxed">{ab.description}</p>
+                <div key={i} className="rounded border border-stone-700/30 px-2 py-1.5 bg-stone-800/30">
+                  <p className="text-[11px] font-semibold text-stone-200 mb-0.5">{ab.name}</p>
+                  <p className="text-[10px] text-stone-400 leading-relaxed">{ab.description}</p>
                 </div>
               ))}
             </div>
@@ -245,9 +245,9 @@ function ClassesTab() {
         placeholder="Search classes…"
         value={search}
         onChange={e => setSearch(e.target.value)}
-        className="w-full px-3 py-2 rounded-md bg-slate-800/50 border border-slate-700/40 text-slate-100 text-sm placeholder:text-slate-600 focus:outline-none focus:border-amber-500/40 transition-colors"
+        className="w-full px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors"
       />
-      <p className="text-[10px] text-slate-600 tracking-wider">{classes.length} classes</p>
+      <p className="text-[10px] text-stone-600 tracking-wider">{classes.length} classes</p>
       <div className="space-y-1">
         {classes.map(cls => <ClassCard key={cls.id} cls={cls} />)}
       </div>
@@ -260,29 +260,29 @@ function ClassCard({ cls }: { cls: CharacterClass }) {
   const lvl1Features = cls.features.filter(f => f.level === 1 && f.featureType === 'base').slice(0, 3)
 
   return (
-    <div className="border border-slate-700/25 rounded-md overflow-hidden bg-slate-800/20">
+    <div className="border border-stone-700/25 rounded-md overflow-hidden bg-stone-800/20">
       <button
-        className="w-full flex items-center gap-2 px-3 py-2.5 hover:bg-slate-700/20 transition-colors text-left"
+        className="w-full flex items-center gap-2 px-3 py-2.5 hover:bg-stone-700/20 transition-colors text-left"
         onClick={() => setOpen(o => !o)}
       >
-        <span className="text-[10px] text-slate-600 shrink-0 transition-transform duration-150"
+        <span className="text-[10px] text-stone-600 shrink-0 transition-transform duration-150"
           style={{ transform: open ? 'rotate(90deg)' : undefined }}>▶</span>
         <span className="flex-1 min-w-0">
-          <span className="font-semibold text-sm text-slate-100">{cls.name}</span>
+          <span className="font-semibold text-sm text-stone-100">{cls.name}</span>
         </span>
-        <Badge className="text-[9px] py-0 px-1.5 border shrink-0 bg-slate-700/40 text-slate-400 border-slate-600/40">
+        <Badge className="text-[9px] py-0 px-1.5 border shrink-0 bg-stone-700/40 text-stone-400 border-stone-600/40">
           d{cls.hitDie}
         </Badge>
       </button>
 
       {open && (
-        <div className="px-3 pb-3 pt-1 border-t border-slate-700/20 space-y-3 bg-slate-800/10">
-          <p className="text-xs text-slate-400 leading-relaxed">{cls.description}</p>
+        <div className="px-3 pb-3 pt-1 border-t border-stone-700/20 space-y-3 bg-stone-800/10">
+          <p className="text-xs text-stone-400 leading-relaxed">{cls.description}</p>
 
           {/* Stats row */}
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
-              <p className="text-[9px] uppercase tracking-widest text-slate-600 mb-1">Primary Abilities</p>
+              <p className="text-[9px] uppercase tracking-widest text-stone-600 mb-1">Primary Abilities</p>
               <div className="flex gap-1 flex-wrap">
                 {cls.primaryAbility.map(a => (
                   <span key={a} className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300/80 text-[10px] border border-amber-500/20">
@@ -292,10 +292,10 @@ function ClassCard({ cls }: { cls: CharacterClass }) {
               </div>
             </div>
             <div>
-              <p className="text-[9px] uppercase tracking-widest text-slate-600 mb-1">Saving Throws</p>
+              <p className="text-[9px] uppercase tracking-widest text-stone-600 mb-1">Saving Throws</p>
               <div className="flex gap-1 flex-wrap">
                 {cls.savingThrows.map(a => (
-                  <span key={a} className="px-1.5 py-0.5 rounded bg-slate-700/40 text-slate-300 text-[10px] border border-slate-600/30">
+                  <span key={a} className="px-1.5 py-0.5 rounded bg-stone-700/40 text-stone-300 text-[10px] border border-stone-600/30">
                     {ABILITY_SHORT[a] ?? a.toUpperCase()}
                   </span>
                 ))}
@@ -305,12 +305,12 @@ function ClassCard({ cls }: { cls: CharacterClass }) {
 
           {/* Proficiencies */}
           {(cls.armorProficiencies?.length || cls.weaponProficiencies?.length) ? (
-            <div className="text-xs text-slate-500 space-y-0.5">
+            <div className="text-xs text-stone-500 space-y-0.5">
               {cls.armorProficiencies && cls.armorProficiencies.length > 0 && (
-                <p><span className="text-slate-600">Armor:</span> {cls.armorProficiencies.join(', ')}</p>
+                <p><span className="text-stone-600">Armor:</span> {cls.armorProficiencies.join(', ')}</p>
               )}
               {cls.weaponProficiencies && cls.weaponProficiencies.length > 0 && (
-                <p><span className="text-slate-600">Weapons:</span> {cls.weaponProficiencies.join(', ')}</p>
+                <p><span className="text-stone-600">Weapons:</span> {cls.weaponProficiencies.join(', ')}</p>
               )}
             </div>
           ) : null}
@@ -318,12 +318,12 @@ function ClassCard({ cls }: { cls: CharacterClass }) {
           {/* Subclasses */}
           {cls.subclasses && cls.subclasses.length > 0 && (
             <div>
-              <p className="text-[9px] uppercase tracking-widest text-slate-600 mb-1.5">
+              <p className="text-[9px] uppercase tracking-widest text-stone-600 mb-1.5">
                 {cls.subclassLabel ?? 'Specializations'} ({cls.subclasses.length})
               </p>
               <div className="flex flex-wrap gap-1">
                 {cls.subclasses.map(s => (
-                  <span key={s.id} className="text-[10px] px-2 py-0.5 rounded border border-slate-700/30 bg-slate-800/40 text-slate-300">
+                  <span key={s.id} className="text-[10px] px-2 py-0.5 rounded border border-stone-700/30 bg-stone-800/40 text-stone-300">
                     {s.name}
                   </span>
                 ))}
@@ -334,12 +334,12 @@ function ClassCard({ cls }: { cls: CharacterClass }) {
           {/* Level 1 features preview */}
           {lvl1Features.length > 0 && (
             <div>
-              <p className="text-[9px] uppercase tracking-widest text-slate-600 mb-1.5">Level 1 Features</p>
+              <p className="text-[9px] uppercase tracking-widest text-stone-600 mb-1.5">Level 1 Features</p>
               <div className="space-y-1.5">
                 {lvl1Features.map(f => (
-                  <div key={f.name} className="rounded border border-slate-700/30 px-2 py-1.5 bg-slate-800/30">
-                    <p className="text-[11px] font-semibold text-slate-200">{f.name}</p>
-                    <p className="text-[10px] text-slate-500 leading-relaxed line-clamp-2 mt-0.5">
+                  <div key={f.name} className="rounded border border-stone-700/30 px-2 py-1.5 bg-stone-800/30">
+                    <p className="text-[11px] font-semibold text-stone-200">{f.name}</p>
+                    <p className="text-[10px] text-stone-500 leading-relaxed line-clamp-2 mt-0.5">
                       {f.description.split('\n')[0]}
                     </p>
                   </div>
@@ -369,9 +369,9 @@ function SpeciesTab() {
         placeholder="Search species…"
         value={search}
         onChange={e => setSearch(e.target.value)}
-        className="w-full px-3 py-2 rounded-md bg-slate-800/50 border border-slate-700/40 text-slate-100 text-sm placeholder:text-slate-600 focus:outline-none focus:border-amber-500/40 transition-colors"
+        className="w-full px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors"
       />
-      <p className="text-[10px] text-slate-600 tracking-wider">{races.length} species</p>
+      <p className="text-[10px] text-stone-600 tracking-wider">{races.length} species</p>
       <div className="space-y-1">
         {races.map(r => <RaceCard key={r.id} race={r} />)}
       </div>
@@ -384,15 +384,15 @@ function RaceCard({ race }: { race: Race }) {
   const abilityBonuses = Object.entries(race.abilityScoreIncreases).filter(([, v]) => v !== 0)
 
   return (
-    <div className="border border-slate-700/25 rounded-md overflow-hidden bg-slate-800/20">
+    <div className="border border-stone-700/25 rounded-md overflow-hidden bg-stone-800/20">
       <button
-        className="w-full flex items-center gap-2 px-3 py-2.5 hover:bg-slate-700/20 transition-colors text-left"
+        className="w-full flex items-center gap-2 px-3 py-2.5 hover:bg-stone-700/20 transition-colors text-left"
         onClick={() => setOpen(o => !o)}
       >
-        <span className="text-[10px] text-slate-600 shrink-0 transition-transform duration-150"
+        <span className="text-[10px] text-stone-600 shrink-0 transition-transform duration-150"
           style={{ transform: open ? 'rotate(90deg)' : undefined }}>▶</span>
         <span className="flex-1 min-w-0">
-          <span className="font-semibold text-sm text-slate-100">{race.name}</span>
+          <span className="font-semibold text-sm text-stone-100">{race.name}</span>
           {race.tier === 'advanced' && (
             <span className="ml-2 text-[9px] text-red-400/70 border border-red-500/20 rounded px-1 py-0.5">GM APPROVAL</span>
           )}
@@ -407,21 +407,21 @@ function RaceCard({ race }: { race: Race }) {
       </button>
 
       {open && (
-        <div className="px-3 pb-3 pt-1 border-t border-slate-700/20 space-y-3 bg-slate-800/10">
-          <p className="text-xs text-slate-400 leading-relaxed">{race.description}</p>
+        <div className="px-3 pb-3 pt-1 border-t border-stone-700/20 space-y-3 bg-stone-800/10">
+          <p className="text-xs text-stone-400 leading-relaxed">{race.description}</p>
 
           {/* Stats */}
-          <div className="flex flex-wrap gap-3 text-xs text-slate-500">
-            <span><span className="text-slate-600">Speed:</span> {race.speed} ft</span>
-            <span><span className="text-slate-600">Size:</span> {race.size}</span>
+          <div className="flex flex-wrap gap-3 text-xs text-stone-500">
+            <span><span className="text-stone-600">Speed:</span> {race.speed} ft</span>
+            <span><span className="text-stone-600">Size:</span> {race.size}</span>
             {race.languages.length > 0 && (
-              <span><span className="text-slate-600">Languages:</span> {race.languages.join(', ')}</span>
+              <span><span className="text-stone-600">Languages:</span> {race.languages.join(', ')}</span>
             )}
           </div>
 
           {/* Ability score choices */}
           {race.abilityScoreChoices && (
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-stone-500">
               +{race.abilityScoreChoices.amount} to {race.abilityScoreChoices.choose} ability score{race.abilityScoreChoices.choose > 1 ? 's' : ''} of your choice
             </p>
           )}
@@ -429,12 +429,12 @@ function RaceCard({ race }: { race: Race }) {
           {/* Traits */}
           {race.traits.length > 0 && (
             <div>
-              <p className="text-[9px] uppercase tracking-widest text-slate-600 mb-1.5">Traits</p>
+              <p className="text-[9px] uppercase tracking-widest text-stone-600 mb-1.5">Traits</p>
               <div className="space-y-1.5">
                 {race.traits.map(t => (
-                  <div key={t.name} className="rounded border border-slate-700/30 px-2 py-1.5 bg-slate-800/30">
-                    <p className="text-[11px] font-semibold text-slate-200">{t.name}</p>
-                    <p className="text-[10px] text-slate-500 leading-relaxed mt-0.5">{t.description}</p>
+                  <div key={t.name} className="rounded border border-stone-700/30 px-2 py-1.5 bg-stone-800/30">
+                    <p className="text-[11px] font-semibold text-stone-200">{t.name}</p>
+                    <p className="text-[10px] text-stone-500 leading-relaxed mt-0.5">{t.description}</p>
                   </div>
                 ))}
               </div>
@@ -449,7 +449,7 @@ function RaceCard({ race }: { race: Race }) {
                 {race.drawbacks.map(d => (
                   <div key={d.name} className="rounded border border-red-500/20 px-2 py-1.5 bg-red-500/5">
                     <p className="text-[11px] font-semibold text-red-300/80">{d.name}</p>
-                    <p className="text-[10px] text-slate-500 leading-relaxed mt-0.5">{d.description}</p>
+                    <p className="text-[10px] text-stone-500 leading-relaxed mt-0.5">{d.description}</p>
                   </div>
                 ))}
               </div>
@@ -477,9 +477,9 @@ function BackgroundsTab() {
         placeholder="Search backgrounds…"
         value={search}
         onChange={e => setSearch(e.target.value)}
-        className="w-full px-3 py-2 rounded-md bg-slate-800/50 border border-slate-700/40 text-slate-100 text-sm placeholder:text-slate-600 focus:outline-none focus:border-amber-500/40 transition-colors"
+        className="w-full px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors"
       />
-      <p className="text-[10px] text-slate-600 tracking-wider">{backgrounds.length} backgrounds</p>
+      <p className="text-[10px] text-stone-600 tracking-wider">{backgrounds.length} backgrounds</p>
       <div className="space-y-1">
         {backgrounds.map(b => <BackgroundCard key={b.id} bg={b} />)}
       </div>
@@ -491,22 +491,22 @@ function BackgroundCard({ bg }: { bg: Background }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div className="border border-slate-700/25 rounded-md overflow-hidden bg-slate-800/20">
+    <div className="border border-stone-700/25 rounded-md overflow-hidden bg-stone-800/20">
       <button
-        className="w-full flex items-center gap-2 px-3 py-2.5 hover:bg-slate-700/20 transition-colors text-left"
+        className="w-full flex items-center gap-2 px-3 py-2.5 hover:bg-stone-700/20 transition-colors text-left"
         onClick={() => setOpen(o => !o)}
       >
-        <span className="text-[10px] text-slate-600 shrink-0 transition-transform duration-150"
+        <span className="text-[10px] text-stone-600 shrink-0 transition-transform duration-150"
           style={{ transform: open ? 'rotate(90deg)' : undefined }}>▶</span>
         <span className="flex-1 min-w-0">
-          <span className="font-semibold text-sm text-slate-100">{bg.name}</span>
+          <span className="font-semibold text-sm text-stone-100">{bg.name}</span>
           {bg.special && (
             <span className="ml-2 text-[9px] text-red-400/70 border border-red-500/20 rounded px-1 py-0.5">GM APPROVAL</span>
           )}
         </span>
         <div className="flex gap-0.5 shrink-0">
           {bg.skillProficiencies.map(s => (
-            <span key={s} className="text-[9px] px-1 py-0.5 rounded bg-slate-700/40 text-slate-400 border border-slate-600/30 capitalize">
+            <span key={s} className="text-[9px] px-1 py-0.5 rounded bg-stone-700/40 text-stone-400 border border-stone-600/30 capitalize">
               {s.replace(/([A-Z])/g, ' $1').trim()}
             </span>
           ))}
@@ -514,24 +514,24 @@ function BackgroundCard({ bg }: { bg: Background }) {
       </button>
 
       {open && (
-        <div className="px-3 pb-3 pt-1 border-t border-slate-700/20 space-y-3 bg-slate-800/10">
-          <p className="text-xs text-slate-400 leading-relaxed">{bg.description}</p>
+        <div className="px-3 pb-3 pt-1 border-t border-stone-700/20 space-y-3 bg-stone-800/10">
+          <p className="text-xs text-stone-400 leading-relaxed">{bg.description}</p>
 
           {/* Feature */}
-          <div className="rounded border border-slate-700/30 px-2 py-1.5 bg-slate-800/30">
-            <p className="text-[9px] uppercase tracking-widest text-slate-600 mb-1">Background Feature</p>
-            <p className="text-[11px] font-semibold text-slate-200">{bg.feature.name}</p>
-            <p className="text-[10px] text-slate-400 leading-relaxed mt-0.5">{bg.feature.description}</p>
+          <div className="rounded border border-stone-700/30 px-2 py-1.5 bg-stone-800/30">
+            <p className="text-[9px] uppercase tracking-widest text-stone-600 mb-1">Background Feature</p>
+            <p className="text-[11px] font-semibold text-stone-200">{bg.feature.name}</p>
+            <p className="text-[10px] text-stone-400 leading-relaxed mt-0.5">{bg.feature.description}</p>
           </div>
 
           {/* Tool proficiencies / languages */}
           {(bg.toolProficiencies?.length || bg.languages?.length || bg.languageChoices) ? (
-            <div className="text-xs text-slate-500 space-y-0.5">
+            <div className="text-xs text-stone-500 space-y-0.5">
               {bg.toolProficiencies && bg.toolProficiencies.length > 0 && (
-                <p><span className="text-slate-600">Tools:</span> {bg.toolProficiencies.join(', ')}</p>
+                <p><span className="text-stone-600">Tools:</span> {bg.toolProficiencies.join(', ')}</p>
               )}
               {bg.languages && bg.languages.length > 0 && (
-                <p><span className="text-slate-600">Languages:</span> {bg.languages.join(', ')}</p>
+                <p><span className="text-stone-600">Languages:</span> {bg.languages.join(', ')}</p>
               )}
               {bg.languageChoices && bg.languageChoices > 0 && (
                 <p>+{bg.languageChoices} language{bg.languageChoices > 1 ? 's' : ''} of your choice</p>
@@ -542,11 +542,11 @@ function BackgroundCard({ bg }: { bg: Background }) {
           {/* Starting equipment */}
           {bg.startingEquipment.length > 0 && (
             <div>
-              <p className="text-[9px] uppercase tracking-widest text-slate-600 mb-1">Starting Equipment</p>
+              <p className="text-[9px] uppercase tracking-widest text-stone-600 mb-1">Starting Equipment</p>
               <ul className="space-y-0.5">
                 {bg.startingEquipment.map((e, i) => (
-                  <li key={i} className="text-[10px] text-slate-400 flex gap-1.5">
-                    <span className="text-slate-600">·</span> {e}
+                  <li key={i} className="text-[10px] text-stone-400 flex gap-1.5">
+                    <span className="text-stone-600">·</span> {e}
                   </li>
                 ))}
               </ul>
@@ -565,7 +565,7 @@ export default function CompendiumPage() {
   const [activeTab, setActiveTab] = useState<Tab>('items')
 
   return (
-    <div className="min-h-screen bg-[#131519]">
+    <div className="min-h-screen bg-[#0F0D0B]">
       {/* Header */}
       <div
         className="sticky top-0 z-10 border-b"
@@ -574,11 +574,11 @@ export default function CompendiumPage() {
         <div className="flex items-center gap-0 h-12">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-1.5 px-4 h-12 text-slate-400 hover:text-amber-300 hover:bg-white/5 transition-colors shrink-0 border-r border-white/[0.07] text-[11px] tracking-[0.15em] uppercase font-medium"
+            className="flex items-center gap-1.5 px-4 h-12 text-stone-400 hover:text-amber-300 hover:bg-white/5 transition-colors shrink-0 border-r border-white/[0.07] text-[11px] tracking-[0.15em] uppercase font-medium"
           >
             ← Home
           </button>
-          <h1 className="px-4 text-[11px] tracking-[0.2em] uppercase font-semibold text-slate-300">
+          <h1 className="px-4 text-[11px] tracking-[0.2em] uppercase font-semibold text-stone-300">
             Compendium
           </h1>
         </div>
@@ -592,7 +592,7 @@ export default function CompendiumPage() {
               className={`px-5 py-2.5 text-[11px] tracking-[0.15em] uppercase font-medium transition-colors relative ${
                 activeTab === tab.value
                   ? 'text-amber-200'
-                  : 'text-slate-500 hover:text-slate-300'
+                  : 'text-stone-500 hover:text-stone-300'
               }`}
             >
               {tab.label}

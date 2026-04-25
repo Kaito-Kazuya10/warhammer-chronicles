@@ -83,10 +83,10 @@ export default function MomentCapture({ campaignId, characters }: MomentCaptureP
       {/* Moment capture dialog */}
       {open && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40">
-          <div className="w-full max-w-md bg-[#1a1d22] border border-slate-700/30 rounded-lg shadow-2xl p-4 space-y-3">
+          <div className="w-full max-w-md bg-[#1a1d22] border border-stone-700/30 rounded-lg shadow-2xl p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs text-slate-400 tracking-widest uppercase">Capture Moment</h3>
-              <button onClick={() => setOpen(false)} className="text-slate-600 hover:text-slate-300">&times;</button>
+              <h3 className="text-xs text-stone-400 tracking-widest uppercase">Capture Moment</h3>
+              <button onClick={() => setOpen(false)} className="text-stone-600 hover:text-stone-300">&times;</button>
             </div>
 
             <input
@@ -95,7 +95,7 @@ export default function MomentCapture({ campaignId, characters }: MomentCaptureP
               placeholder="What just happened?"
               value={text}
               onChange={e => setText(e.target.value)}
-              className="w-full bg-slate-900/50 border border-slate-700/30 rounded px-3 py-2 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-amber-500/30"
+              className="w-full bg-stone-900/50 border border-stone-700/30 rounded px-3 py-2 text-xs text-stone-200 placeholder-stone-600 focus:outline-none focus:border-amber-500/30"
               onKeyDown={e => e.key === 'Enter' && handleSubmit()}
             />
 
@@ -103,7 +103,7 @@ export default function MomentCapture({ campaignId, characters }: MomentCaptureP
               <select
                 value={kind}
                 onChange={e => setKind(e.target.value as MomentKind)}
-                className="bg-slate-900/50 border border-slate-700/30 rounded px-2 py-1.5 text-xs text-slate-400 focus:outline-none flex-1"
+                className="bg-stone-900/50 border border-stone-700/30 rounded px-2 py-1.5 text-xs text-stone-400 focus:outline-none flex-1"
               >
                 {MOMENT_KINDS.map(k => (
                   <option key={k.value} value={k.value}>{k.label}</option>
@@ -113,7 +113,7 @@ export default function MomentCapture({ campaignId, characters }: MomentCaptureP
               <select
                 value={characterId}
                 onChange={e => setCharacterId(e.target.value)}
-                className="bg-slate-900/50 border border-slate-700/30 rounded px-2 py-1.5 text-xs text-slate-400 focus:outline-none flex-1"
+                className="bg-stone-900/50 border border-stone-700/30 rounded px-2 py-1.5 text-xs text-stone-400 focus:outline-none flex-1"
               >
                 <option value="">No character</option>
                 {characters.map(ch => (

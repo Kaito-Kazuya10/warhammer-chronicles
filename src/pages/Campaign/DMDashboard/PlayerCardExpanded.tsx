@@ -11,15 +11,15 @@ interface PlayerCardExpandedProps {
 
 function StatRow({ label, value, color }: { label: string; value: string | number; color?: string }) {
   return (
-    <div className="flex items-center justify-between py-1 border-b border-slate-800/30">
-      <span className="text-[10px] text-slate-500 uppercase tracking-wider">{label}</span>
-      <span className={`text-xs font-mono ${color ?? 'text-slate-300'}`}>{value}</span>
+    <div className="flex items-center justify-between py-1 border-b border-stone-800/30">
+      <span className="text-[10px] text-stone-500 uppercase tracking-wider">{label}</span>
+      <span className={`text-xs font-mono ${color ?? 'text-stone-300'}`}>{value}</span>
     </div>
   )
 }
 
 function hpColor(current: number, max: number): string {
-  if (max === 0) return 'bg-slate-700'
+  if (max === 0) return 'bg-stone-700'
   const ratio = current / max
   if (ratio <= 0) return 'bg-red-900'
   if (ratio <= 0.25) return 'bg-red-500'
@@ -45,7 +45,7 @@ function GmSlider({
   return (
     <div className="py-1">
       <div className="flex items-center justify-between mb-0.5">
-        <span className="text-[10px] text-slate-500 uppercase tracking-wider">{label}</span>
+        <span className="text-[10px] text-stone-500 uppercase tracking-wider">{label}</span>
         <span className={`text-xs font-mono ${color}`}>{value}</span>
       </div>
       <input
@@ -90,38 +90,38 @@ export default function PlayerCardExpanded({ character, campaignId, onClose }: P
   }
 
   return (
-    <div className="fixed inset-y-0 right-0 w-80 bg-[#1a1d22] border-l border-slate-700/30 shadow-2xl z-50 flex flex-col">
+    <div className="fixed inset-y-0 right-0 w-80 bg-[#1a1d22] border-l border-stone-700/30 shadow-2xl z-50 flex flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-700/20">
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-stone-700/20">
         <div className="flex items-center gap-2 flex-1 min-w-0">
           {character.portrait ? (
-            <img src={character.portrait} alt="" className="w-10 h-10 rounded-full object-cover border border-slate-700/30" />
+            <img src={character.portrait} alt="" className="w-10 h-10 rounded-full object-cover border border-stone-700/30" />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-slate-800/50 border border-slate-700/30 flex items-center justify-center text-xs font-bold text-slate-600">
+            <div className="w-10 h-10 rounded-full bg-stone-800/50 border border-stone-700/30 flex items-center justify-center text-xs font-bold text-stone-600">
               {character.name.slice(0, 2).toUpperCase()}
             </div>
           )}
           <div className="min-w-0">
-            <p className="text-sm font-medium text-slate-200 truncate">{character.name}</p>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-sm font-medium text-stone-200 truncate">{character.name}</p>
+            <p className="text-[10px] text-stone-500">
               Lvl {character.level} {character.class} · {character.race}
             </p>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="text-slate-600 hover:text-slate-300 text-lg transition-colors"
+          className="text-stone-600 hover:text-stone-300 text-lg transition-colors"
         >
           &times;
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-700/20">
+      <div className="flex border-b border-stone-700/20">
         <button
           onClick={() => setActiveTab('stats')}
           className={`flex-1 py-2 text-[10px] tracking-widest uppercase transition-colors ${
-            activeTab === 'stats' ? 'text-amber-400 border-b border-amber-400' : 'text-slate-600 hover:text-slate-400'
+            activeTab === 'stats' ? 'text-amber-400 border-b border-amber-400' : 'text-stone-600 hover:text-stone-400'
           }`}
         >
           Stats
@@ -129,7 +129,7 @@ export default function PlayerCardExpanded({ character, campaignId, onClose }: P
         <button
           onClick={() => setActiveTab('notes')}
           className={`flex-1 py-2 text-[10px] tracking-widest uppercase transition-colors ${
-            activeTab === 'notes' ? 'text-amber-400 border-b border-amber-400' : 'text-slate-600 hover:text-slate-400'
+            activeTab === 'notes' ? 'text-amber-400 border-b border-amber-400' : 'text-stone-600 hover:text-stone-400'
           }`}
         >
           Notes
@@ -144,15 +144,15 @@ export default function PlayerCardExpanded({ character, campaignId, onClose }: P
         <>
         {/* HP */}
         <div>
-          <h4 className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Hit Points</h4>
-          <div className="h-2 rounded-full bg-slate-900/50 overflow-hidden mb-1">
+          <h4 className="text-[10px] text-stone-500 uppercase tracking-widest mb-1">Hit Points</h4>
+          <div className="h-2 rounded-full bg-stone-900/50 overflow-hidden mb-1">
             <div
               className={`h-full rounded-full transition-all ${hpColor(character.currentHitPoints, character.maxHitPoints)}`}
               style={{ width: `${hpPct}%` }}
             />
           </div>
           <div className="flex gap-3 text-xs font-mono">
-            <span className="text-slate-300">{character.currentHitPoints}/{character.maxHitPoints}</span>
+            <span className="text-stone-300">{character.currentHitPoints}/{character.maxHitPoints}</span>
             {character.temporaryHitPoints > 0 && (
               <span className="text-cyan-400">+{character.temporaryHitPoints} temp</span>
             )}
@@ -166,7 +166,7 @@ export default function PlayerCardExpanded({ character, campaignId, onClose }: P
               value={hpAmount}
               onChange={e => setHpAmount(e.target.value)}
               placeholder="Amount"
-              className="flex-1 bg-slate-900/50 border border-slate-700/30 rounded px-2 py-1 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-amber-500/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+              className="flex-1 bg-stone-900/50 border border-stone-700/30 rounded px-2 py-1 text-xs text-stone-200 placeholder-stone-600 focus:outline-none focus:border-amber-500/30 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
               onKeyDown={e => {
                 if (e.key === 'Enter') applyDamage()
               }}
@@ -188,7 +188,7 @@ export default function PlayerCardExpanded({ character, campaignId, onClose }: P
 
         {/* Class resources */}
         <div>
-          <h4 className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Class Resources</h4>
+          <h4 className="text-[10px] text-stone-500 uppercase tracking-widest mb-1">Class Resources</h4>
           {character.warpBar !== undefined && (
             <StatRow label="Warp Bar" value={`${character.warpBar}/20`} color="text-purple-400" />
           )}
@@ -205,7 +205,7 @@ export default function PlayerCardExpanded({ character, campaignId, onClose }: P
 
         {/* Combat */}
         <div>
-          <h4 className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Combat</h4>
+          <h4 className="text-[10px] text-stone-500 uppercase tracking-widest mb-1">Combat</h4>
           <StatRow label="Armor Class" value={character.armorClass} />
           <StatRow label="Initiative" value={`+${character.initiative}`} />
           <StatRow label="Speed" value={`${character.speed} ft`} />
@@ -248,7 +248,7 @@ export default function PlayerCardExpanded({ character, campaignId, onClose }: P
 
         {/* Death saves */}
         <div>
-          <h4 className="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Death Saves</h4>
+          <h4 className="text-[10px] text-stone-500 uppercase tracking-widest mb-1">Death Saves</h4>
           <div className="flex gap-4 text-xs font-mono">
             <span className="text-green-400">{character.deathSaveSuccesses}/3 success</span>
             <span className="text-red-400">{character.deathSaveFailures}/3 fail</span>

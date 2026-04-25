@@ -58,11 +58,11 @@ export default function AuthPage() {
   // ── Signup success screen ───────────────────────────────────────────────────
   if (signupSuccess) {
     return (
-      <div className="min-h-screen bg-[#131519] flex items-center justify-center p-6">
+      <div className="min-h-screen bg-[#0F0D0B] flex items-center justify-center p-6">
         <div className="w-full max-w-sm text-center">
           <h1 className="text-2xl font-bold text-amber-100 mb-4">Check Your Email</h1>
-          <p className="text-slate-400 text-sm mb-6 leading-relaxed">
-            We sent a confirmation link to <span className="text-slate-200">{email}</span>.
+          <p className="text-stone-400 text-sm mb-6 leading-relaxed">
+            We sent a confirmation link to <span className="text-stone-200">{email}</span>.
             Click the link to activate your account, then come back here to log in.
           </p>
           <button
@@ -78,20 +78,19 @@ export default function AuthPage() {
 
   // ── Form ────────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-[#131519] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#0F0D0B] flex items-center justify-center p-6">
       <div className="w-full max-w-sm">
-        {/* Title */}
-        <div className="text-center mb-8">
-          <h1 className="landing-title text-3xl font-bold text-amber-100 tracking-tight">
-            Warhammer
-          </h1>
-          <h2 className="landing-subtitle text-sm text-amber-400/90 tracking-[0.25em] uppercase mt-0.5 font-medium">
-            Chronicles
-          </h2>
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          <img
+            src="/warhammer_chronicles_logo.jpg"
+            alt="Warhammer Chronicles"
+            className="w-56 object-contain drop-shadow-[0_0_20px_rgba(196,164,74,0.25)]"
+          />
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <h3 className="text-sm font-semibold text-slate-200 tracking-wide text-center">
+          <h3 className="text-sm font-semibold text-stone-200 tracking-wide text-center">
             {mode === 'login' ? 'Log In' : 'Create Account'}
           </h3>
 
@@ -104,7 +103,7 @@ export default function AuthPage() {
                 value={displayName}
                 onChange={e => setDisplayName(e.target.value)}
                 maxLength={40}
-                className="w-full px-3 py-2 rounded-md bg-slate-800/50 border border-slate-700/40 text-slate-100 text-sm placeholder:text-slate-600 focus:outline-none focus:border-amber-500/40 transition-colors"
+                className="w-full px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors"
               />
 
               {/* Role selector */}
@@ -118,7 +117,7 @@ export default function AuthPage() {
                       flex-1 py-2 rounded-md text-xs tracking-wider uppercase font-medium border transition-all
                       ${role === r
                         ? 'bg-amber-500/15 border-amber-500/40 text-amber-300'
-                        : 'bg-slate-800/30 border-slate-700/30 text-slate-500 hover:text-slate-300 hover:border-slate-600/40'
+                        : 'bg-stone-800/30 border-stone-700/30 text-stone-500 hover:text-stone-300 hover:border-stone-600/40'
                       }
                     `}
                   >
@@ -135,7 +134,7 @@ export default function AuthPage() {
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
-            className="w-full px-3 py-2 rounded-md bg-slate-800/50 border border-slate-700/40 text-slate-100 text-sm placeholder:text-slate-600 focus:outline-none focus:border-amber-500/40 transition-colors"
+            className="w-full px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors"
           />
 
           <input
@@ -145,7 +144,7 @@ export default function AuthPage() {
             onChange={e => setPassword(e.target.value)}
             required
             minLength={6}
-            className="w-full px-3 py-2 rounded-md bg-slate-800/50 border border-slate-700/40 text-slate-100 text-sm placeholder:text-slate-600 focus:outline-none focus:border-amber-500/40 transition-colors"
+            className="w-full px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors"
           />
 
           {error && (
@@ -160,7 +159,7 @@ export default function AuthPage() {
             {busy ? '...' : mode === 'login' ? 'LOG IN' : 'CREATE ACCOUNT'}
           </button>
 
-          <p className="text-center text-xs text-slate-600">
+          <p className="text-center text-xs text-stone-600">
             {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
             <button type="button" onClick={switchMode} className="text-amber-500/70 hover:text-amber-400 transition-colors">
               {mode === 'login' ? 'Sign up' : 'Log in'}

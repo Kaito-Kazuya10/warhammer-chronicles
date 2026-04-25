@@ -10,15 +10,15 @@ export default function CampaignDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#131519] flex items-center justify-center">
-        <p className="text-slate-600 text-sm animate-pulse tracking-widest">LOADING...</p>
+      <div className="min-h-screen bg-[#0F0D0B] flex items-center justify-center">
+        <p className="text-stone-600 text-sm animate-pulse tracking-widest">LOADING...</p>
       </div>
     )
   }
 
   if (error || !campaign || role === 'none') {
     return (
-      <div className="min-h-screen bg-[#131519] flex items-center justify-center p-6">
+      <div className="min-h-screen bg-[#0F0D0B] flex items-center justify-center p-6">
         <div className="text-center space-y-4">
           <p className="text-sm text-red-400">{error ?? 'Campaign not found'}</p>
           <button
