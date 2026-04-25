@@ -56,7 +56,7 @@ export default function RollToast() {
 
   return (
     <div
-      className="fixed top-16 left-1/2 -transtone-x-1/2 z-50 pointer-events-auto"
+      className="fixed top-16 left-1/2 -tranzinc-x-1/2 z-50 pointer-events-auto"
       style={{ animation: 'toast-enter 200ms ease-out' }}
     >
       <Card

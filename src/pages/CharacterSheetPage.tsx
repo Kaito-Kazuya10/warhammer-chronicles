@@ -66,7 +66,7 @@ export default function CharacterSheetPage() {
         {/* HOME button */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-1.5 px-4 h-12 text-stone-400 hover:text-amber-300 hover:bg-white/5 transition-colors shrink-0 border-r border-white/[0.07]"
+          className="flex items-center gap-1.5 px-4 h-12 text-zinc-400 hover:text-amber-300 hover:bg-white/5 transition-colors shrink-0 border-r border-white/[0.07]"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
           <span className="text-[11px] tracking-[0.15em] uppercase font-medium">Home</span>
@@ -87,11 +87,11 @@ export default function CharacterSheetPage() {
                 }`}
               >
                 <span className={`text-[13px] font-semibold leading-tight tracking-wide transition-colors ${
-                  isActive ? 'text-amber-200' : 'text-stone-400 hover:text-stone-200'
+                  isActive ? 'text-amber-200' : 'text-zinc-400 hover:text-zinc-200'
                 }`}>
                   {c.name}
                 </span>
-                <span className="text-[10px] text-stone-600 leading-tight tracking-wider uppercase mt-0.5">
+                <span className="text-[10px] text-zinc-600 leading-tight tracking-wider uppercase mt-0.5">
                   Lvl {c.level} · {c.class}
                 </span>
                 {isActive && (
@@ -121,7 +121,7 @@ export default function CharacterSheetPage() {
           <button
             onClick={toggleDarkMode}
             aria-label="Toggle dark mode"
-            className="flex items-center gap-1.5 px-3 h-12 text-stone-400 hover:text-amber-300 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
+            className="flex items-center gap-1.5 px-3 h-12 text-zinc-400 hover:text-amber-300 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
           >
             {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
@@ -130,7 +130,7 @@ export default function CharacterSheetPage() {
           <button
             onClick={toggleHistory}
             aria-label="Open roll history"
-            className="relative flex items-center gap-1.5 px-3 h-12 text-stone-400 hover:text-amber-300 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
+            className="relative flex items-center gap-1.5 px-3 h-12 text-zinc-400 hover:text-amber-300 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
           >
             <Dice6 className="w-4 h-4" />
             <span className="text-[11px] tracking-wider uppercase hidden sm:inline">Dice</span>
@@ -145,7 +145,7 @@ export default function CharacterSheetPage() {
           <button
             onClick={handleExport}
             title="Export character"
-            className="flex items-center gap-1.5 px-3 h-12 text-stone-400 hover:text-stone-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
+            className="flex items-center gap-1.5 px-3 h-12 text-zinc-400 hover:text-zinc-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
           >
             <Download className="w-3.5 h-3.5" />
             <span className="text-[11px] tracking-wider uppercase hidden sm:inline">Export</span>
@@ -155,7 +155,7 @@ export default function CharacterSheetPage() {
           <button
             onClick={handleDuplicate}
             title="Duplicate character"
-            className="flex items-center gap-1.5 px-3 h-12 text-stone-400 hover:text-stone-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
+            className="flex items-center gap-1.5 px-3 h-12 text-zinc-400 hover:text-zinc-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
           >
             <Copy className="w-3.5 h-3.5" />
             <span className="text-[11px] tracking-wider uppercase hidden sm:inline">Duplicate</span>
@@ -165,7 +165,7 @@ export default function CharacterSheetPage() {
           <button
             onClick={() => navigate(`/create?edit=${activeCharacterId}`)}
             title="Edit character"
-            className="flex items-center gap-1.5 px-3 h-12 text-stone-400 hover:text-stone-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
+            className="flex items-center gap-1.5 px-3 h-12 text-zinc-400 hover:text-zinc-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
           >
             <Pencil className="w-3.5 h-3.5" />
             <span className="text-[11px] tracking-wider uppercase hidden sm:inline">Edit</span>

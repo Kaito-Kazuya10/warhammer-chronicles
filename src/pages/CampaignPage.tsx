@@ -168,21 +168,21 @@ export default function CampaignPage() {
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#0F0D0B] p-6">
+    <div className="min-h-screen bg-[#111114] p-6">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <button
             onClick={() => navigate('/')}
-            className="text-stone-500 hover:text-stone-300 text-xs tracking-widest transition-colors"
+            className="text-zinc-500 hover:text-zinc-300 text-xs tracking-widest transition-colors"
           >
             ← HOME
           </button>
-          <div className="h-px flex-1 bg-stone-800/60" />
-          <h1 className="text-sm font-semibold text-stone-200 tracking-[0.2em] uppercase">
+          <div className="h-px flex-1 bg-zinc-800/60" />
+          <h1 className="text-sm font-semibold text-zinc-200 tracking-[0.2em] uppercase">
             Campaigns
           </h1>
-          <div className="h-px flex-1 bg-stone-800/60" />
+          <div className="h-px flex-1 bg-zinc-800/60" />
         </div>
 
         {/* Error */}
@@ -201,7 +201,7 @@ export default function CampaignPage() {
               value={campaignName}
               onChange={e => setCampaignName(e.target.value)}
               maxLength={60}
-              className="flex-1 px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors"
+              className="flex-1 px-3 py-2 rounded-md bg-zinc-800/50 border border-zinc-700/40 text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-amber-500/40 transition-colors"
             />
             <button
               type="submit"
@@ -219,7 +219,7 @@ export default function CampaignPage() {
               value={inviteCode}
               onChange={e => setInviteCode(e.target.value)}
               maxLength={20}
-              className="flex-1 px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors font-mono"
+              className="flex-1 px-3 py-2 rounded-md bg-zinc-800/50 border border-zinc-700/40 text-zinc-100 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-amber-500/40 transition-colors font-mono"
             />
             <button
               type="submit"
@@ -233,63 +233,63 @@ export default function CampaignPage() {
 
         {/* Campaign list */}
         {loading ? (
-          <p className="text-stone-600 text-sm text-center py-8 animate-pulse tracking-widest">LOADING...</p>
+          <p className="text-zinc-600 text-sm text-center py-8 animate-pulse tracking-widest">LOADING...</p>
         ) : campaigns.length === 0 ? (
-          <div className="border border-dashed border-stone-700/40 rounded-lg py-16 text-center">
-            <p className="text-sm text-stone-500 tracking-wide">
+          <div className="border border-dashed border-zinc-700/40 rounded-lg py-16 text-center">
+            <p className="text-sm text-zinc-500 tracking-wide">
               {isDm ? 'No campaigns yet — create one above' : 'No campaigns yet — ask your DM for an invite code'}
             </p>
           </div>
         ) : (
           <div className="grid gap-2">
             {campaigns.map(c => (
-              <div key={c.id} className="border border-stone-700/25 rounded-lg bg-stone-800/20">
+              <div key={c.id} className="border border-zinc-700/25 rounded-lg bg-zinc-800/20">
                 {/* Campaign header row */}
                 <button
                   onClick={() => toggleExpand(c.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-stone-700/15 transition-colors rounded-lg"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-zinc-700/15 transition-colors rounded-lg"
                 >
                   <div className="flex-1 min-w-0">
-                    <span className="text-sm font-semibold text-stone-100">{c.name}</span>
+                    <span className="text-sm font-semibold text-zinc-100">{c.name}</span>
                     {isDm && (
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-stone-500">Invite code:</span>
+                        <span className="text-[10px] text-zinc-500">Invite code:</span>
                         <span className="text-[11px] font-mono text-amber-400/70">{c.invite_code}</span>
                         <button
                           type="button"
                           onClick={e => { e.stopPropagation(); copyLink(c.invite_code) }}
-                          className="text-[9px] text-stone-600 hover:text-amber-400/70 tracking-wider transition-colors"
+                          className="text-[9px] text-zinc-600 hover:text-amber-400/70 tracking-wider transition-colors"
                         >
                           {copied === c.invite_code ? 'COPIED ✓' : 'COPY LINK'}
                         </button>
                       </div>
                     )}
                   </div>
-                  <span className="text-stone-700 text-xs">
+                  <span className="text-zinc-700 text-xs">
                     {expandedId === c.id ? '−' : '+'}
                   </span>
                 </button>
 
                 {/* Expanded detail */}
                 {expandedId === c.id && (
-                  <div className="px-4 pb-4 border-t border-stone-700/15">
+                  <div className="px-4 pb-4 border-t border-zinc-700/15">
                     {detailLoading ? (
-                      <p className="text-stone-600 text-xs py-3 animate-pulse">Loading...</p>
+                      <p className="text-zinc-600 text-xs py-3 animate-pulse">Loading...</p>
                     ) : (
                       <>
                         {/* Members */}
                         <div className="mt-3">
-                          <h4 className="text-[10px] text-stone-500 uppercase tracking-widest mb-2">
+                          <h4 className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">
                             Members ({members.length})
                           </h4>
                           {members.length === 0 ? (
-                            <p className="text-xs text-stone-600">No players have joined yet.</p>
+                            <p className="text-xs text-zinc-600">No players have joined yet.</p>
                           ) : (
                             <div className="flex flex-wrap gap-2">
                               {members.map(m => (
                                 <span
                                   key={m.userId}
-                                  className="text-xs px-2 py-1 rounded bg-stone-800/40 border border-stone-700/20 text-stone-300"
+                                  className="text-xs px-2 py-1 rounded bg-zinc-800/40 border border-zinc-700/20 text-zinc-300"
                                 >
                                   {m.displayName}
                                   <span className="ml-1 text-[9px] text-amber-500/40 uppercase">{m.role}</span>
@@ -302,27 +302,27 @@ export default function CampaignPage() {
                         {/* Campaign characters (DM only) */}
                         {isDm && campaignChars.length > 0 && (
                           <div className="mt-4">
-                            <h4 className="text-[10px] text-stone-500 uppercase tracking-widest mb-2">
+                            <h4 className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">
                               Characters ({campaignChars.length})
                             </h4>
                             <div className="grid gap-1.5">
                               {campaignChars.map(ch => (
                                 <div
                                   key={ch.id}
-                                  className="flex items-center gap-3 px-3 py-2 rounded-md bg-stone-800/30 border border-stone-700/15"
+                                  className="flex items-center gap-3 px-3 py-2 rounded-md bg-zinc-800/30 border border-zinc-700/15"
                                 >
-                                  <div className="w-7 h-7 rounded-full bg-stone-800/50 border border-stone-700/30 flex items-center justify-center shrink-0 text-[9px] font-bold text-stone-600">
+                                  <div className="w-7 h-7 rounded-full bg-zinc-800/50 border border-zinc-700/30 flex items-center justify-center shrink-0 text-[9px] font-bold text-zinc-600">
                                     {ch.name.slice(0, 2).toUpperCase()}
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <span className="text-xs font-medium text-stone-200 truncate block">
+                                    <span className="text-xs font-medium text-zinc-200 truncate block">
                                       {ch.name}
                                     </span>
-                                    <span className="text-[10px] text-stone-500">
+                                    <span className="text-[10px] text-zinc-500">
                                       Lvl {ch.level} {ch.class} {ch.race && `· ${ch.race}`}
                                     </span>
                                   </div>
-                                  <span className="text-[10px] text-stone-600 font-mono">
+                                  <span className="text-[10px] text-zinc-600 font-mono">
                                     {ch.currentHitPoints}/{ch.maxHitPoints}
                                   </span>
                                 </div>
@@ -354,7 +354,7 @@ export default function CampaignPage() {
                                     if (e.key === 'Enter') handleRename(c.id)
                                     if (e.key === 'Escape') setRenamingId(null)
                                   }}
-                                  className="flex-1 px-2 py-1.5 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-xs focus:outline-none focus:border-amber-500/40 transition-colors"
+                                  className="flex-1 px-2 py-1.5 rounded-md bg-zinc-800/50 border border-zinc-700/40 text-zinc-100 text-xs focus:outline-none focus:border-amber-500/40 transition-colors"
                                 />
                                 <button
                                   onClick={() => handleRename(c.id)}
@@ -365,7 +365,7 @@ export default function CampaignPage() {
                                 </button>
                                 <button
                                   onClick={() => setRenamingId(null)}
-                                  className="px-3 py-1.5 rounded-md bg-stone-800/30 hover:bg-stone-700/30 text-stone-400 border border-stone-700/20 text-[10px] tracking-wider"
+                                  className="px-3 py-1.5 rounded-md bg-zinc-800/30 hover:bg-zinc-700/30 text-zinc-400 border border-zinc-700/20 text-[10px] tracking-wider"
                                 >
                                   CANCEL
                                 </button>
@@ -382,7 +382,7 @@ export default function CampaignPage() {
                                 </button>
                                 <button
                                   onClick={() => setDeletingId(null)}
-                                  className="px-3 py-1.5 rounded-md bg-stone-800/30 hover:bg-stone-700/30 text-stone-400 border border-stone-700/20 text-[10px] tracking-wider"
+                                  className="px-3 py-1.5 rounded-md bg-zinc-800/30 hover:bg-zinc-700/30 text-zinc-400 border border-zinc-700/20 text-[10px] tracking-wider"
                                 >
                                   CANCEL
                                 </button>
@@ -391,7 +391,7 @@ export default function CampaignPage() {
                               <>
                                 <button
                                   onClick={() => handleStartRename(c)}
-                                  className="flex-1 py-1.5 rounded-md bg-stone-800/30 hover:bg-stone-700/30 text-stone-400 hover:text-stone-200 border border-stone-700/20 text-[10px] tracking-widest transition-colors"
+                                  className="flex-1 py-1.5 rounded-md bg-zinc-800/30 hover:bg-zinc-700/30 text-zinc-400 hover:text-zinc-200 border border-zinc-700/20 text-[10px] tracking-widest transition-colors"
                                 >
                                   RENAME
                                 </button>

@@ -6,7 +6,7 @@ interface PlayerCardProps {
 }
 
 function hpColor(current: number, max: number): string {
-  if (max === 0) return 'bg-stone-700'
+  if (max === 0) return 'bg-zinc-700'
   const ratio = current / max
   if (ratio <= 0) return 'bg-red-900'
   if (ratio <= 0.25) return 'bg-red-500'
@@ -42,37 +42,37 @@ export default function PlayerCard({ character, onClick }: PlayerCardProps) {
   return (
     <button
       onClick={onClick}
-      className="flex-shrink-0 w-44 rounded-lg border border-stone-700/20 bg-stone-800/30 hover:bg-stone-800/50 transition-colors p-3 text-left cursor-pointer"
+      className="flex-shrink-0 w-44 rounded-lg border border-zinc-700/20 bg-zinc-800/30 hover:bg-zinc-800/50 transition-colors p-3 text-left cursor-pointer"
     >
       <div className="flex items-center gap-2 mb-2">
         {character.portrait ? (
           <img
             src={character.portrait}
             alt=""
-            className="w-8 h-8 rounded-full object-cover border border-stone-700/30"
+            className="w-8 h-8 rounded-full object-cover border border-zinc-700/30"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-stone-800/50 border border-stone-700/30 flex items-center justify-center text-[9px] font-bold text-stone-600">
+          <div className="w-8 h-8 rounded-full bg-zinc-800/50 border border-zinc-700/30 flex items-center justify-center text-[9px] font-bold text-zinc-600">
             {character.name.slice(0, 2).toUpperCase()}
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-medium text-stone-200 truncate">{character.name}</p>
-          <p className="text-[10px] text-stone-500">
+          <p className="text-xs font-medium text-zinc-200 truncate">{character.name}</p>
+          <p className="text-[10px] text-zinc-500">
             Lvl {character.level} {character.class}
           </p>
         </div>
       </div>
 
       {/* HP bar */}
-      <div className="h-1.5 rounded-full bg-stone-900/50 overflow-hidden mb-1">
+      <div className="h-1.5 rounded-full bg-zinc-900/50 overflow-hidden mb-1">
         <div
           className={`h-full rounded-full transition-all ${hpColor(character.currentHitPoints, character.maxHitPoints)}`}
           style={{ width: `${hpPct}%` }}
         />
       </div>
       <div className="flex items-center justify-between">
-        <span className="text-[9px] text-stone-600 font-mono">
+        <span className="text-[9px] text-zinc-600 font-mono">
           {character.currentHitPoints}/{character.maxHitPoints}
         </span>
         {resource && (

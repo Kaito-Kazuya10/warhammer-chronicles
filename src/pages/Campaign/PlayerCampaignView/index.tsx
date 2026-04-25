@@ -42,40 +42,40 @@ export default function PlayerCampaignView({ campaign }: PlayerCampaignViewProps
   }, [campaign.id])
 
   return (
-    <div className="min-h-screen bg-[#0F0D0B] p-6">
+    <div className="min-h-screen bg-[#111114] p-6">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <button
             onClick={() => navigate('/campaign')}
-            className="text-stone-500 hover:text-stone-300 text-xs tracking-widest transition-colors"
+            className="text-zinc-500 hover:text-zinc-300 text-xs tracking-widest transition-colors"
           >
             &larr; CAMPAIGNS
           </button>
-          <div className="h-px flex-1 bg-stone-800/60" />
-          <h1 className="text-sm font-semibold text-stone-200 tracking-[0.2em] uppercase">
+          <div className="h-px flex-1 bg-zinc-800/60" />
+          <h1 className="text-sm font-semibold text-zinc-200 tracking-[0.2em] uppercase">
             {campaign.name}
           </h1>
-          <div className="h-px flex-1 bg-stone-800/60" />
+          <div className="h-px flex-1 bg-zinc-800/60" />
         </div>
 
         <ActiveSessionPill session={activeSession} />
 
         {loading ? (
-          <p className="text-stone-600 text-xs py-3 animate-pulse">Loading...</p>
+          <p className="text-zinc-600 text-xs py-3 animate-pulse">Loading...</p>
         ) : (
           <div>
-            <h4 className="text-[10px] text-stone-500 uppercase tracking-widest mb-2">
+            <h4 className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">
               Members ({members.length})
             </h4>
             {members.length === 0 ? (
-              <p className="text-xs text-stone-600">No players have joined yet.</p>
+              <p className="text-xs text-zinc-600">No players have joined yet.</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {members.map(m => (
                   <span
                     key={m.userId}
-                    className="text-xs px-2 py-1 rounded bg-stone-800/40 border border-stone-700/20 text-stone-300"
+                    className="text-xs px-2 py-1 rounded bg-zinc-800/40 border border-zinc-700/20 text-zinc-300"
                   >
                     {m.displayName}
                     <span className="ml-1 text-[9px] text-amber-500/40 uppercase">{m.role}</span>

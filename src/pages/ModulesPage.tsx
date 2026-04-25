@@ -64,27 +64,27 @@ export default function ModulesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F0D0B] p-6">
+    <div className="min-h-screen bg-[#111114] p-6">
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <button
             onClick={() => navigate('/')}
-            className="text-stone-500 hover:text-stone-300 text-xs tracking-widest transition-colors"
+            className="text-zinc-500 hover:text-zinc-300 text-xs tracking-widest transition-colors"
           >
             ← HOME
           </button>
-          <div className="h-px flex-1 bg-stone-800/60" />
-          <h1 className="text-sm font-semibold text-stone-200 tracking-[0.2em] uppercase">
+          <div className="h-px flex-1 bg-zinc-800/60" />
+          <h1 className="text-sm font-semibold text-zinc-200 tracking-[0.2em] uppercase">
             Modules
           </h1>
-          <div className="h-px flex-1 bg-stone-800/60" />
+          <div className="h-px flex-1 bg-zinc-800/60" />
         </div>
 
         {/* Upload zone */}
         <div className="mb-8">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-semibold mb-3">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-semibold mb-3">
             Load Module
           </p>
 
@@ -97,15 +97,15 @@ export default function ModulesPage() {
               border-2 border-dashed rounded-lg py-10 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all
               ${dragging
                 ? 'border-amber-500/50 bg-amber-500/5'
-                : 'border-stone-700/40 hover:border-stone-600/50 bg-stone-800/10 hover:bg-stone-800/20'
+                : 'border-zinc-700/40 hover:border-zinc-600/50 bg-zinc-800/10 hover:bg-zinc-800/20'
               }
             `}
           >
             <span className="text-2xl select-none">📦</span>
-            <p className="text-sm text-stone-400">
+            <p className="text-sm text-zinc-400">
               {uploading ? 'Loading...' : 'Drop a module .json here, or click to browse'}
             </p>
-            <p className="text-[10px] text-stone-600 tracking-wide">JSON modules only</p>
+            <p className="text-[10px] text-zinc-600 tracking-wide">JSON modules only</p>
           </div>
 
           <input
@@ -130,13 +130,13 @@ export default function ModulesPage() {
 
         {/* Loaded modules list */}
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-semibold mb-3">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-semibold mb-3">
             Loaded Modules ({modules.length})
           </p>
 
           {modules.length === 0 ? (
-            <div className="border border-dashed border-stone-700/40 rounded-lg py-10 text-center">
-              <p className="text-sm text-stone-500">No modules loaded</p>
+            <div className="border border-dashed border-zinc-700/40 rounded-lg py-10 text-center">
+              <p className="text-sm text-zinc-500">No modules loaded</p>
             </div>
           ) : (
             <div className="grid gap-2">
@@ -145,12 +145,12 @@ export default function ModulesPage() {
                 return (
                   <div
                     key={mod.id}
-                    className="border border-stone-700/25 rounded-lg bg-stone-800/20 px-4 py-3 flex items-start gap-3"
+                    className="border border-zinc-700/25 rounded-lg bg-zinc-800/20 px-4 py-3 flex items-start gap-3"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm font-semibold text-stone-100">{mod.name}</span>
-                        <span className="text-[9px] font-mono text-stone-500 border border-stone-700/40 rounded px-1 py-0.5">
+                        <span className="text-sm font-semibold text-zinc-100">{mod.name}</span>
+                        <span className="text-[9px] font-mono text-zinc-500 border border-zinc-700/40 rounded px-1 py-0.5">
                           v{mod.version}
                         </span>
                         {isCore && (
@@ -159,13 +159,13 @@ export default function ModulesPage() {
                           </span>
                         )}
                         {mod.author && (
-                          <span className="text-[10px] text-stone-500">by {mod.author}</span>
+                          <span className="text-[10px] text-zinc-500">by {mod.author}</span>
                         )}
                       </div>
                       {mod.description && (
-                        <p className="text-xs text-stone-500 mt-0.5 truncate">{mod.description}</p>
+                        <p className="text-xs text-zinc-500 mt-0.5 truncate">{mod.description}</p>
                       )}
-                      <p className="text-[10px] font-mono text-stone-600 mt-0.5">{mod.id}</p>
+                      <p className="text-[10px] font-mono text-zinc-600 mt-0.5">{mod.id}</p>
                     </div>
 
                     <button
@@ -175,7 +175,7 @@ export default function ModulesPage() {
                       className={`
                         mt-0.5 text-[9px] px-2 py-1 rounded border transition-colors flex-shrink-0
                         ${isCore
-                          ? 'border-stone-700/20 text-stone-700 cursor-not-allowed'
+                          ? 'border-zinc-700/20 text-zinc-700 cursor-not-allowed'
                           : 'border-red-500/20 text-red-500/60 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 cursor-pointer'
                         }
                       `}
