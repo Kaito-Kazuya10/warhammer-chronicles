@@ -8,6 +8,8 @@ import {
   joinCampaignByCode,
   fetchMyCampaigns,
   fetchCampaignMembers,
+  renameCampaign,
+  deleteCampaign,
   type CampaignMember,
 } from '@/db/campaignRepository'
 import { fetchCampaignCharacters } from '@/db/characterRepository'
@@ -110,6 +112,50 @@ export default function CampaignPage() {
     }
   }
 
+  // ── Rename campaign (DM) ────────────────────────────────────────────────────
+
+  const [renamingId, setRenamingId] = useState<string | null>(null)
+  const [renameValue, setRenameValue] = useState('')
+
+  const handleStartRename = (c: DbCampaignRow) => {
+    setRenamingId(c.id)
+    setRenameValue(c.name)
+  }
+
+  const handleRename = async (id: string) => {
+    if (!renameValue.trim()) return
+    setBusy(true)
+    setError(null)
+    try {
+      await renameCampaign(id, renameValue.trim())
+      setRenamingId(null)
+      await load()
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  // ── Delete campaign (DM) ────────────────────────────────────────────────────
+
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const handleDelete = async (id: string) => {
+    setBusy(true)
+    setError(null)
+    try {
+      await deleteCampaign(id)
+      setDeletingId(null)
+      setExpandedId(null)
+      await load()
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   // ── Copy invite code ────────────────────────────────────────────────────────
 
   const [copied, setCopied] = useState<string | null>(null)
@@ -122,21 +168,21 @@ export default function CampaignPage() {
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#131519] p-6">
+    <div className="min-h-screen bg-[#0F0D0B] p-6">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <button
             onClick={() => navigate('/')}
-            className="text-slate-500 hover:text-slate-300 text-xs tracking-widest transition-colors"
+            className="text-stone-500 hover:text-stone-300 text-xs tracking-widest transition-colors"
           >
             ← HOME
           </button>
-          <div className="h-px flex-1 bg-slate-800/60" />
-          <h1 className="text-sm font-semibold text-slate-200 tracking-[0.2em] uppercase">
+          <div className="h-px flex-1 bg-stone-800/60" />
+          <h1 className="text-sm font-semibold text-stone-200 tracking-[0.2em] uppercase">
             Campaigns
           </h1>
-          <div className="h-px flex-1 bg-slate-800/60" />
+          <div className="h-px flex-1 bg-stone-800/60" />
         </div>
 
         {/* Error */}
@@ -155,7 +201,7 @@ export default function CampaignPage() {
               value={campaignName}
               onChange={e => setCampaignName(e.target.value)}
               maxLength={60}
-              className="flex-1 px-3 py-2 rounded-md bg-slate-800/50 border border-slate-700/40 text-slate-100 text-sm placeholder:text-slate-600 focus:outline-none focus:border-amber-500/40 transition-colors"
+              className="flex-1 px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors"
             />
             <button
               type="submit"
@@ -173,7 +219,7 @@ export default function CampaignPage() {
               value={inviteCode}
               onChange={e => setInviteCode(e.target.value)}
               maxLength={20}
-              className="flex-1 px-3 py-2 rounded-md bg-slate-800/50 border border-slate-700/40 text-slate-100 text-sm placeholder:text-slate-600 focus:outline-none focus:border-amber-500/40 transition-colors font-mono"
+              className="flex-1 px-3 py-2 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/40 transition-colors font-mono"
             />
             <button
               type="submit"
@@ -187,63 +233,63 @@ export default function CampaignPage() {
 
         {/* Campaign list */}
         {loading ? (
-          <p className="text-slate-600 text-sm text-center py-8 animate-pulse tracking-widest">LOADING...</p>
+          <p className="text-stone-600 text-sm text-center py-8 animate-pulse tracking-widest">LOADING...</p>
         ) : campaigns.length === 0 ? (
-          <div className="border border-dashed border-slate-700/40 rounded-lg py-16 text-center">
-            <p className="text-sm text-slate-500 tracking-wide">
+          <div className="border border-dashed border-stone-700/40 rounded-lg py-16 text-center">
+            <p className="text-sm text-stone-500 tracking-wide">
               {isDm ? 'No campaigns yet — create one above' : 'No campaigns yet — ask your DM for an invite code'}
             </p>
           </div>
         ) : (
           <div className="grid gap-2">
             {campaigns.map(c => (
-              <div key={c.id} className="border border-slate-700/25 rounded-lg bg-slate-800/20">
+              <div key={c.id} className="border border-stone-700/25 rounded-lg bg-stone-800/20">
                 {/* Campaign header row */}
                 <button
                   onClick={() => toggleExpand(c.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-700/15 transition-colors rounded-lg"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-stone-700/15 transition-colors rounded-lg"
                 >
                   <div className="flex-1 min-w-0">
-                    <span className="text-sm font-semibold text-slate-100">{c.name}</span>
+                    <span className="text-sm font-semibold text-stone-100">{c.name}</span>
                     {isDm && (
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] text-slate-500">Invite code:</span>
+                        <span className="text-[10px] text-stone-500">Invite code:</span>
                         <span className="text-[11px] font-mono text-amber-400/70">{c.invite_code}</span>
                         <button
                           type="button"
                           onClick={e => { e.stopPropagation(); copyLink(c.invite_code) }}
-                          className="text-[9px] text-slate-600 hover:text-amber-400/70 tracking-wider transition-colors"
+                          className="text-[9px] text-stone-600 hover:text-amber-400/70 tracking-wider transition-colors"
                         >
                           {copied === c.invite_code ? 'COPIED ✓' : 'COPY LINK'}
                         </button>
                       </div>
                     )}
                   </div>
-                  <span className="text-slate-700 text-xs">
+                  <span className="text-stone-700 text-xs">
                     {expandedId === c.id ? '−' : '+'}
                   </span>
                 </button>
 
                 {/* Expanded detail */}
                 {expandedId === c.id && (
-                  <div className="px-4 pb-4 border-t border-slate-700/15">
+                  <div className="px-4 pb-4 border-t border-stone-700/15">
                     {detailLoading ? (
-                      <p className="text-slate-600 text-xs py-3 animate-pulse">Loading...</p>
+                      <p className="text-stone-600 text-xs py-3 animate-pulse">Loading...</p>
                     ) : (
                       <>
                         {/* Members */}
                         <div className="mt-3">
-                          <h4 className="text-[10px] text-slate-500 uppercase tracking-widest mb-2">
+                          <h4 className="text-[10px] text-stone-500 uppercase tracking-widest mb-2">
                             Members ({members.length})
                           </h4>
                           {members.length === 0 ? (
-                            <p className="text-xs text-slate-600">No players have joined yet.</p>
+                            <p className="text-xs text-stone-600">No players have joined yet.</p>
                           ) : (
                             <div className="flex flex-wrap gap-2">
                               {members.map(m => (
                                 <span
                                   key={m.userId}
-                                  className="text-xs px-2 py-1 rounded bg-slate-800/40 border border-slate-700/20 text-slate-300"
+                                  className="text-xs px-2 py-1 rounded bg-stone-800/40 border border-stone-700/20 text-stone-300"
                                 >
                                   {m.displayName}
                                   <span className="ml-1 text-[9px] text-amber-500/40 uppercase">{m.role}</span>
@@ -256,27 +302,27 @@ export default function CampaignPage() {
                         {/* Campaign characters (DM only) */}
                         {isDm && campaignChars.length > 0 && (
                           <div className="mt-4">
-                            <h4 className="text-[10px] text-slate-500 uppercase tracking-widest mb-2">
+                            <h4 className="text-[10px] text-stone-500 uppercase tracking-widest mb-2">
                               Characters ({campaignChars.length})
                             </h4>
                             <div className="grid gap-1.5">
                               {campaignChars.map(ch => (
                                 <div
                                   key={ch.id}
-                                  className="flex items-center gap-3 px-3 py-2 rounded-md bg-slate-800/30 border border-slate-700/15"
+                                  className="flex items-center gap-3 px-3 py-2 rounded-md bg-stone-800/30 border border-stone-700/15"
                                 >
-                                  <div className="w-7 h-7 rounded-full bg-slate-800/50 border border-slate-700/30 flex items-center justify-center shrink-0 text-[9px] font-bold text-slate-600">
+                                  <div className="w-7 h-7 rounded-full bg-stone-800/50 border border-stone-700/30 flex items-center justify-center shrink-0 text-[9px] font-bold text-stone-600">
                                     {ch.name.slice(0, 2).toUpperCase()}
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <span className="text-xs font-medium text-slate-200 truncate block">
+                                    <span className="text-xs font-medium text-stone-200 truncate block">
                                       {ch.name}
                                     </span>
-                                    <span className="text-[10px] text-slate-500">
+                                    <span className="text-[10px] text-stone-500">
                                       Lvl {ch.level} {ch.class} {ch.race && `· ${ch.race}`}
                                     </span>
                                   </div>
-                                  <span className="text-[10px] text-slate-600 font-mono">
+                                  <span className="text-[10px] text-stone-600 font-mono">
                                     {ch.currentHitPoints}/{ch.maxHitPoints}
                                   </span>
                                 </div>
@@ -292,6 +338,73 @@ export default function CampaignPage() {
                         >
                           VIEW CAMPAIGN
                         </button>
+
+                        {/* DM actions: rename & delete */}
+                        {isDm && c.dm_id === profile?.id && (
+                          <div className="mt-3 flex gap-2">
+                            {renamingId === c.id ? (
+                              <div className="flex gap-1.5 flex-1">
+                                <input
+                                  type="text"
+                                  value={renameValue}
+                                  onChange={e => setRenameValue(e.target.value)}
+                                  maxLength={60}
+                                  autoFocus
+                                  onKeyDown={e => {
+                                    if (e.key === 'Enter') handleRename(c.id)
+                                    if (e.key === 'Escape') setRenamingId(null)
+                                  }}
+                                  className="flex-1 px-2 py-1.5 rounded-md bg-stone-800/50 border border-stone-700/40 text-stone-100 text-xs focus:outline-none focus:border-amber-500/40 transition-colors"
+                                />
+                                <button
+                                  onClick={() => handleRename(c.id)}
+                                  disabled={busy || !renameValue.trim()}
+                                  className="px-3 py-1.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 text-amber-300/80 border border-amber-500/20 text-[10px] tracking-wider disabled:opacity-50"
+                                >
+                                  SAVE
+                                </button>
+                                <button
+                                  onClick={() => setRenamingId(null)}
+                                  className="px-3 py-1.5 rounded-md bg-stone-800/30 hover:bg-stone-700/30 text-stone-400 border border-stone-700/20 text-[10px] tracking-wider"
+                                >
+                                  CANCEL
+                                </button>
+                              </div>
+                            ) : deletingId === c.id ? (
+                              <div className="flex items-center gap-2 flex-1">
+                                <span className="text-xs text-red-400/80 flex-1">Delete this campaign permanently?</span>
+                                <button
+                                  onClick={() => handleDelete(c.id)}
+                                  disabled={busy}
+                                  className="px-3 py-1.5 rounded-md bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 text-[10px] tracking-wider disabled:opacity-50"
+                                >
+                                  CONFIRM
+                                </button>
+                                <button
+                                  onClick={() => setDeletingId(null)}
+                                  className="px-3 py-1.5 rounded-md bg-stone-800/30 hover:bg-stone-700/30 text-stone-400 border border-stone-700/20 text-[10px] tracking-wider"
+                                >
+                                  CANCEL
+                                </button>
+                              </div>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => handleStartRename(c)}
+                                  className="flex-1 py-1.5 rounded-md bg-stone-800/30 hover:bg-stone-700/30 text-stone-400 hover:text-stone-200 border border-stone-700/20 text-[10px] tracking-widest transition-colors"
+                                >
+                                  RENAME
+                                </button>
+                                <button
+                                  onClick={() => setDeletingId(c.id)}
+                                  className="flex-1 py-1.5 rounded-md bg-red-500/5 hover:bg-red-500/15 text-red-400/60 hover:text-red-400 border border-red-500/10 hover:border-red-500/25 text-[10px] tracking-widest transition-colors"
+                                >
+                                  DELETE
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </>
                     )}
                   </div>

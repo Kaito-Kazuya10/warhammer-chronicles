@@ -44,10 +44,10 @@ function WarpBar({ current, max, onChange }: { current: number; max: number; onC
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+        <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
           Warp Bar
         </p>
-        <span className="text-[9px] text-muted-foreground italic">
+        <span className="text-[11px] text-muted-foreground italic">
           Perils at {max}
         </span>
       </div>
@@ -55,7 +55,7 @@ function WarpBar({ current, max, onChange }: { current: number; max: number; onC
       <div className="flex items-center gap-2">
         <button
           onClick={() => onChange(Math.max(0, current - 1))}
-          className="text-[10px] w-5 h-5 rounded border border-border text-muted-foreground hover:bg-muted/50 flex items-center justify-center flex-shrink-0"
+          className="text-xs w-5 h-5 rounded border border-border text-muted-foreground hover:bg-muted/50 flex items-center justify-center flex-shrink-0"
           title="−1 Warp"
         >
           −
@@ -68,17 +68,17 @@ function WarpBar({ current, max, onChange }: { current: number; max: number; onC
         </div>
         <button
           onClick={() => onChange(Math.min(max, current + 1))}
-          className="text-[10px] w-5 h-5 rounded border border-border text-muted-foreground hover:bg-muted/50 flex items-center justify-center flex-shrink-0"
+          className="text-xs w-5 h-5 rounded border border-border text-muted-foreground hover:bg-muted/50 flex items-center justify-center flex-shrink-0"
           title="+1 Warp"
         >
           +
         </button>
-        <span className="text-sm font-mono font-bold tabular-nums flex-shrink-0 min-w-[3rem] text-right">
+        <span className="text-base font-mono font-bold tabular-nums flex-shrink-0 min-w-[3rem] text-right">
           {current} / {max}
         </span>
         <button
           onClick={() => onChange(0)}
-          className="text-[9px] px-1.5 py-0.5 rounded border border-border text-muted-foreground/60 hover:bg-muted/50 flex-shrink-0"
+          className="text-[11px] px-1.5 py-0.5 rounded border border-border text-muted-foreground/60 hover:bg-muted/50 flex-shrink-0"
           title="Reset Warp Bar (after Perils)"
         >
           RESET
@@ -86,7 +86,7 @@ function WarpBar({ current, max, onChange }: { current: number; max: number; onC
       </div>
 
       {current >= max && (
-        <p className="text-[9px] text-[var(--wh-crimson)] font-semibold animate-pulse">
+        <p className="text-[11px] text-[var(--wh-crimson)] font-semibold animate-pulse">
           ⚠ PERILS OF THE WARP — Roll on the Perils table now!
         </p>
       )}
@@ -109,7 +109,7 @@ function SlotPips({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-[9px] uppercase tracking-widest text-muted-foreground w-6 flex-shrink-0">
+      <span className="text-[11px] uppercase tracking-widest text-muted-foreground w-6 flex-shrink-0">
         {ORDINAL[level]}
       </span>
       <div className="flex gap-1">
@@ -129,7 +129,7 @@ function SlotPips({
           )
         })}
       </div>
-      <span className="text-[9px] text-muted-foreground/60 tabular-nums">
+      <span className="text-[11px] text-muted-foreground/60 tabular-nums">
         {total - used} left
       </span>
     </div>
@@ -171,7 +171,7 @@ function PowerRow({
         <CollapsibleTrigger className="flex-1 text-left min-w-0 focus:outline-none">
           <div className="flex items-start gap-2 py-2 pl-2 pr-1">
             <span
-              className="mt-0.5 flex-shrink-0 text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
+              className="mt-0.5 flex-shrink-0 text-sm text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
               style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 150ms' }}
               aria-hidden
             >
@@ -179,29 +179,29 @@ function PowerRow({
             </span>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-sm font-medium text-foreground">{power.name}</span>
+                <span className="text-base font-medium text-foreground">{power.name}</span>
                 {power.warpCost !== undefined && (
-                  <span className="text-[9px] text-purple-500/80 font-mono">+{power.warpCost}⚡</span>
+                  <span className="text-[11px] text-purple-500/80 font-mono">+{power.warpCost}⚡</span>
                 )}
-                <Badge variant="outline" className="text-[9px] py-0 px-1 border-border/40 text-muted-foreground">
+                <Badge variant="outline" className="text-[11px] py-0 px-1 border-border/40 text-muted-foreground">
                   {levelBadge}
                 </Badge>
                 {power.discipline && power.discipline !== 'ALL' && (
-                  <Badge variant="outline" className={`text-[9px] py-0 px-1 ${discColor}`}>
+                  <Badge variant="outline" className={`text-[11px] py-0 px-1 ${discColor}`}>
                     {power.discipline}
                   </Badge>
                 )}
                 {power.isRitual && (
-                  <Badge variant="outline" className="text-[9px] py-0 px-1 border-amber-500/30 text-amber-600 bg-amber-500/10">
+                  <Badge variant="outline" className="text-[11px] py-0 px-1 border-amber-500/30 text-amber-600 bg-amber-500/10">
                     RITUAL
                   </Badge>
                 )}
                 {alwaysPrepared && (
-                  <Badge variant="outline" className="text-[9px] py-0 px-1 border-purple-500/30 text-purple-600 bg-purple-500/10">
+                  <Badge variant="outline" className="text-[11px] py-0 px-1 border-purple-500/30 text-purple-600 bg-purple-500/10">
                     AUTO
                   </Badge>
                 )}
-                <span className="text-[9px] text-muted-foreground/50">{power.castingTime}</span>
+                <span className="text-[11px] text-muted-foreground/50">{power.castingTime}</span>
               </div>
             </div>
           </div>
@@ -212,7 +212,7 @@ function PowerRow({
           {isCantrip && (prepared || alwaysPrepared) && onCastCantrip && (
             <button
               onClick={onCastCantrip}
-              className="text-[9px] px-1.5 py-0.5 rounded border border-purple-500/30 text-purple-600 hover:bg-purple-500/10 transition-colors"
+              className="text-[11px] px-1.5 py-0.5 rounded border border-purple-500/30 text-purple-600 hover:bg-purple-500/10 transition-colors"
               title={`Cast (costs ${power.warpCost ?? 1} warp)`}
             >
               CAST
@@ -224,7 +224,7 @@ function PowerRow({
             <button
               key={slotLevel}
               onClick={() => onCast(slotLevel)}
-              className="text-[9px] px-1.5 py-0.5 rounded border border-purple-500/30 text-purple-600 hover:bg-purple-500/10 transition-colors"
+              className="text-[11px] px-1.5 py-0.5 rounded border border-purple-500/30 text-purple-600 hover:bg-purple-500/10 transition-colors"
               title={`Cast using ${ORDINAL[slotLevel]} level slot`}
             >
               {ORDINAL[slotLevel]}
@@ -235,7 +235,7 @@ function PowerRow({
           {alwaysPrepared ? null : prepared ? (
             <button
               onClick={onUnprepare}
-              className="text-[9px] px-1.5 py-0.5 rounded border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
+              className="text-[11px] px-1.5 py-0.5 rounded border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
             >
               UNPREPARE
             </button>
@@ -243,7 +243,7 @@ function PowerRow({
             <button
               onClick={onPrepare}
               disabled={!canPrepare && !isCantrip}
-              className={`text-[9px] px-1.5 py-0.5 rounded border transition-colors ${
+              className={`text-[11px] px-1.5 py-0.5 rounded border transition-colors ${
                 canPrepare || isCantrip
                   ? 'border-purple-500/30 text-purple-600 hover:bg-purple-500/10 cursor-pointer'
                   : 'border-border text-muted-foreground/30 cursor-not-allowed'
@@ -257,16 +257,16 @@ function PowerRow({
       </div>
 
       <CollapsibleContent>
-        <div className="mx-3 mb-2 mt-0.5 pl-6 text-xs text-muted-foreground border-l border-purple-500/20 space-y-1.5">
+        <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground border-l border-purple-500/20 space-y-1.5">
           <div>{renderDescription(power.description)}</div>
           {power.higherLevels && (
             <div>
-              <p className="text-[9px] uppercase tracking-widest text-purple-500/60 mb-0.5">At Higher Levels</p>
+              <p className="text-[11px] uppercase tracking-widest text-purple-500/60 mb-0.5">At Higher Levels</p>
               <div>{renderDescription(power.higherLevels)}</div>
             </div>
           )}
           {power.range && (
-            <div className="flex gap-3 text-[9px] text-muted-foreground/60">
+            <div className="flex gap-3 text-[11px] text-muted-foreground/60">
               <span>Range: {power.range}</span>
               {power.duration && <span>Duration: {power.duration}</span>}
             </div>
@@ -391,7 +391,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
       {/* ── Power Slots ── */}
       {slotLevels.length > 0 ? (
         <div>
-          <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-2">
+          <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-2">
             Power Slots
           </p>
           <div className="space-y-1.5">
@@ -407,7 +407,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
           </div>
         </div>
       ) : (
-        <p className="text-[9px] text-muted-foreground/50 italic">
+        <p className="text-[11px] text-muted-foreground/50 italic">
           No power slots — level up to gain slots.
         </p>
       )}
@@ -415,7 +415,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
       {/* ── Always Prepared ── */}
       {alwaysPreparedPowers.length > 0 && (
         <div>
-          <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
+          <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
             Always Prepared
           </p>
           <div className="divide-y divide-border/50 border border-border rounded-md">
@@ -440,7 +440,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
       {/* ── Prepared Powers ── */}
       {chosenPrepared.length > 0 && (
         <div>
-          <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
+          <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
             Prepared ({prepCountable.length} / {prepLimit})
           </p>
           <div className="divide-y divide-border/50 border border-border rounded-md">
@@ -470,7 +470,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
             size="sm"
             variant={discFilter === value ? 'default' : 'outline'}
             onClick={() => setDiscFilter(value)}
-            className="shrink-0 text-[10px] tracking-wide h-7 px-2"
+            className="shrink-0 text-xs tracking-wide h-7 px-2"
           >
             {label}
           </Button>
@@ -480,7 +480,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
       {/* ── Available Powers Pool ── */}
       {poolPowers.length > 0 ? (
         <div>
-          <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
+          <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
             Available Powers
           </p>
           <div className="divide-y divide-border/50 border border-border rounded-md">
@@ -502,7 +502,7 @@ export default function WarpDisciplinesTab({ characterId }: Props) {
       ) : (
         <div className="flex flex-col items-center justify-center h-24 gap-1 text-muted-foreground/50 border border-dashed border-border rounded-lg">
           <span className="text-xl">🔮</span>
-          <span className="text-xs italic">All powers prepared or no matches</span>
+          <span className="text-sm italic">All powers prepared or no matches</span>
         </div>
       )}
 

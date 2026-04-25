@@ -30,11 +30,11 @@ function ProfSection({
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger className="flex w-full items-center justify-between py-1.5 text-left focus:outline-none group">
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
           {label}
         </span>
         <span
-          className="text-muted-foreground text-xs transition-transform duration-200"
+          className="text-muted-foreground text-sm transition-transform duration-200"
           style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}
           aria-hidden="true"
         >
@@ -47,13 +47,13 @@ function ProfSection({
           {items.length > 0 ? (
             <div className="flex flex-wrap gap-1">
               {items.map(item => (
-                <Badge key={item} variant="outline" className="text-[10px] h-4 px-1.5">
+                <Badge key={item} variant="outline" className="text-xs h-4 px-1.5">
                   {item}
                 </Badge>
               ))}
             </div>
           ) : (
-            <span className="text-xs text-muted-foreground italic">None</span>
+            <span className="text-sm text-muted-foreground italic">None</span>
           )}
         </div>
       </CollapsibleContent>
@@ -88,7 +88,7 @@ export default function ProficiencyPanel({ characterId }: Props) {
   return (
     <Card>
       <CardHeader className="border-b pb-3">
-        <CardTitle className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
+        <CardTitle className="text-sm font-bold tracking-widest uppercase text-muted-foreground">
           Proficiencies &amp; Languages
         </CardTitle>
       </CardHeader>

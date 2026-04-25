@@ -63,7 +63,7 @@ function SlotPips({
 }) {
   return (
     <div className="flex items-center gap-1.5">
-      <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold w-6 flex-shrink-0">
+      <span className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold w-6 flex-shrink-0">
         {LEVEL_LABEL[level]}
       </span>
       <div className="flex gap-1">
@@ -80,7 +80,7 @@ function SlotPips({
           />
         ))}
       </div>
-      <span className="text-[9px] text-muted-foreground tabular-nums">
+      <span className="text-[11px] text-muted-foreground tabular-nums">
         {slots.total - slots.used} / {slots.total}
       </span>
     </div>
@@ -117,7 +117,7 @@ function PrayerRow({
         <CollapsibleTrigger className="flex-1 text-left min-w-0 focus:outline-none">
           <div className="flex items-start gap-2 py-2 pl-2 pr-1">
             <span
-              className="mt-0.5 flex-shrink-0 text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
+              className="mt-0.5 flex-shrink-0 text-sm text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
               style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 150ms' }}
               aria-hidden="true"
             >
@@ -126,17 +126,17 @@ function PrayerRow({
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-sm font-medium text-foreground">{prayer.name}</span>
-                <Badge variant="outline" className={`text-[9px] py-0 px-1 ${labelColor}`}>
+                <span className="text-base font-medium text-foreground">{prayer.name}</span>
+                <Badge variant="outline" className={`text-[11px] py-0 px-1 ${labelColor}`}>
                   {LEVEL_LABEL[prayer.level] ?? prayer.level}
                 </Badge>
                 {actionLbl && (
-                  <Badge variant="outline" className={`text-[9px] py-0 px-1 ${actionColor(prayer.castingTime)}`}>
+                  <Badge variant="outline" className={`text-[11px] py-0 px-1 ${actionColor(prayer.castingTime)}`}>
                     {actionLbl}
                   </Badge>
                 )}
                 {prayer.tags?.map(tag => (
-                  <span key={tag} className="text-[9px] text-muted-foreground/60">{tag}</span>
+                  <span key={tag} className="text-[11px] text-muted-foreground/60">{tag}</span>
                 ))}
               </div>
 
@@ -147,7 +147,7 @@ function PrayerRow({
                     <button
                       key={sl}
                       onClick={e => { e.stopPropagation(); onCast(sl) }}
-                      className="text-[9px] px-1.5 py-0.5 rounded border border-[var(--wh-gold)]/30 text-[var(--wh-gold)] hover:bg-[var(--wh-gold)]/10 transition-colors"
+                      className="text-[11px] px-1.5 py-0.5 rounded border border-[var(--wh-gold)]/30 text-[var(--wh-gold)] hover:bg-[var(--wh-gold)]/10 transition-colors"
                     >
                       Cast {LEVEL_LABEL[sl]}
                     </button>
@@ -164,7 +164,7 @@ function PrayerRow({
             isCantrip ? null : (
               <button
                 onClick={onUnprepare}
-                className="text-[9px] px-1.5 py-0.5 rounded border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
+                className="text-[11px] px-1.5 py-0.5 rounded border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
               >
                 UNPREPARE
               </button>
@@ -173,7 +173,7 @@ function PrayerRow({
             <button
               onClick={onPrepare}
               disabled={!canPrepare && !isCantrip}
-              className={`text-[9px] px-1.5 py-0.5 rounded border transition-colors ${
+              className={`text-[11px] px-1.5 py-0.5 rounded border transition-colors ${
                 canPrepare || isCantrip
                   ? 'border-[var(--wh-gold)]/30 text-[var(--wh-gold)] hover:bg-[var(--wh-gold)]/10 cursor-pointer'
                   : 'border-border text-muted-foreground/30 cursor-not-allowed'
@@ -187,14 +187,14 @@ function PrayerRow({
       </div>
 
       <CollapsibleContent>
-        <div className="mx-3 mb-2 mt-0.5 pl-6 text-xs text-muted-foreground border-l border-border space-y-1">
+        <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground border-l border-border space-y-1">
           {renderDescription(prayer.description)}
           {prayer.higherLevels && (
-            <p className="text-[10px] italic text-muted-foreground/70">
+            <p className="text-xs italic text-muted-foreground/70">
               <strong>At Higher Levels:</strong> {prayer.higherLevels}
             </p>
           )}
-          <p className="text-[9px] text-muted-foreground/50">
+          <p className="text-[11px] text-muted-foreground/50">
             {prayer.castingTime} · {prayer.range} · {prayer.duration}
           </p>
         </div>
@@ -300,13 +300,13 @@ export default function PrayersTab({ characterId }: Props) {
       {/* ── Prayer Slots ── */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+          <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
             Prayer Slots
           </p>
-          <span className="text-[9px] text-muted-foreground italic">Regain on long rest</span>
+          <span className="text-[11px] text-muted-foreground italic">Regain on long rest</span>
         </div>
         {slotLevels.length === 0 ? (
-          <p className="text-xs text-muted-foreground/50 italic">
+          <p className="text-sm text-muted-foreground/50 italic">
             No prayer slots — gain them by levelling up.
           </p>
         ) : (
@@ -327,10 +327,10 @@ export default function PrayersTab({ characterId }: Props) {
       {/* ── Prepared Prayers ── */}
       <div>
         <div className="flex items-center justify-between mb-1">
-          <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+          <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
             Prepared Prayers
           </p>
-          <span className="text-[9px] text-muted-foreground tabular-nums">
+          <span className="text-[11px] text-muted-foreground tabular-nums">
             {prepCount} / {prepLimit}
           </span>
         </div>
@@ -338,7 +338,7 @@ export default function PrayersTab({ characterId }: Props) {
         {/* Cantrips — always shown, always prepared */}
         {cantrips.filter(p => matchesFilter(p) || filter === 'all' || filter === '0').length > 0 && (
           <div className="mb-1">
-            <p className="text-[9px] text-muted-foreground/60 mb-0.5 pl-1">Sacred Rites (Cantrips)</p>
+            <p className="text-[11px] text-muted-foreground/60 mb-0.5 pl-1">Sacred Rites (Cantrips)</p>
             <div className="divide-y divide-border/50 border border-border rounded-md">
               {cantrips.map(prayer => (
                 <PrayerRow
@@ -375,7 +375,7 @@ export default function PrayersTab({ characterId }: Props) {
           </div>
         ) : (
           filter === 'all' || filter !== '0'
-            ? <p className="text-xs text-muted-foreground/50 italic pl-1">No prayers prepared.</p>
+            ? <p className="text-sm text-muted-foreground/50 italic pl-1">No prayers prepared.</p>
             : null
         )}
       </div>
@@ -388,7 +388,7 @@ export default function PrayersTab({ characterId }: Props) {
             size="sm"
             variant={filter === value ? 'default' : 'outline'}
             onClick={() => setFilter(value)}
-            className="shrink-0 text-[10px] tracking-wide h-7 px-2"
+            className="shrink-0 text-xs tracking-wide h-7 px-2"
           >
             {label}
           </Button>
@@ -400,13 +400,13 @@ export default function PrayersTab({ characterId }: Props) {
         const visible = unpreparedPool.filter(p => matchesFilter(p))
         if (visible.length === 0 && filter !== '0') return (
           <div className="flex flex-col items-center justify-center h-16 gap-1 text-muted-foreground/40 border border-dashed border-border rounded-lg">
-            <span className="text-xs italic">All matching prayers prepared</span>
+            <span className="text-sm italic">All matching prayers prepared</span>
           </div>
         )
         if (visible.length === 0) return null
         return (
           <div>
-            <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
+            <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
               Available Prayers
             </p>
             <div className="divide-y divide-border/50 border border-border rounded-md">

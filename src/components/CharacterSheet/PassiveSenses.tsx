@@ -16,10 +16,10 @@ function SenseRow({ value, line1, line2 }: { value: number; line1: string; line2
         {value}
       </span>
       <div className="flex flex-col leading-tight">
-        <span className="text-[9px] text-muted-foreground uppercase tracking-[0.15em] font-medium">
+        <span className="text-[11px] text-muted-foreground uppercase tracking-[0.15em] font-medium">
           {line1}
         </span>
-        <span className="text-[9px] text-muted-foreground uppercase tracking-[0.15em] font-medium">
+        <span className="text-[11px] text-muted-foreground uppercase tracking-[0.15em] font-medium">
           {line2}
         </span>
       </div>
@@ -49,7 +49,7 @@ export default function PassiveSenses({ characterId }: Props) {
   return (
     <Card>
       <CardHeader className="border-b pb-3">
-        <CardTitle className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
+        <CardTitle className="text-sm font-bold tracking-widest uppercase text-muted-foreground">
           Passive Senses
         </CardTitle>
       </CardHeader>

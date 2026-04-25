@@ -63,7 +63,7 @@ export default function SkillList({ characterId }: Props) {
   return (
     <Card>
       <CardHeader className="border-b pb-3">
-        <CardTitle className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
+        <CardTitle className="text-sm font-bold tracking-widest uppercase text-muted-foreground">
           Skills
         </CardTitle>
       </CardHeader>
@@ -72,9 +72,9 @@ export default function SkillList({ characterId }: Props) {
         {/* Column header */}
         <div className="flex items-center gap-2 px-1 py-1.5 border-b border-border/50">
           <span className="w-3 flex-shrink-0" />
-          <span className="w-7 text-[9px] uppercase tracking-wider text-muted-foreground/60 flex-shrink-0">MOD</span>
-          <span className="flex-1 text-[9px] uppercase tracking-wider text-muted-foreground/60">SKILL</span>
-          <span className="w-8 text-right text-[9px] uppercase tracking-wider text-muted-foreground/60 flex-shrink-0">BONUS</span>
+          <span className="w-7 text-[11px] uppercase tracking-wider text-muted-foreground/60 flex-shrink-0">MOD</span>
+          <span className="flex-1 text-[11px] uppercase tracking-wider text-muted-foreground/60">SKILL</span>
+          <span className="w-8 text-right text-[11px] uppercase tracking-wider text-muted-foreground/60 flex-shrink-0">BONUS</span>
         </div>
 
         {/* Skill rows */}
@@ -130,17 +130,17 @@ export default function SkillList({ characterId }: Props) {
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doRoll() } }}
                   title={`Left-click to roll · Right-click for Advantage/Disadvantage`}
                 >
-                  <span className="w-7 text-[10px] uppercase text-muted-foreground flex-shrink-0 group-hover:text-muted-foreground/80">
+                  <span className="w-7 text-xs uppercase text-muted-foreground flex-shrink-0 group-hover:text-muted-foreground/80">
                     {ABILITY_ABBR[ability]}
                   </span>
-                  <span className={`flex-1 text-xs transition-colors ${proficient ? 'text-foreground font-medium' : 'text-foreground/75'}`}>
+                  <span className={`flex-1 text-sm transition-colors ${proficient ? 'text-foreground font-medium' : 'text-foreground/75'}`}>
                     {label}
                   </span>
-                  <span className={`w-8 text-right font-mono text-xs flex-shrink-0 tabular-nums ${proficient ? 'text-foreground font-semibold' : 'text-foreground/70'}`}>
+                  <span className={`w-8 text-right font-mono text-sm flex-shrink-0 tabular-nums ${proficient ? 'text-foreground font-semibold' : 'text-foreground/70'}`}>
                     {bonusStr}
                   </span>
                   {/* Dice icon hint */}
-                  <span className="text-[9px] text-muted-foreground/0 group-hover:text-muted-foreground/40 transition-opacity shrink-0" aria-hidden>
+                  <span className="text-[11px] text-muted-foreground/0 group-hover:text-muted-foreground/40 transition-opacity shrink-0" aria-hidden>
                     🎲
                   </span>
                 </div>

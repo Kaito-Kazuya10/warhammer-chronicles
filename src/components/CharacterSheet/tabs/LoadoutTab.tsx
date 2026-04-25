@@ -102,7 +102,7 @@ function AugmentRow({
         <CollapsibleTrigger className="flex-1 text-left min-w-0 focus:outline-none">
           <div className="flex items-start gap-2 py-2 pl-2 pr-1">
             <span
-              className="mt-0.5 flex-shrink-0 text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
+              className="mt-0.5 flex-shrink-0 text-sm text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
               style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 150ms' }}
               aria-hidden="true"
             >
@@ -111,25 +111,25 @@ function AugmentRow({
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className={`text-sm font-medium ${installed && hasUses && usesSpent >= usesMax ? 'text-muted-foreground/50' : 'text-foreground'}`}>
+                <span className={`text-base font-medium ${installed && hasUses && usesSpent >= usesMax ? 'text-muted-foreground/50' : 'text-foreground'}`}>
                   {augment.name}
                 </span>
                 <SlotPips cost={augment.slotCost} />
-                <Badge variant="outline" className={`text-[9px] py-0 px-1 ${CATEGORY_COLOR[augment.category]}`}>
+                <Badge variant="outline" className={`text-[11px] py-0 px-1 ${CATEGORY_COLOR[augment.category]}`}>
                   {augment.category}
                 </Badge>
                 {augment.actionType && ACTION_LABEL[augment.actionType] && (
-                  <Badge variant="outline" className={`text-[9px] py-0 px-1 ${ACTION_COLOR[augment.actionType] ?? ''}`}>
+                  <Badge variant="outline" className={`text-[11px] py-0 px-1 ${ACTION_COLOR[augment.actionType] ?? ''}`}>
                     {ACTION_LABEL[augment.actionType]}
                   </Badge>
                 )}
                 {augment.isWeapon && (
-                  <Badge variant="outline" className="text-[9px] py-0 px-1 bg-[var(--wh-crimson)]/10 text-[var(--wh-crimson)] border-[var(--wh-crimson)]/30">
+                  <Badge variant="outline" className="text-[11px] py-0 px-1 bg-[var(--wh-crimson)]/10 text-[var(--wh-crimson)] border-[var(--wh-crimson)]/30">
                     Weapon
                   </Badge>
                 )}
                 {augment.tags?.map(tag => (
-                  <span key={tag} className="text-[9px] text-muted-foreground/60">{tag}</span>
+                  <span key={tag} className="text-[11px] text-muted-foreground/60">{tag}</span>
                 ))}
               </div>
 
@@ -148,7 +148,7 @@ function AugmentRow({
                       aria-label={i < usesSpent ? 'Unspend use' : 'Spend use'}
                     />
                   ))}
-                  <span className="text-[9px] text-muted-foreground ml-0.5">
+                  <span className="text-[11px] text-muted-foreground ml-0.5">
                     / {augment.usesPerRest === 'short' ? 'Short Rest' : 'Long Rest'}
                   </span>
                 </div>
@@ -162,7 +162,7 @@ function AugmentRow({
           {installed ? (
             <button
               onClick={onUninstall}
-              className="text-[9px] px-1.5 py-0.5 rounded border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
+              className="text-[11px] px-1.5 py-0.5 rounded border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
               title="Uninstall augment"
             >
               REMOVE
@@ -171,7 +171,7 @@ function AugmentRow({
             <button
               onClick={onInstall}
               disabled={!canInstall}
-              className={`text-[9px] px-1.5 py-0.5 rounded border transition-colors ${
+              className={`text-[11px] px-1.5 py-0.5 rounded border transition-colors ${
                 canInstall
                   ? 'border-primary/30 text-primary hover:bg-primary/10 cursor-pointer'
                   : 'border-border text-muted-foreground/30 cursor-not-allowed'
@@ -185,7 +185,7 @@ function AugmentRow({
       </div>
 
       <CollapsibleContent>
-        <div className="mx-3 mb-2 mt-0.5 pl-6 text-xs text-muted-foreground border-l border-border">
+        <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground border-l border-border">
           {renderDescription(augment.description)}
         </div>
       </CollapsibleContent>
@@ -207,10 +207,10 @@ function SlotBar({ used, max }: { used: number; max: number }) {
           style={{ width: `${pct * 100}%`, backgroundColor: color }}
         />
       </div>
-      <span className="text-sm font-mono font-bold text-foreground tabular-nums flex-shrink-0">
+      <span className="text-base font-mono font-bold text-foreground tabular-nums flex-shrink-0">
         {used} / {max}
       </span>
-      <span className="text-[9px] uppercase tracking-widest text-muted-foreground flex-shrink-0">slots</span>
+      <span className="text-[11px] uppercase tracking-widest text-muted-foreground flex-shrink-0">slots</span>
     </div>
   )
 }
@@ -290,10 +290,10 @@ export default function LoadoutTab({ characterId }: Props) {
       {/* ── Slot counter ── */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+          <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
             Augment Slots
           </p>
-          <span className="text-[9px] text-muted-foreground italic">Swap on long rest</span>
+          <span className="text-[11px] text-muted-foreground italic">Swap on long rest</span>
         </div>
         <SlotBar used={slotsUsed} max={slotsMax} />
       </div>
@@ -302,16 +302,16 @@ export default function LoadoutTab({ characterId }: Props) {
       {hasPowerCells && (
         <div className="rounded-md border border-[var(--wh-gold)]/20 bg-[var(--wh-gold)]/5 p-3 space-y-1.5">
           <div className="flex items-center justify-between">
-            <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+            <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
               Power Cells
             </p>
-            <span className="text-[9px] text-muted-foreground italic">Recharge on short rest</span>
+            <span className="text-[11px] text-muted-foreground italic">Recharge on short rest</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setPowerCells(powerCells.current - 1)}
               disabled={powerCells.current <= 0}
-              className="text-[10px] w-5 h-5 rounded border border-border text-muted-foreground hover:bg-muted/50 flex items-center justify-center flex-shrink-0 disabled:opacity-30"
+              className="text-xs w-5 h-5 rounded border border-border text-muted-foreground hover:bg-muted/50 flex items-center justify-center flex-shrink-0 disabled:opacity-30"
             >
               −
             </button>
@@ -332,11 +332,11 @@ export default function LoadoutTab({ characterId }: Props) {
             <button
               onClick={() => setPowerCells(powerCells.current + 1)}
               disabled={powerCells.current >= powerCells.max}
-              className="text-[10px] w-5 h-5 rounded border border-border text-muted-foreground hover:bg-muted/50 flex items-center justify-center flex-shrink-0 disabled:opacity-30"
+              className="text-xs w-5 h-5 rounded border border-border text-muted-foreground hover:bg-muted/50 flex items-center justify-center flex-shrink-0 disabled:opacity-30"
             >
               +
             </button>
-            <span className="text-sm font-mono font-bold tabular-nums flex-shrink-0 min-w-[3rem] text-right">
+            <span className="text-base font-mono font-bold tabular-nums flex-shrink-0 min-w-[3rem] text-right">
               {powerCells.current} / {powerCells.max}
             </span>
           </div>
@@ -346,7 +346,7 @@ export default function LoadoutTab({ characterId }: Props) {
       {/* ── Installed augments ── */}
       {installedAugments.length > 0 && (
         <div>
-          <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
+          <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
             Installed ({installedAugments.length})
           </p>
           <div className="divide-y divide-border/50 border border-border rounded-md">
@@ -373,7 +373,7 @@ export default function LoadoutTab({ characterId }: Props) {
             size="sm"
             variant={filter === value ? 'default' : 'outline'}
             onClick={() => setFilter(value)}
-            className="shrink-0 text-[10px] tracking-wide h-7 px-2"
+            className="shrink-0 text-xs tracking-wide h-7 px-2"
           >
             {label}
           </Button>
@@ -386,7 +386,7 @@ export default function LoadoutTab({ characterId }: Props) {
         if (visible.length === 0) return null
         return (
           <div>
-            <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
+            <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
               Universal Augments
             </p>
             <div className="divide-y divide-border/50 border border-border rounded-md">
@@ -412,7 +412,7 @@ export default function LoadoutTab({ characterId }: Props) {
         if (visible.length === 0) return null
         return (
           <div>
-            <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
+            <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
               {subclassName} Exclusive
             </p>
             <div className="divide-y divide-border/50 border border-border rounded-md">
@@ -437,7 +437,7 @@ export default function LoadoutTab({ characterId }: Props) {
        specialized.filter(a => matchesFilter(a) && !installedIds.includes(a.id)).length === 0 && (
         <div className="flex flex-col items-center justify-center h-24 gap-1 text-muted-foreground/50 border border-dashed border-border rounded-lg">
           <span className="text-xl">⚙</span>
-          <span className="text-xs italic">All augments installed or no matches</span>
+          <span className="text-sm italic">All augments installed or no matches</span>
         </div>
       )}
 

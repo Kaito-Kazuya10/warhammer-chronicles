@@ -58,7 +58,7 @@ export default function DiceToolbar() {
             key={s}
             variant="outline"
             onClick={() => handleQuickRoll(s)}
-            className={`h-8 px-2 text-xs font-mono min-w-[36px] ${s === 20 && advMode !== 'normal' ? 'border-primary text-primary' : ''}`}
+            className={`h-8 px-2 text-sm font-mono min-w-[36px] ${s === 20 && advMode !== 'normal' ? 'border-primary text-primary' : ''}`}
           >
             d{s}
           </Button>
@@ -67,14 +67,14 @@ export default function DiceToolbar() {
 
       {/* Advantage / Disadvantage toggles (for d20) */}
       <div className="flex gap-1.5 items-center">
-        <span className="text-[10px] uppercase tracking-wide text-muted-foreground shrink-0">d20 mode:</span>
+        <span className="text-xs uppercase tracking-wide text-muted-foreground shrink-0">d20 mode:</span>
         {(['normal', 'advantage', 'disadvantage'] as const).map(mode => (
           <Button
             key={mode}
             size="sm"
             variant={advMode === mode ? 'default' : 'outline'}
             onClick={() => setAdvMode(mode)}
-            className="h-6 text-[10px] px-2 capitalize"
+            className="h-6 text-xs px-2 capitalize"
           >
             {mode === 'normal' ? 'Normal' : mode === 'advantage' ? 'Adv' : 'Dis'}
           </Button>
@@ -89,21 +89,21 @@ export default function DiceToolbar() {
           max={20}
           value={count}
           onChange={e => setCount(Math.max(1, Number(e.target.value) || 1))}
-          className="h-7 w-12 text-center text-sm px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="h-7 w-12 text-center text-base px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
-        <span className="text-muted-foreground text-sm font-mono">d</span>
+        <span className="text-muted-foreground text-base font-mono">d</span>
         <Input
           type="number"
           min={2}
           max={1000}
           value={sides}
           onChange={e => setSides(Math.max(2, Number(e.target.value) || 6))}
-          className="h-7 w-14 text-center text-sm px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          className="h-7 w-14 text-center text-base px-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
         <Button
           size="sm"
           onClick={handleCustomRoll}
-          className="h-7 text-xs px-3"
+          className="h-7 text-sm px-3"
         >
           Roll
         </Button>

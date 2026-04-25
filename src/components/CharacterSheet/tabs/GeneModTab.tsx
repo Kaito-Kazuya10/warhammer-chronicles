@@ -48,10 +48,10 @@ function StabilityBar({ used, max }: { used: number; max: number }) {
           style={{ width: `${pct * 100}%`, backgroundColor: color }}
         />
       </div>
-      <span className="text-sm font-mono font-bold text-foreground tabular-nums flex-shrink-0">
+      <span className="text-base font-mono font-bold text-foreground tabular-nums flex-shrink-0">
         {used} / {max}
       </span>
-      <span className="text-[9px] uppercase tracking-widest text-muted-foreground flex-shrink-0">SP</span>
+      <span className="text-[11px] uppercase tracking-widest text-muted-foreground flex-shrink-0">SP</span>
     </div>
   )
 }
@@ -149,7 +149,7 @@ function GeneModRow({
         <CollapsibleTrigger className="flex-1 text-left min-w-0 focus:outline-none">
           <div className="flex items-start gap-2 py-2 pl-2 pr-1">
             <span
-              className="mt-0.5 flex-shrink-0 text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
+              className="mt-0.5 flex-shrink-0 text-sm text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
               style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 150ms' }}
               aria-hidden="true"
             >
@@ -158,16 +158,16 @@ function GeneModRow({
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-sm font-medium text-foreground">{mod.name}</span>
+                <span className="text-base font-medium text-foreground">{mod.name}</span>
                 <StabPips cost={mod.stabilityCost} installed={installed} />
                 {installed && character && characterId && updateCharacter && (
                   <ModUsePips mod={mod} character={character} characterId={characterId} updateCharacter={updateCharacter} />
                 )}
-                <Badge variant="outline" className={`text-[9px] py-0 px-1 ${TIER_COLOR[mod.tier]}`}>
+                <Badge variant="outline" className={`text-[11px] py-0 px-1 ${TIER_COLOR[mod.tier]}`}>
                   {mod.tier}
                 </Badge>
                 {mod.tags?.map(tag => (
-                  <span key={tag} className="text-[9px] text-muted-foreground/60">{tag}</span>
+                  <span key={tag} className="text-[11px] text-muted-foreground/60">{tag}</span>
                 ))}
               </div>
             </div>
@@ -178,7 +178,7 @@ function GeneModRow({
           {installed ? (
             <button
               onClick={onUninstall}
-              className="text-[9px] px-1.5 py-0.5 rounded border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
+              className="text-[11px] px-1.5 py-0.5 rounded border border-destructive/30 text-destructive hover:bg-destructive/10 transition-colors"
             >
               REMOVE
             </button>
@@ -186,7 +186,7 @@ function GeneModRow({
             <button
               onClick={onInstall}
               disabled={!canInstall}
-              className={`text-[9px] px-1.5 py-0.5 rounded border transition-colors ${
+              className={`text-[11px] px-1.5 py-0.5 rounded border transition-colors ${
                 canInstall
                   ? 'border-primary/30 text-primary hover:bg-primary/10 cursor-pointer'
                   : 'border-border text-muted-foreground/30 cursor-not-allowed'
@@ -200,18 +200,18 @@ function GeneModRow({
       </div>
 
       <CollapsibleContent>
-        <div className="mx-3 mb-2 mt-0.5 pl-6 text-xs text-muted-foreground border-l border-border space-y-1.5">
+        <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground border-l border-border space-y-1.5">
           <div>
-            <p className="text-[9px] uppercase tracking-widest text-muted-foreground/60 mb-0.5">Passive Effect</p>
+            <p className="text-[11px] uppercase tracking-widest text-muted-foreground/60 mb-0.5">Passive Effect</p>
             <div>{renderDescription(mod.passiveEffect)}</div>
           </div>
           <div>
-            <p className="text-[9px] uppercase tracking-widest text-primary/60 mb-0.5">During Gene-Surge</p>
+            <p className="text-[11px] uppercase tracking-widest text-primary/60 mb-0.5">During Gene-Surge</p>
             <div>{renderDescription(mod.geneSurgeEffect)}</div>
           </div>
           {mod.sideEffect && (
             <div>
-              <p className="text-[9px] uppercase tracking-widest text-[var(--wh-warning)]/70 mb-0.5">Side Effect</p>
+              <p className="text-[11px] uppercase tracking-widest text-[var(--wh-warning)]/70 mb-0.5">Side Effect</p>
               <div className="text-[var(--wh-warning)]/80">{renderDescription(mod.sideEffect)}</div>
             </div>
           )}
@@ -317,7 +317,7 @@ export default function GeneModTab({ characterId }: Props) {
       <div className="rounded-md border border-green-500/20 bg-green-500/5 p-3 space-y-2">
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+            <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
               Genetic Stability
               <span className="ml-1 text-muted-foreground/50 normal-case tracking-normal font-normal">
                 (CON mod + prof × 2)
@@ -327,14 +327,14 @@ export default function GeneModTab({ characterId }: Props) {
           {/* Gene-Surge toggle + remaining counter */}
           <div className="flex items-center gap-2 shrink-0">
             {surgesRemaining !== null && (
-              <span className="text-[10px] font-mono text-muted-foreground tabular-nums">
+              <span className="text-xs font-mono text-muted-foreground tabular-nums">
                 {surgesRemaining}/{surgesMax}
               </span>
             )}
             <button
               onClick={toggleSurge}
               disabled={!isInSurge && surgesRemaining !== null && surgesRemaining <= 0}
-              className={`text-[9px] px-2 py-1 rounded border transition-colors font-semibold tracking-widest ${
+              className={`text-[11px] px-2 py-1 rounded border transition-colors font-semibold tracking-widest ${
                 isInSurge
                   ? 'border-green-500/60 bg-green-500/20 text-green-400 hover:bg-green-500/30'
                   : surgesRemaining !== null && surgesRemaining <= 0
@@ -352,11 +352,11 @@ export default function GeneModTab({ characterId }: Props) {
 
         <div className="flex items-center justify-between gap-2">
           {overThreshold ? (
-            <p className="text-[9px] text-[var(--wh-crimson)] font-semibold">
+            <p className="text-[11px] text-[var(--wh-crimson)] font-semibold">
               ⚠ Over threshold by {stabilityUsed - stabilityMax} SP — stability check penalty active
             </p>
           ) : (
-            <p className="text-[9px] text-muted-foreground/50 italic">
+            <p className="text-[11px] text-muted-foreground/50 italic">
               {stabilityMax - stabilityUsed > 0
                 ? `+${stabilityMax - stabilityUsed} bonus to stability check`
                 : 'At limit — no bonus or penalty'}
@@ -364,7 +364,7 @@ export default function GeneModTab({ characterId }: Props) {
           )}
           <button
             onClick={rollStabilityCheck}
-            className="shrink-0 text-[9px] px-2 py-1 rounded border border-border text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-colors tracking-wider"
+            className="shrink-0 text-[11px] px-2 py-1 rounded border border-border text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-colors tracking-wider"
             title="Roll Gene Stability Check (d20 ± free stability slots)"
           >
             🎲 STABILITY CHECK
@@ -375,7 +375,7 @@ export default function GeneModTab({ characterId }: Props) {
       {/* ── Installed Modifications ── */}
       {installedMods.length > 0 && (
         <div>
-          <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
+          <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
             Installed ({installedMods.length})
           </p>
           <div className="divide-y divide-border/50 border border-border rounded-md">
@@ -404,7 +404,7 @@ export default function GeneModTab({ characterId }: Props) {
             size="sm"
             variant={filter === value ? 'default' : 'outline'}
             onClick={() => setFilter(value)}
-            className="shrink-0 text-[10px] tracking-wide h-7 px-2"
+            className="shrink-0 text-xs tracking-wide h-7 px-2"
           >
             {label}
           </Button>
@@ -417,7 +417,7 @@ export default function GeneModTab({ characterId }: Props) {
         if (visible.length === 0) return null
         return (
           <div>
-            <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
+            <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
               Base Modifications
             </p>
             <div className="divide-y divide-border/50 border border-border rounded-md">
@@ -442,7 +442,7 @@ export default function GeneModTab({ characterId }: Props) {
         if (visible.length === 0) return null
         return (
           <div>
-            <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
+            <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold mb-1">
               {archName} Exclusive
             </p>
             <div className="divide-y divide-border/50 border border-border rounded-md">
@@ -466,7 +466,7 @@ export default function GeneModTab({ characterId }: Props) {
        archetypeMods.filter(m => matchesFilter(m) && !installedIds.includes(m.id)).length === 0 && (
         <div className="flex flex-col items-center justify-center h-24 gap-1 text-muted-foreground/50 border border-dashed border-border rounded-lg">
           <span className="text-xl">🧬</span>
-          <span className="text-xs italic">All modifications installed or no matches</span>
+          <span className="text-sm italic">All modifications installed or no matches</span>
         </div>
       )}
 

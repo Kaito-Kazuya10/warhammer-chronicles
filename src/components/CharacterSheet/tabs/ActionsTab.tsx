@@ -153,7 +153,7 @@ function FilterBar({
           size="sm"
           variant={active === value ? 'default' : 'outline'}
           onClick={() => onChange(value)}
-          className="shrink-0 text-[10px] tracking-wide h-7 px-2"
+          className="shrink-0 text-xs tracking-wide h-7 px-2"
         >
           {label}
         </Button>
@@ -218,9 +218,9 @@ function AmmoStrip({
 
   return (
     <div className="flex items-center gap-2 mt-1.5 px-1 flex-wrap">
-      <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold shrink-0">AMMO</span>
+      <span className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold shrink-0">AMMO</span>
       {item.ammoName && (
-        <span className="text-[10px] text-muted-foreground shrink-0">{item.ammoName}</span>
+        <span className="text-xs text-muted-foreground shrink-0">{item.ammoName}</span>
       )}
 
       {/* Pack type: pip dots */}
@@ -236,12 +236,12 @@ function AmmoStrip({
               }`}
             />
           ))}
-          <span className="text-[10px] font-mono ml-1 text-muted-foreground">{current}/{capacity}</span>
+          <span className="text-xs font-mono ml-1 text-muted-foreground">{current}/{capacity}</span>
         </div>
       ) : (
         /* Shot/belt type: fill bar */
         <div className="flex items-center gap-1.5">
-          <span className={`text-xs font-mono tabular-nums ${low ? 'text-destructive' : 'text-foreground'}`}>
+          <span className={`text-sm font-mono tabular-nums ${low ? 'text-destructive' : 'text-foreground'}`}>
             {current}/{capacity}
           </span>
           <div className="w-20 h-1.5 rounded-full bg-muted overflow-hidden">
@@ -255,13 +255,13 @@ function AmmoStrip({
 
       {/* Misfire flash */}
       {misfire && (
-        <span className="text-[10px] font-bold text-destructive animate-pulse">MISFIRE!</span>
+        <span className="text-xs font-bold text-destructive animate-pulse">MISFIRE!</span>
       )}
 
       {/* Buttons */}
       {!isPack && (
         <button
-          className="text-[10px] px-1.5 py-0.5 rounded border border-border hover:bg-muted transition-colors font-mono"
+          className="text-xs px-1.5 py-0.5 rounded border border-border hover:bg-muted transition-colors font-mono"
           onClick={() => patch(-1)}
           disabled={current === 0}
         >
@@ -269,21 +269,21 @@ function AmmoStrip({
         </button>
       )}
       <button
-        className="text-[10px] px-1.5 py-0.5 rounded border border-destructive/50 text-destructive hover:bg-destructive/10 transition-colors font-bold"
+        className="text-xs px-1.5 py-0.5 rounded border border-destructive/50 text-destructive hover:bg-destructive/10 transition-colors font-bold"
         onClick={() => patch(-1, true)}
         disabled={current === 0}
       >
         NAT 1!
       </button>
       <button
-        className="text-[10px] px-1.5 py-0.5 rounded border border-border hover:bg-muted transition-colors"
+        className="text-xs px-1.5 py-0.5 rounded border border-border hover:bg-muted transition-colors"
         onClick={reload}
       >
         RELOAD
       </button>
       {item.rechargeable && (
         <button
-          className="text-[10px] px-1.5 py-0.5 rounded border border-border text-muted-foreground hover:bg-muted transition-colors"
+          className="text-xs px-1.5 py-0.5 rounded border border-border text-muted-foreground hover:bg-muted transition-colors"
           onClick={reload}
         >
           ⚡ RECHARGE
@@ -341,7 +341,7 @@ function WeaponRow({
       <tr className="border-b border-border/50 hover:bg-muted/30 transition-colors group">
         <td className="py-2 pr-3">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-medium text-foreground text-xs">
+            <span className="font-medium text-foreground text-sm">
               {item.rangeType === 'ranged' ? '🏹' : '⚔'} {item.name}
             </span>
             {effectiveTier !== 'standard' && (
@@ -351,28 +351,28 @@ function WeaponRow({
                     <span>
                       <Badge
                         variant="outline"
-                        className={`text-[9px] h-4 px-1 cursor-help ${TIER_BADGE[effectiveTier] ?? ''}`}
+                        className={`text-[11px] h-4 px-1 cursor-help ${TIER_BADGE[effectiveTier] ?? ''}`}
                       >
                         {effectiveTier === 'master-crafted' ? 'MC' : effectiveTier}
                       </Badge>
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="text-xs max-w-[200px] capitalize">{tierTooltipText(effectiveTier)}</p>
+                    <p className="text-sm max-w-[200px] capitalize">{tierTooltipText(effectiveTier)}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
             {invItem.rolledTrait && (
-              <Badge variant="outline" className="text-[9px] h-4 px-1 bg-muted/40 text-muted-foreground border-border cursor-help" title={invItem.rolledTrait.effect}>
+              <Badge variant="outline" className="text-[11px] h-4 px-1 bg-muted/40 text-muted-foreground border-border cursor-help" title={invItem.rolledTrait.effect}>
                 ✦ {invItem.rolledTrait.name}
               </Badge>
             )}
             {invItem.quantity > 1 && (
-              <span className="text-[10px] text-muted-foreground">×{invItem.quantity}</span>
+              <span className="text-xs text-muted-foreground">×{invItem.quantity}</span>
             )}
           </div>
-          <p className="text-[10px] text-muted-foreground capitalize mt-0.5">
+          <p className="text-xs text-muted-foreground capitalize mt-0.5">
             {item.rangeType ?? (item.range ? 'ranged' : 'melee')} weapon
           </p>
           {/* Ammo strip */}
@@ -380,13 +380,13 @@ function WeaponRow({
             <AmmoStrip invItem={invItem} item={item} characterId={characterId} />
           )}
         </td>
-        <td className="py-2 pr-3 text-right text-xs tabular-nums whitespace-nowrap text-foreground/80">
+        <td className="py-2 pr-3 text-right text-sm tabular-nums whitespace-nowrap text-foreground/80">
           {range}
         </td>
-        <td className="py-2 pr-3 text-right text-xs tabular-nums font-mono font-semibold text-foreground">
+        <td className="py-2 pr-3 text-right text-sm tabular-nums font-mono font-semibold text-foreground">
           {fmtBonus(hitBonus)}
         </td>
-        <td className="py-2 pr-3 text-right text-xs tabular-nums text-foreground/80 whitespace-nowrap">
+        <td className="py-2 pr-3 text-right text-sm tabular-nums text-foreground/80 whitespace-nowrap">
           {item.damage ? (
             <button
               className="font-mono hover:text-primary hover:underline cursor-pointer transition-colors"
@@ -397,7 +397,7 @@ function WeaponRow({
             </button>
           ) : damage}
         </td>
-        <td className="py-2 text-right text-[10px] text-muted-foreground max-w-[100px]">
+        <td className="py-2 text-right text-xs text-muted-foreground max-w-[100px]">
           {(item.properties ?? []).length === 0 ? '—' : (
             <TooltipProvider>
               <div className="flex flex-wrap gap-x-1 gap-y-0.5 justify-end">
@@ -409,8 +409,8 @@ function WeaponRow({
                         <span className="underline decoration-dotted cursor-help">{p}</span>
                       </TooltipTrigger>
                       <TooltipContent side="left">
-                        <p className="font-semibold text-xs mb-0.5">{tip.name}</p>
-                        <p className="text-xs opacity-90 max-w-[220px]">{tip.shortDescription}</p>
+                        <p className="font-semibold text-sm mb-0.5">{tip.name}</p>
+                        <p className="text-sm opacity-90 max-w-[220px]">{tip.shortDescription}</p>
                       </TooltipContent>
                     </Tooltip>
                   ) : (
@@ -422,7 +422,7 @@ function WeaponRow({
           )}
           {activeAbilities.length > 0 && (
             <button
-              className="ml-1.5 text-primary hover:underline text-[10px]"
+              className="ml-1.5 text-primary hover:underline text-xs"
               onClick={() => setAbOpen(o => !o)}
             >
               {abOpen ? '▲' : '▼'} abilities
@@ -437,19 +437,19 @@ function WeaponRow({
           <td colSpan={5} className="px-3 py-2">
             <div className="space-y-2">
               {activeAbilities.map(ab => (
-                <div key={ab.name} className="text-xs">
+                <div key={ab.name} className="text-sm">
                   <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
                     <span className="font-medium">{ab.name}</span>
                     {ab.actionType && ACTION_TYPE_LABELS[ab.actionType] && (
                       <Badge
                         variant="outline"
-                        className={`text-[9px] h-4 px-1 ${ACTION_TYPE_BADGE_CLASS[ab.actionType] ?? ''}`}
+                        className={`text-[11px] h-4 px-1 ${ACTION_TYPE_BADGE_CLASS[ab.actionType] ?? ''}`}
                       >
                         {ACTION_TYPE_LABELS[ab.actionType]}
                       </Badge>
                     )}
                     {ab.usesPerRest && (
-                      <Badge variant="outline" className="text-[9px] h-4 px-1">
+                      <Badge variant="outline" className="text-[11px] h-4 px-1">
                         {ab.usesPerRest} rest
                       </Badge>
                     )}
@@ -503,7 +503,7 @@ function AttackSection({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
+        <p className="text-sm font-bold tracking-widest uppercase text-muted-foreground">
           Attacks per action:{' '}
           <span className="text-foreground">{attacksPerAction}</span>
         </p>
@@ -512,7 +512,7 @@ function AttackSection({
       {weapons.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-24 gap-1 text-muted-foreground/50 border border-dashed border-border rounded-lg">
           <span className="text-xl">⚔</span>
-          <span className="text-xs italic">No weapons equipped</span>
+          <span className="text-sm italic">No weapons equipped</span>
         </div>
       ) : (
         <>
@@ -532,7 +532,7 @@ function AttackSection({
                   className="border border-border rounded-md p-3 space-y-1.5"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm">
+                    <span className="font-medium text-base">
                       {item.rangeType === 'ranged' ? '🏹' : '⚔'} {item.name}
                     </span>
                     {effectiveTier !== 'standard' && (
@@ -540,25 +540,25 @@ function AttackSection({
                         <Tooltip>
                           <TooltipTrigger>
                             <span>
-                              <Badge variant="outline" className={`text-[9px] h-4 px-1 cursor-help ${TIER_BADGE[effectiveTier] ?? ''}`}>
+                              <Badge variant="outline" className={`text-[11px] h-4 px-1 cursor-help ${TIER_BADGE[effectiveTier] ?? ''}`}>
                                 {effectiveTier === 'master-crafted' ? 'MC' : effectiveTier}
                               </Badge>
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p className="text-xs max-w-[200px] capitalize">{tierTooltipText(effectiveTier)}</p>
+                            <p className="text-sm max-w-[200px] capitalize">{tierTooltipText(effectiveTier)}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     )}
                   </div>
-                  <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div className="grid grid-cols-3 gap-2 text-sm">
                     <div>
-                      <p className="text-[9px] uppercase tracking-wide text-muted-foreground">HIT</p>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">HIT</p>
                       <p className="font-mono font-semibold">{fmtBonus(hitBonus)}</p>
                     </div>
                     <div>
-                      <p className="text-[9px] uppercase tracking-wide text-muted-foreground">DAMAGE</p>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">DAMAGE</p>
                       {item.damage ? (
                         <button
                           className="font-mono hover:text-primary hover:underline cursor-pointer transition-colors"
@@ -577,13 +577,13 @@ function AttackSection({
                       )}
                     </div>
                     <div>
-                      <p className="text-[9px] uppercase tracking-wide text-muted-foreground">RANGE</p>
+                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">RANGE</p>
                       <p>{range}</p>
                     </div>
                   </div>
                   {item.properties && item.properties.length > 0 && (
                     <TooltipProvider>
-                      <div className="flex flex-wrap gap-x-1 gap-y-0.5 text-[10px] text-muted-foreground">
+                      <div className="flex flex-wrap gap-x-1 gap-y-0.5 text-xs text-muted-foreground">
                         {item.properties.map(p => {
                           const tip = findPropTooltip(p)
                           return tip ? (
@@ -592,8 +592,8 @@ function AttackSection({
                                 <span className="underline decoration-dotted cursor-help">{p}</span>
                               </TooltipTrigger>
                               <TooltipContent side="top">
-                                <p className="font-semibold text-xs mb-0.5">{tip.name}</p>
-                                <p className="text-xs opacity-90 max-w-[220px]">{tip.shortDescription}</p>
+                                <p className="font-semibold text-sm mb-0.5">{tip.name}</p>
+                                <p className="text-sm opacity-90 max-w-[220px]">{tip.shortDescription}</p>
                               </TooltipContent>
                             </Tooltip>
                           ) : (
@@ -616,11 +616,11 @@ function AttackSection({
             <table className="w-full min-w-[520px]">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left text-[9px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">ATTACK</th>
-                  <th className="text-right text-[9px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">RANGE</th>
-                  <th className="text-right text-[9px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">HIT / DC</th>
-                  <th className="text-right text-[9px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">DAMAGE</th>
-                  <th className="text-right text-[9px] uppercase tracking-wider text-muted-foreground py-1.5 font-medium">NOTES</th>
+                  <th className="text-left text-[11px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">ATTACK</th>
+                  <th className="text-right text-[11px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">RANGE</th>
+                  <th className="text-right text-[11px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">HIT / DC</th>
+                  <th className="text-right text-[11px] uppercase tracking-wider text-muted-foreground py-1.5 pr-3 font-medium">DAMAGE</th>
+                  <th className="text-right text-[11px] uppercase tracking-wider text-muted-foreground py-1.5 font-medium">NOTES</th>
                 </tr>
               </thead>
               <tbody>
@@ -682,7 +682,7 @@ function FeatureRow({
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger className="flex w-full items-start gap-2 py-2 text-left focus:outline-none group hover:bg-muted/30 px-2 rounded-md transition-colors">
         <span
-          className="text-muted-foreground text-[10px] mt-0.5 shrink-0 transition-transform duration-150"
+          className="text-muted-foreground text-xs mt-0.5 shrink-0 transition-transform duration-150"
           style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}
           aria-hidden="true"
         >
@@ -690,19 +690,19 @@ function FeatureRow({
         </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className={`text-sm font-medium ${hasUses && usesSpent >= usesMax ? 'text-muted-foreground/50' : 'text-foreground'}`}>
+            <span className={`text-base font-medium ${hasUses && usesSpent >= usesMax ? 'text-muted-foreground/50' : 'text-foreground'}`}>
               {feature.name}
             </span>
             {actionLabel && (
               <Badge
                 variant="outline"
-                className={`text-[9px] h-4 px-1.5 ${badgeClass ?? ''}`}
+                className={`text-[11px] h-4 px-1.5 ${badgeClass ?? ''}`}
               >
                 {actionLabel}
               </Badge>
             )}
             {sourceName && (
-              <span className="text-[10px] text-muted-foreground/60 italic">({sourceName})</span>
+              <span className="text-xs text-muted-foreground/60 italic">({sourceName})</span>
             )}
           </div>
 
@@ -720,26 +720,26 @@ function FeatureRow({
                   aria-label={i < usesSpent ? 'Unspend use' : 'Spend use'}
                 />
               ))}
-              <span className="text-[9px] text-muted-foreground ml-0.5">
+              <span className="text-[11px] text-muted-foreground ml-0.5">
                 / {feature.usesPerRest === 'short' ? 'Short Rest' : 'Long Rest'}
               </span>
             </div>
           )}
           {!hasUses && feature.usesPerRest && (
             <div className="mt-1">
-              <Badge variant="outline" className="text-[9px] h-4 px-1.5 text-muted-foreground">
+              <Badge variant="outline" className="text-[11px] h-4 px-1.5 text-muted-foreground">
                 {feature.usesMax ? `${feature.usesMax}×` : ''}
                 {feature.usesPerRest === 'short' ? ' Short Rest' : ' Long Rest'}
               </Badge>
             </div>
           )}
 
-          <p className="text-[10px] text-muted-foreground mt-0.5">Lv. {feature.level}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Lv. {feature.level}</p>
         </div>
       </CollapsibleTrigger>
 
       <CollapsibleContent>
-        <div className="px-7 pb-3 pt-0.5 text-xs text-foreground/80">
+        <div className="px-7 pb-3 pt-0.5 text-sm text-foreground/80">
           {renderDescription(feature.description)}
         </div>
       </CollapsibleContent>
@@ -809,7 +809,7 @@ function ClassFeaturesSection({
 
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-1 mt-2">
+      <p className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-1 mt-2">
         Class Features
         {totalCount === 0 && (
           <span className="normal-case tracking-normal font-normal ml-1 italic">— none match this filter</span>
@@ -844,11 +844,11 @@ function CombatReference() {
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger className="flex w-full items-center justify-between py-2 px-2 rounded-md hover:bg-muted/30 transition-colors focus:outline-none text-left mt-2">
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
           Actions in Combat
         </span>
         <span
-          className="text-muted-foreground text-xs transition-transform duration-150"
+          className="text-muted-foreground text-sm transition-transform duration-150"
           style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}
           aria-hidden="true"
         >
@@ -859,7 +859,7 @@ function CombatReference() {
         <div className="px-2 pb-3 pt-1">
           <div className="flex flex-wrap gap-1.5">
             {COMBAT_ACTIONS.map(action => (
-              <Badge key={action} variant="outline" className="text-xs font-normal">
+              <Badge key={action} variant="outline" className="text-sm font-normal">
                 {action}
               </Badge>
             ))}
