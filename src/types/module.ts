@@ -239,11 +239,12 @@ export interface Race {
   abilityScoreChoices?: { choose: number; amount: number }
   speed: number
   size: 'tiny' | 'small' | 'medium' | 'large' | 'huge' | 'gargantuan'
-  tier?: 'standard' | 'advanced'     // advanced = GM approval required
+  tier?: 'standard' | 'advanced' | 'restricted'
   traits: RacialTrait[]
   drawbacks?: RacialTrait[]           // styled differently in UI
   languages: string[]
   tags?: string[]
+  incompatibleClasses?: string[]
 }
 
 // ─── Class ────────────────────────────────────────────────────────────────────
