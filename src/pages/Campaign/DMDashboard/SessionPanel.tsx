@@ -48,7 +48,7 @@ export default function SessionPanel({ campaignId }: SessionPanelProps) {
     : 0
 
   return (
-    <div className="mb-6 rounded-md border border-stone-700/20 bg-stone-800/20 p-4">
+    <div className="mb-6 rounded-md border border-zinc-700/20 bg-zinc-800/20 p-4">
       {error && (
         <p className="text-xs text-red-400 mb-3">{error}</p>
       )}
@@ -60,9 +60,9 @@ export default function SessionPanel({ campaignId }: SessionPanelProps) {
             <span className="text-xs text-green-400 tracking-widest uppercase">Session Active</span>
           </div>
           {activeSession.title && (
-            <p className="text-sm text-stone-200 mb-1">{activeSession.title}</p>
+            <p className="text-sm text-zinc-200 mb-1">{activeSession.title}</p>
           )}
-          <p className="text-[10px] text-stone-500 mb-3">
+          <p className="text-[10px] text-zinc-500 mb-3">
             Started {new Date(activeSession.startedAt).toLocaleTimeString()} · {elapsed} min
           </p>
 
@@ -73,7 +73,7 @@ export default function SessionPanel({ campaignId }: SessionPanelProps) {
                 value={summary}
                 onChange={e => setSummary(e.target.value)}
                 rows={3}
-                className="w-full bg-stone-900/50 border border-stone-700/30 rounded px-3 py-2 text-xs text-stone-200 placeholder-stone-600 resize-none focus:outline-none focus:border-amber-500/30"
+                className="w-full bg-zinc-900/50 border border-zinc-700/30 rounded px-3 py-2 text-xs text-zinc-200 placeholder-zinc-600 resize-none focus:outline-none focus:border-amber-500/30"
               />
               <div className="flex gap-2">
                 <button
@@ -85,7 +85,7 @@ export default function SessionPanel({ campaignId }: SessionPanelProps) {
                 </button>
                 <button
                   onClick={() => setShowEndForm(false)}
-                  className="px-3 py-1.5 rounded text-xs text-stone-500 hover:text-stone-300 transition-colors"
+                  className="px-3 py-1.5 rounded text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
                 >
                   Cancel
                 </button>
@@ -109,7 +109,7 @@ export default function SessionPanel({ campaignId }: SessionPanelProps) {
                 placeholder="Session title (optional)"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                className="w-full bg-stone-900/50 border border-stone-700/30 rounded px-3 py-2 text-xs text-stone-200 placeholder-stone-600 focus:outline-none focus:border-amber-500/30"
+                className="w-full bg-zinc-900/50 border border-zinc-700/30 rounded px-3 py-2 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-amber-500/30"
                 onKeyDown={e => e.key === 'Enter' && handleStart()}
               />
               <div className="flex gap-2">
@@ -122,7 +122,7 @@ export default function SessionPanel({ campaignId }: SessionPanelProps) {
                 </button>
                 <button
                   onClick={() => setShowStartForm(false)}
-                  className="px-3 py-1.5 rounded text-xs text-stone-500 hover:text-stone-300 transition-colors"
+                  className="px-3 py-1.5 rounded text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
                 >
                   Cancel
                 </button>

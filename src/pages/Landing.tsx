@@ -34,21 +34,21 @@ export default function Landing() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F0D0B] flex">
+    <div className="min-h-screen bg-[#111114] flex">
       {/* ── Sidebar ──────────────────────────────────────────────────────── */}
-      <aside className="w-56 shrink-0 bg-[#0B0A08] border-r border-stone-700/30 flex flex-col">
+      <aside className="w-56 shrink-0 bg-[#0C0C0F] border-r border-zinc-700/30 flex flex-col">
         {/* Account button (top) → navigate to Settings */}
         <button
           onClick={() => navigate('/settings')}
-          className="px-4 py-3 border-b border-stone-700/25 flex items-center gap-2 hover:bg-stone-700/15 transition-colors text-left"
+          className="px-4 py-3 border-b border-zinc-700/25 flex items-center gap-2 hover:bg-zinc-700/15 transition-colors text-left"
         >
-          <div className="w-7 h-7 rounded-full bg-stone-800 border border-stone-700/40 flex items-center justify-center shrink-0">
-            <span className="text-[9px] font-bold text-stone-400">
+          <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700/40 flex items-center justify-center shrink-0">
+            <span className="text-[9px] font-bold text-zinc-400">
               {(profile?.displayName || 'U').slice(0, 2).toUpperCase()}
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] text-stone-300 truncate font-medium">
+            <p className="text-[11px] text-zinc-300 truncate font-medium">
               {profile?.displayName || 'User'}
             </p>
             <p className="text-[9px] text-amber-500/50 uppercase tracking-wider">
@@ -67,14 +67,14 @@ export default function Landing() {
               className={`
                 flex items-center gap-3 px-3 py-2.5 rounded-md text-left text-sm transition-all
                 ${item.available
-                  ? 'text-stone-200 hover:bg-stone-700/25 hover:text-white cursor-pointer'
-                  : 'text-stone-600 cursor-not-allowed'
+                  ? 'text-zinc-200 hover:bg-zinc-700/25 hover:text-white cursor-pointer'
+                  : 'text-zinc-600 cursor-not-allowed'
                 }
               `}
             >
               <span className="tracking-wide">{item.label}</span>
               {!item.available && (
-                <span className="ml-auto text-[9px] text-stone-600 border border-stone-700/50 rounded px-1 py-0.5 leading-none">
+                <span className="ml-auto text-[9px] text-zinc-600 border border-zinc-700/50 rounded px-1 py-0.5 leading-none">
                   soon
                 </span>
               )}
@@ -85,7 +85,7 @@ export default function Landing() {
           <div className="flex-1" />
 
           {/* Bottom nav items */}
-          <div className="border-t border-stone-700/20 pt-2 mt-2 flex flex-col gap-0.5">
+          <div className="border-t border-zinc-700/20 pt-2 mt-2 flex flex-col gap-0.5">
             {BOTTOM_NAV.map(item => (
               <button
                 key={item.label}
@@ -94,14 +94,14 @@ export default function Landing() {
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-md text-left text-sm transition-all
                   ${item.available
-                    ? 'text-stone-200 hover:bg-stone-700/25 hover:text-white cursor-pointer'
-                    : 'text-stone-600 cursor-not-allowed'
+                    ? 'text-zinc-200 hover:bg-zinc-700/25 hover:text-white cursor-pointer'
+                    : 'text-zinc-600 cursor-not-allowed'
                   }
                 `}
               >
                 <span className="tracking-wide">{item.label}</span>
                 {!item.available && (
-                  <span className="ml-auto text-[9px] text-stone-600 border border-stone-700/50 rounded px-1 py-0.5 leading-none">
+                  <span className="ml-auto text-[9px] text-zinc-600 border border-zinc-700/50 rounded px-1 py-0.5 leading-none">
                     soon
                   </span>
                 )}
@@ -126,7 +126,7 @@ export default function Landing() {
         <section className="flex-1 px-8 pb-6">
           <div className="max-w-3xl mx-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xs tracking-[0.2em] text-stone-400 uppercase font-semibold">
+              <h3 className="text-xs tracking-[0.2em] text-zinc-400 uppercase font-semibold">
                 Your Characters
               </h3>
               <button
@@ -138,8 +138,8 @@ export default function Landing() {
             </div>
 
             {characters.length === 0 ? (
-              <div className="border border-dashed border-stone-700/40 rounded-lg py-12 text-center">
-                <p className="text-sm text-stone-500 tracking-wide">No characters yet</p>
+              <div className="border border-dashed border-zinc-700/40 rounded-lg py-12 text-center">
+                <p className="text-sm text-zinc-500 tracking-wide">No characters yet</p>
                 <button
                   onClick={() => navigate('/create')}
                   className="mt-3 text-xs text-amber-400/70 hover:text-amber-300 tracking-widest transition-colors"
@@ -153,21 +153,21 @@ export default function Landing() {
                   <button
                     key={c.id}
                     onClick={() => openCharacter(c.id)}
-                    className="group flex items-center gap-4 w-full text-left border border-stone-700/25 rounded-lg bg-stone-800/20 hover:bg-stone-700/25 hover:border-stone-600/40 transition-all px-4 py-3"
+                    className="group flex items-center gap-4 w-full text-left border border-zinc-700/25 rounded-lg bg-zinc-800/20 hover:bg-zinc-700/25 hover:border-zinc-600/40 transition-all px-4 py-3"
                   >
                     {/* Portrait or placeholder */}
-                    <div className="w-10 h-10 rounded-full bg-stone-800/50 border border-stone-700/30 flex items-center justify-center shrink-0 overflow-hidden">
+                    <div className="w-10 h-10 rounded-full bg-zinc-800/50 border border-zinc-700/30 flex items-center justify-center shrink-0 overflow-hidden">
                       {c.portrait ? (
                         <img src={c.portrait} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <span className="text-stone-600 text-[10px] font-bold">CH</span>
+                        <span className="text-zinc-600 text-[10px] font-bold">CH</span>
                       )}
                     </div>
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-baseline gap-2">
-                        <span className="text-sm font-semibold text-stone-100 group-hover:text-white truncate">
+                        <span className="text-sm font-semibold text-zinc-100 group-hover:text-white truncate">
                           {c.name}
                         </span>
                         {c.class && (
@@ -176,15 +176,15 @@ export default function Landing() {
                           </span>
                         )}
                       </div>
-                      <div className="flex gap-3 mt-0.5 text-[11px] text-stone-500">
+                      <div className="flex gap-3 mt-0.5 text-[11px] text-zinc-500">
                         <span>Lvl {c.level}</span>
                         <span>{c.currentHitPoints}/{c.maxHitPoints} Wounds</span>
-                        {c.race && <span className="text-stone-600">{c.race}</span>}
+                        {c.race && <span className="text-zinc-600">{c.race}</span>}
                       </div>
                     </div>
 
                     {/* Arrow */}
-                    <span className="text-stone-700 group-hover:text-amber-500/50 transition-colors text-xs">
+                    <span className="text-zinc-700 group-hover:text-amber-500/50 transition-colors text-xs">
                       →
                     </span>
                   </button>
@@ -198,10 +198,10 @@ export default function Landing() {
         <section className="px-8 pb-8">
           <div className="max-w-3xl mx-auto">
             <div className="flex items-center gap-3 mb-3">
-              <h3 className="text-xs tracking-[0.2em] text-stone-500 uppercase font-semibold">
+              <h3 className="text-xs tracking-[0.2em] text-zinc-500 uppercase font-semibold">
                 Compendium
               </h3>
-              <div className="h-px flex-1 bg-stone-800/60" />
+              <div className="h-px flex-1 bg-zinc-800/60" />
               <button
                 onClick={() => navigate('/compendium')}
                 className="text-[9px] text-amber-500/60 hover:text-amber-400 border border-amber-500/20 hover:border-amber-500/40 rounded px-1.5 py-0.5 tracking-wider transition-colors"
@@ -215,10 +215,10 @@ export default function Landing() {
                 <button
                   key={item.id}
                   onClick={() => navigate('/compendium')}
-                  className="border border-stone-700/20 rounded-md bg-stone-800/15 px-3 py-2.5 text-left hover:bg-stone-700/20 hover:border-stone-600/30 transition-colors"
+                  className="border border-zinc-700/20 rounded-md bg-zinc-800/15 px-3 py-2.5 text-left hover:bg-zinc-700/20 hover:border-zinc-600/30 transition-colors"
                 >
-                  <p className="text-xs text-stone-300 font-medium truncate">{item.name}</p>
-                  <p className="text-[10px] text-stone-600 capitalize">{item.type}</p>
+                  <p className="text-xs text-zinc-300 font-medium truncate">{item.name}</p>
+                  <p className="text-[10px] text-zinc-600 capitalize">{item.type}</p>
                 </button>
               ))}
             </div>

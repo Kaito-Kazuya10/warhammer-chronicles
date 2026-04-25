@@ -17,7 +17,7 @@ export default function PartyStrip({ characters, campaignId }: PartyStripProps) 
   return (
     <>
       <div className="mb-6">
-        <h4 className="text-[10px] text-stone-500 uppercase tracking-widest mb-2">
+        <h4 className="text-[10px] text-zinc-500 uppercase tracking-widest mb-2">
           Party ({characters.length})
         </h4>
         <div className="flex gap-2 overflow-x-auto pb-2">
