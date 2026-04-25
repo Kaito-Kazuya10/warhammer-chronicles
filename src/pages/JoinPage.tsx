@@ -38,18 +38,18 @@ export default function JoinPage() {
   }, [code])
 
   return (
-    <div className="min-h-screen bg-[#131519] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#0F0D0B] flex items-center justify-center p-6">
       <div className="w-full max-w-sm text-center space-y-4">
         {/* Title */}
         <div className="mb-6">
           <h1 className="text-xl font-bold text-amber-100 tracking-tight">Warhammer Chronicles</h1>
-          <p className="text-xs text-slate-500 tracking-[0.2em] uppercase mt-0.5">Campaign Invite</p>
+          <p className="text-xs text-stone-500 tracking-[0.2em] uppercase mt-0.5">Campaign Invite</p>
         </div>
 
         {status === 'joining' && (
           <>
             <div className="w-8 h-8 border-2 border-amber-500/30 border-t-amber-400 rounded-full animate-spin mx-auto" />
-            <p className="text-sm text-slate-400 tracking-wide animate-pulse">Joining campaign…</p>
+            <p className="text-sm text-stone-400 tracking-wide animate-pulse">Joining campaign…</p>
           </>
         )}
 
@@ -59,15 +59,15 @@ export default function JoinPage() {
             <p className="text-sm font-semibold text-amber-200">
               Joined{campaignName ? ` "${campaignName}"` : ''}!
             </p>
-            <p className="text-xs text-slate-500">Redirecting to your campaigns…</p>
+            <p className="text-xs text-stone-500">Redirecting to your campaigns…</p>
           </>
         )}
 
         {status === 'already-member' && (
           <>
             <div className="text-3xl">✓</div>
-            <p className="text-sm font-semibold text-slate-200">You're already in this campaign.</p>
-            <p className="text-xs text-slate-500">Redirecting to your campaigns…</p>
+            <p className="text-sm font-semibold text-stone-200">You're already in this campaign.</p>
+            <p className="text-xs text-stone-500">Redirecting to your campaigns…</p>
           </>
         )}
 

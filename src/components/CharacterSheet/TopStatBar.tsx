@@ -75,7 +75,7 @@ function CharacterHeader({ characterId, onLevelUp }: { characterId: string; onLe
           className="text-xl font-bold border-0 border-b border-border rounded-none px-0 h-auto py-0 mb-1 focus-visible:ring-0 shadow-none bg-transparent w-full"
         />
         <div className="flex items-center gap-1.5 flex-wrap">
-          <p className="text-sm text-muted-foreground truncate">
+          <p className="text-base text-muted-foreground truncate">
             Level{' '}
             <input
               type="number"
@@ -83,7 +83,7 @@ function CharacterHeader({ characterId, onLevelUp }: { characterId: string; onLe
               max={20}
               value={character.level}
               onChange={e => updateCharacter(characterId, { level: Math.max(1, Number(e.target.value) || 1) })}
-              className="w-7 text-center text-sm bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-7 text-center text-base bg-transparent border-none outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
             {raceName && ` ${raceName}`}
             {className && ` — ${className}`}
@@ -94,14 +94,14 @@ function CharacterHeader({ characterId, onLevelUp }: { characterId: string; onLe
           {character.level > 1 && !showLevelDown && (
             <button
               onClick={() => setShowLevelDown(true)}
-              className="w-5 h-5 rounded text-[10px] text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/40 transition-colors flex items-center justify-center"
+              className="w-5 h-5 rounded text-xs text-muted-foreground/40 hover:text-muted-foreground hover:bg-muted/40 transition-colors flex items-center justify-center"
               title="Reduce level"
             >
               −
             </button>
           )}
           {showLevelDown && (
-            <span className="inline-flex items-center gap-1 text-[10px]">
+            <span className="inline-flex items-center gap-1 text-xs">
               <span className="text-muted-foreground">Reduce to Lv {character.level - 1}?</span>
               <button onClick={handleLevelDown} className="text-destructive hover:underline font-semibold">Yes</button>
               <button onClick={() => setShowLevelDown(false)} className="text-muted-foreground hover:underline">No</button>
@@ -149,7 +149,7 @@ function AbilityScoreBlock({
 
   return (
     <div className="flex flex-col items-center justify-between border border-border bg-muted/20 rounded-md p-2 gap-0.5 min-w-0">
-      <span className="text-[8px] uppercase tracking-[0.08em] text-muted-foreground font-medium text-center leading-tight">{label}</span>
+      <span className="text-[11px] uppercase tracking-[0.08em] text-muted-foreground font-medium text-center leading-tight">{label}</span>
 
       {/* Modifier — left-click to roll, right-click for adv/dis */}
       <span
@@ -177,11 +177,11 @@ function AbilityScoreBlock({
             if (e.key === 'Enter')  { onChange(Number((e.target as HTMLInputElement).value)); setEditing(false) }
             if (e.key === 'Escape') setEditing(false)
           }}
-          className="h-6 w-12 text-center text-sm px-1"
+          className="h-6 w-12 text-center text-base px-1"
         />
       ) : (
         <span
-          className="text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none leading-none"
+          className="text-base text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none leading-none"
           aria-label={`${abilityKey} score: ${score}, click to edit`}
           onClick={() => setEditing(true)}
         >
@@ -198,7 +198,7 @@ function StatBox({ label, children }: { label: string; children: React.ReactNode
   return (
     <div className="flex flex-col items-center justify-center border border-border bg-muted/20 rounded-md p-3 gap-1.5 min-w-0">
       <span className="text-2xl font-bold font-mono text-foreground leading-none">{children}</span>
-      <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground text-center font-medium leading-tight">
+      <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground text-center font-medium leading-tight">
         {label}
       </span>
     </div>
@@ -266,14 +266,14 @@ function HPSection({ characterId }: { characterId: string }) {
           value={delta}
           onChange={e => setDelta(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') applyHeal() }}
-          className="h-7 w-14 text-center text-sm px-1"
+          className="h-7 w-14 text-center text-base px-1"
           min={0}
         />
         <Button
           size="sm"
           variant="outline"
           onClick={applyHeal}
-          className="text-[var(--wh-success)] border-[var(--wh-success)]/40 hover:bg-[var(--wh-success)]/10 hover:border-[var(--wh-success)]/60 text-xs"
+          className="text-[var(--wh-success)] border-[var(--wh-success)]/40 hover:bg-[var(--wh-success)]/10 hover:border-[var(--wh-success)]/60 text-sm"
         >
           HEAL ↑
         </Button>
@@ -281,7 +281,7 @@ function HPSection({ characterId }: { characterId: string }) {
           size="sm"
           variant="outline"
           onClick={applyDamage}
-          className="text-[var(--wh-warning)] border-[var(--wh-warning)]/40 hover:bg-[var(--wh-warning)]/10 hover:border-[var(--wh-warning)]/60 text-xs"
+          className="text-[var(--wh-warning)] border-[var(--wh-warning)]/40 hover:bg-[var(--wh-warning)]/10 hover:border-[var(--wh-warning)]/60 text-sm"
         >
           DMG ↓
         </Button>
@@ -293,7 +293,7 @@ function HPSection({ characterId }: { characterId: string }) {
           size="sm"
           variant="outline"
           onClick={() => setRestType('short')}
-          className="text-xs gap-1.5 text-foreground flex-1"
+          className="text-sm gap-1.5 text-foreground flex-1"
           title="Short Rest (1 hour)"
         >
           <Moon size={12} /> Short Rest
@@ -302,7 +302,7 @@ function HPSection({ characterId }: { characterId: string }) {
           size="sm"
           variant="outline"
           onClick={() => setRestType('long')}
-          className="text-xs gap-1.5 text-foreground flex-1"
+          className="text-sm gap-1.5 text-foreground flex-1"
           title="Long Rest (8 hours)"
         >
           <Sun size={12} /> Long Rest
@@ -322,7 +322,7 @@ function HPSection({ characterId }: { characterId: string }) {
       {/* HP numbers row — two equal boxes */}
       <div className="flex items-stretch gap-2">
         <div className="flex flex-col items-center border border-border bg-muted/20 rounded-md px-3 py-2 flex-1">
-          <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground mb-0.5">CURRENT</span>
+          <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground mb-0.5">CURRENT</span>
           <EditableNumber
             value={character.currentHitPoints}
             onChange={v => setHitPoints(characterId, v)}
@@ -330,7 +330,7 @@ function HPSection({ characterId }: { characterId: string }) {
           />
         </div>
         <div className="flex flex-col items-center border border-border bg-muted/20 rounded-md px-3 py-2 flex-1">
-          <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground mb-0.5">MAX</span>
+          <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground mb-0.5">MAX</span>
           <EditableNumber
             value={character.maxHitPoints}
             onChange={v => updateCharacter(characterId, { maxHitPoints: Math.max(1, v) })}
@@ -339,7 +339,7 @@ function HPSection({ characterId }: { characterId: string }) {
         </div>
         {character.temporaryHitPoints > 0 && (
           <div className="flex flex-col items-center border border-blue-500/30 bg-blue-500/5 rounded-md px-3 py-2 flex-1">
-            <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground mb-0.5">TEMP</span>
+            <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground mb-0.5">TEMP</span>
             <EditableNumber
               value={character.temporaryHitPoints}
               onChange={v => updateCharacter(characterId, { temporaryHitPoints: Math.max(0, v) })}
@@ -357,7 +357,7 @@ function HPSection({ characterId }: { characterId: string }) {
         />
       </div>
 
-      <p className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground font-medium">WOUNDS</p>
+      <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-medium">WOUNDS</p>
     </div>
   )
 }
@@ -466,9 +466,9 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
                 onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur() }}
                 className="text-2xl font-bold font-mono text-foreground bg-transparent border-none outline-none w-12 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
-              <span className="text-sm text-muted-foreground">ft</span>
+              <span className="text-base text-muted-foreground">ft</span>
             </div>
-            <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">SPEED</span>
+            <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">SPEED</span>
           </div>
 
           {/* Initiative — rollable */}
@@ -483,7 +483,7 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
             title="Left-click to roll · Right-click for Advantage/Disadvantage"
           >
             <span className="text-2xl font-bold font-mono text-foreground leading-none">{dexModStr}</span>
-            <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">INITIATIVE</span>
+            <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">INITIATIVE</span>
           </div>
 
           {/* Armor class — auto-computed from equipped armor */}
@@ -492,7 +492,7 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
             title={acBreakdown}
           >
             <span className="text-2xl font-bold font-mono text-foreground leading-none">{effectiveAC}</span>
-            <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">AC</span>
+            <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">AC</span>
           </div>
 
           {/* Inspiration toggle */}
@@ -507,7 +507,7 @@ export default function TopStatBar({ characterId, onLevelUp }: Props) {
             >
               {character.inspiration ? '★' : '☆'}
             </Toggle>
-            <span className="text-[9px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">INSP</span>
+            <span className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground font-medium leading-tight text-center">INSP</span>
           </div>
         </div>
 

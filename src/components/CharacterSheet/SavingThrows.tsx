@@ -45,7 +45,7 @@ export default function SavingThrows({ characterId }: Props) {
   return (
     <Card>
       <CardHeader className="border-b pb-3">
-        <CardTitle className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
+        <CardTitle className="text-sm font-bold tracking-widest uppercase text-muted-foreground">
           Saving Throws
         </CardTitle>
       </CardHeader>
@@ -100,14 +100,14 @@ export default function SavingThrows({ characterId }: Props) {
                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRoll() } }}
                 title={`Click to roll ${abbr} save`}
               >
-                <span className="w-7 text-right font-mono text-xs font-medium text-foreground/90 flex-shrink-0">
+                <span className="w-7 text-right font-mono text-sm font-medium text-foreground/90 flex-shrink-0">
                   {bonusStr}
                 </span>
-                <span className="text-xs uppercase tracking-wide text-muted-foreground flex-1">
+                <span className="text-sm uppercase tracking-wide text-muted-foreground flex-1">
                   {abbr}
                 </span>
                 {/* Dice icon hint */}
-                <span className="text-[9px] text-muted-foreground/0 group-hover:text-muted-foreground/40 transition-opacity shrink-0" aria-hidden>
+                <span className="text-[11px] text-muted-foreground/0 group-hover:text-muted-foreground/40 transition-opacity shrink-0" aria-hidden>
                   🎲
                 </span>
               </div>

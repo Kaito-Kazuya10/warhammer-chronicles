@@ -34,7 +34,7 @@ export default function BackgroundTab({ characterId }: Props) {
     return (
       <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground/50 border border-dashed border-border rounded-lg">
         <span className="text-2xl">📜</span>
-        <span className="text-sm italic">No background selected</span>
+        <span className="text-base italic">No background selected</span>
       </div>
     )
   }
@@ -47,7 +47,7 @@ export default function BackgroundTab({ characterId }: Props) {
         <CardHeader className="pb-2">
           <CardTitle className="text-base">{bg.name}</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground leading-relaxed">
+        <CardContent className="text-base text-muted-foreground leading-relaxed">
           {bg.description}
         </CardContent>
       </Card>
@@ -55,20 +55,20 @@ export default function BackgroundTab({ characterId }: Props) {
       {/* Card 2 — Background feature */}
       <Card>
         <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-          <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+          <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
             Feature
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-3 space-y-1">
-          <p className="text-sm font-semibold">{bg.feature.name}</p>
-          <p className="text-sm text-muted-foreground leading-relaxed">{bg.feature.description}</p>
+          <p className="text-base font-semibold">{bg.feature.name}</p>
+          <p className="text-base text-muted-foreground leading-relaxed">{bg.feature.description}</p>
         </CardContent>
       </Card>
 
       {/* Card 3 — Proficiencies & Languages */}
       <Card>
         <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-          <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+          <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
             Proficiencies & Languages
           </CardTitle>
         </CardHeader>
@@ -76,10 +76,10 @@ export default function BackgroundTab({ characterId }: Props) {
           {/* Skill proficiencies */}
           {bg.skillProficiencies.length > 0 && (
             <div className="space-y-1">
-              <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">Skills</p>
+              <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">Skills</p>
               <div className="flex flex-wrap gap-1">
                 {bg.skillProficiencies.map(s => (
-                  <Badge key={s} variant="outline" className="text-xs">
+                  <Badge key={s} variant="outline" className="text-sm">
                     {SKILL_LABEL[s] ?? s}
                   </Badge>
                 ))}
@@ -90,10 +90,10 @@ export default function BackgroundTab({ characterId }: Props) {
           {/* Tool proficiencies */}
           {bg.toolProficiencies && bg.toolProficiencies.length > 0 && (
             <div className="space-y-1">
-              <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">Tools</p>
+              <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">Tools</p>
               <div className="flex flex-wrap gap-1">
                 {bg.toolProficiencies.map(t => (
-                  <Badge key={t} variant="outline" className="text-xs">{t}</Badge>
+                  <Badge key={t} variant="outline" className="text-sm">{t}</Badge>
                 ))}
               </div>
             </div>
@@ -102,10 +102,10 @@ export default function BackgroundTab({ characterId }: Props) {
           {/* Languages from background */}
           {bg.languages && bg.languages.length > 0 && (
             <div className="space-y-1">
-              <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">Languages</p>
+              <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">Languages</p>
               <div className="flex flex-wrap gap-1">
                 {bg.languages.map(l => (
-                  <Badge key={l} variant="outline" className="text-xs">{l}</Badge>
+                  <Badge key={l} variant="outline" className="text-sm">{l}</Badge>
                 ))}
               </div>
             </div>
@@ -113,7 +113,7 @@ export default function BackgroundTab({ characterId }: Props) {
 
           {/* Language choices note */}
           {bg.languageChoices != null && bg.languageChoices > 0 && (
-            <p className="text-xs text-muted-foreground italic">
+            <p className="text-sm text-muted-foreground italic">
               + {bg.languageChoices} language{bg.languageChoices !== 1 ? 's' : ''} of your choice
             </p>
           )}
@@ -123,7 +123,7 @@ export default function BackgroundTab({ characterId }: Props) {
       {/* Card 4 — Character details (editable) */}
       <Card>
         <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-          <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+          <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
             Character Details
           </CardTitle>
         </CardHeader>
@@ -139,33 +139,33 @@ export default function BackgroundTab({ characterId }: Props) {
             <div key={key}>
               {i > 0 && <Separator className="mb-4" />}
               <div className="space-y-1">
-                <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+                <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold">
                   {label}
                 </p>
                 <Textarea
                   value={character[key]}
                   onChange={e => updateCharacter(characterId, { [key]: e.target.value })}
                   placeholder={`${label}…`}
-                  className="min-h-[60px] resize-y text-sm"
+                  className="min-h-[60px] resize-y text-base"
                 />
                 {/* Suggested hints */}
                 {key === 'personalityTraits' && bg.suggestedPersonalityTraits && bg.suggestedPersonalityTraits.length > 0 && (
-                  <p className="text-[10px] text-muted-foreground/70 italic">
+                  <p className="text-xs text-muted-foreground/70 italic">
                     Suggested: {bg.suggestedPersonalityTraits[0]}
                   </p>
                 )}
                 {key === 'ideals' && bg.suggestedIdeals && bg.suggestedIdeals.length > 0 && (
-                  <p className="text-[10px] text-muted-foreground/70 italic">
+                  <p className="text-xs text-muted-foreground/70 italic">
                     Suggested: {bg.suggestedIdeals[0]}
                   </p>
                 )}
                 {key === 'bonds' && bg.suggestedBonds && bg.suggestedBonds.length > 0 && (
-                  <p className="text-[10px] text-muted-foreground/70 italic">
+                  <p className="text-xs text-muted-foreground/70 italic">
                     Suggested: {bg.suggestedBonds[0]}
                   </p>
                 )}
                 {key === 'flaws' && bg.suggestedFlaws && bg.suggestedFlaws.length > 0 && (
-                  <p className="text-[10px] text-muted-foreground/70 italic">
+                  <p className="text-xs text-muted-foreground/70 italic">
                     Suggested: {bg.suggestedFlaws[0]}
                   </p>
                 )}

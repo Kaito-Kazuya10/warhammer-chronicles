@@ -8,9 +8,9 @@ import { useSettingsStore } from '../store/settingsStore'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="border border-slate-700/25 rounded-lg bg-slate-800/20 overflow-hidden">
-      <div className="px-5 py-3 border-b border-slate-700/25 bg-slate-800/30">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-semibold">{title}</p>
+    <div className="border border-stone-700/25 rounded-lg bg-stone-800/20 overflow-hidden">
+      <div className="px-5 py-3 border-b border-stone-700/25 bg-stone-800/30">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-semibold">{title}</p>
       </div>
       <div className="px-5 py-4 space-y-4">{children}</div>
     </div>
@@ -36,12 +36,12 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 transition-colors ${
-        checked ? 'border-amber-500/60 bg-amber-500/25' : 'border-slate-600 bg-slate-700/40'
+        checked ? 'border-amber-500/60 bg-amber-500/25' : 'border-stone-600 bg-stone-700/40'
       }`}
     >
       <span
-        className={`pointer-events-none inline-block h-3.5 w-3.5 rounded-full bg-slate-200 shadow transition-transform mt-[1px] ${
-          checked ? 'translate-x-[14px]' : 'translate-x-[1px]'
+        className={`pointer-events-none inline-block h-3.5 w-3.5 rounded-full bg-stone-200 shadow transition-transform mt-[1px] ${
+          checked ? 'transtone-x-[14px]' : 'transtone-x-[1px]'
         }`}
       />
     </button>
@@ -134,22 +134,22 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#131519] p-6">
+    <div className="min-h-screen bg-[#0F0D0B] p-6">
       <div className="max-w-xl mx-auto">
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <button
             onClick={() => navigate('/')}
-            className="text-slate-500 hover:text-slate-300 text-xs tracking-widest transition-colors"
+            className="text-stone-500 hover:text-stone-300 text-xs tracking-widest transition-colors"
           >
             ← HOME
           </button>
-          <div className="h-px flex-1 bg-slate-800/60" />
-          <h1 className="text-sm font-semibold text-slate-200 tracking-[0.2em] uppercase">
+          <div className="h-px flex-1 bg-stone-800/60" />
+          <h1 className="text-sm font-semibold text-stone-200 tracking-[0.2em] uppercase">
             Settings
           </h1>
-          <div className="h-px flex-1 bg-slate-800/60" />
+          <div className="h-px flex-1 bg-stone-800/60" />
         </div>
 
         <div className="space-y-5">
@@ -158,7 +158,7 @@ export default function SettingsPage() {
           <Section title="Profile">
             {/* Display name */}
             <div>
-              <label className="text-xs text-slate-400 mb-1.5 block">Display Name</label>
+              <label className="text-xs text-stone-400 mb-1.5 block">Display Name</label>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -166,7 +166,7 @@ export default function SettingsPage() {
                   onChange={e => setDisplayName(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') handleSaveProfile() }}
                   placeholder="Your name"
-                  className="flex-1 bg-slate-800/40 border border-slate-700/40 rounded-md px-3 py-2 text-sm text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/40 transition-colors"
+                  className="flex-1 bg-stone-800/40 border border-stone-700/40 rounded-md px-3 py-2 text-sm text-stone-100 placeholder-stone-600 outline-none focus:border-amber-500/40 transition-colors"
                 />
                 <button
                   onClick={handleSaveProfile}
@@ -181,7 +181,7 @@ export default function SettingsPage() {
 
             {/* Role — read-only */}
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">Role</span>
+              <span className="text-xs text-stone-400">Role</span>
               <span className="text-xs text-amber-400/70 uppercase tracking-widest border border-amber-500/20 rounded px-2 py-0.5">
                 {profile?.role ?? 'player'}
               </span>
@@ -189,8 +189,8 @@ export default function SettingsPage() {
 
             {/* Current email — read-only */}
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">Email</span>
-              <span className="text-xs text-slate-400 font-mono">{user?.email ?? '—'}</span>
+              <span className="text-xs text-stone-400">Email</span>
+              <span className="text-xs text-stone-400 font-mono">{user?.email ?? '—'}</span>
             </div>
           </Section>
 
@@ -198,14 +198,14 @@ export default function SettingsPage() {
           <Section title="Account Security">
             {/* Change email */}
             <div>
-              <label className="text-xs text-slate-400 mb-1.5 block">Change Email</label>
+              <label className="text-xs text-stone-400 mb-1.5 block">Change Email</label>
               <div className="flex gap-2">
                 <input
                   type="email"
                   value={newEmail}
                   onChange={e => setNewEmail(e.target.value)}
                   placeholder="New email address"
-                  className="flex-1 bg-slate-800/40 border border-slate-700/40 rounded-md px-3 py-2 text-sm text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/40 transition-colors"
+                  className="flex-1 bg-stone-800/40 border border-stone-700/40 rounded-md px-3 py-2 text-sm text-stone-100 placeholder-stone-600 outline-none focus:border-amber-500/40 transition-colors"
                 />
                 <button
                   onClick={handleChangeEmail}
@@ -220,14 +220,14 @@ export default function SettingsPage() {
 
             {/* Change password */}
             <div>
-              <label className="text-xs text-slate-400 mb-1.5 block">Change Password</label>
+              <label className="text-xs text-stone-400 mb-1.5 block">Change Password</label>
               <div className="space-y-2">
                 <input
                   type="password"
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
                   placeholder="New password"
-                  className="w-full bg-slate-800/40 border border-slate-700/40 rounded-md px-3 py-2 text-sm text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/40 transition-colors"
+                  className="w-full bg-stone-800/40 border border-stone-700/40 rounded-md px-3 py-2 text-sm text-stone-100 placeholder-stone-600 outline-none focus:border-amber-500/40 transition-colors"
                 />
                 <div className="flex gap-2">
                   <input
@@ -236,7 +236,7 @@ export default function SettingsPage() {
                     onChange={e => setConfirmPassword(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') handleChangePassword() }}
                     placeholder="Confirm new password"
-                    className="flex-1 bg-slate-800/40 border border-slate-700/40 rounded-md px-3 py-2 text-sm text-slate-100 placeholder-slate-600 outline-none focus:border-amber-500/40 transition-colors"
+                    className="flex-1 bg-stone-800/40 border border-stone-700/40 rounded-md px-3 py-2 text-sm text-stone-100 placeholder-stone-600 outline-none focus:border-amber-500/40 transition-colors"
                   />
                   <button
                     onClick={handleChangePassword}
@@ -255,8 +255,8 @@ export default function SettingsPage() {
           <Section title="Appearance">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-200">Dark Mode</p>
-                <p className="text-xs text-slate-500 mt-0.5">Apply the dark theme across the entire app</p>
+                <p className="text-sm text-stone-200">Dark Mode</p>
+                <p className="text-xs text-stone-500 mt-0.5">Apply the dark theme across the entire app</p>
               </div>
               <Toggle checked={darkMode} onChange={setDarkMode} />
             </div>
@@ -267,23 +267,23 @@ export default function SettingsPage() {
             {/* Sign out */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-200">Sign Out</p>
-                <p className="text-xs text-slate-500 mt-0.5">End your current session</p>
+                <p className="text-sm text-stone-200">Sign Out</p>
+                <p className="text-xs text-stone-500 mt-0.5">End your current session</p>
               </div>
               <button
                 onClick={() => signOut().then(() => navigate('/auth'))}
-                className="px-4 py-2 rounded-md bg-slate-700/40 border border-slate-600/40 text-slate-300 text-sm hover:bg-slate-700/60 transition-colors"
+                className="px-4 py-2 rounded-md bg-stone-700/40 border border-stone-600/40 text-stone-300 text-sm hover:bg-stone-700/60 transition-colors"
               >
                 Sign Out
               </button>
             </div>
 
             {/* Delete account */}
-            <div className="border-t border-slate-700/25 pt-4">
+            <div className="border-t border-stone-700/25 pt-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <p className="text-sm text-red-400">Delete Account</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Permanently remove your account and all data</p>
+                  <p className="text-xs text-stone-500 mt-0.5">Permanently remove your account and all data</p>
                 </div>
                 {!showDeleteConfirm && (
                   <button
@@ -306,7 +306,7 @@ export default function SettingsPage() {
                       value={deleteInput}
                       onChange={e => { setDeleteInput(e.target.value); setDeleteError('') }}
                       placeholder="Type DELETE"
-                      className="flex-1 bg-slate-800/60 border border-red-500/25 rounded-md px-3 py-2 text-sm text-red-300 placeholder-slate-600 outline-none font-mono"
+                      className="flex-1 bg-stone-800/60 border border-red-500/25 rounded-md px-3 py-2 text-sm text-red-300 placeholder-stone-600 outline-none font-mono"
                     />
                     <button
                       onClick={handleDeleteAccount}
@@ -317,7 +317,7 @@ export default function SettingsPage() {
                     </button>
                     <button
                       onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); setDeleteError('') }}
-                      className="px-3 py-2 rounded-md border border-slate-700/40 text-slate-400 text-sm hover:bg-slate-700/30 transition-colors"
+                      className="px-3 py-2 rounded-md border border-stone-700/40 text-stone-400 text-sm hover:bg-stone-700/30 transition-colors"
                     >
                       Cancel
                     </button>

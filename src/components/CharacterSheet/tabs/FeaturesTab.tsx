@@ -94,32 +94,32 @@ function FeatureRow({ feature, source, enhanced, characterId }: FeatureRowProps)
           <div className="flex items-start gap-2 py-2 pl-3 pr-1">
             {/* Chevron */}
             <span
-              className="mt-0.5 flex-shrink-0 text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
+              className="mt-0.5 flex-shrink-0 text-sm text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
               style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 150ms' }}
             >
               ▶
             </span>
 
             {/* Name */}
-            <span className={`flex-1 min-w-0 font-medium text-sm ${hasUses && usesRemaining === 0 ? 'text-muted-foreground/50' : ''}`}>
+            <span className={`flex-1 min-w-0 font-medium text-base ${hasUses && usesRemaining === 0 ? 'text-muted-foreground/50' : ''}`}>
               {feature.name}
             </span>
 
             {/* Badges */}
             <div className="flex flex-wrap gap-1 flex-shrink-0">
               {enhanced && (
-                <Badge className="text-[9px] py-0 px-1 bg-purple-500/15 text-purple-400 border-purple-500/30">⬆ ENHANCED</Badge>
+                <Badge className="text-[11px] py-0 px-1 bg-purple-500/15 text-purple-400 border-purple-500/30">⬆ ENHANCED</Badge>
               )}
               {tagBadges.map(({ label, cls }) => (
-                <Badge key={label} className={`text-[9px] py-0 px-1 ${cls}`}>{label}</Badge>
+                <Badge key={label} className={`text-[11px] py-0 px-1 ${cls}`}>{label}</Badge>
               ))}
               {source && (
-                <Badge className="text-[9px] py-0 px-1 bg-purple-500/10 text-purple-700 border-purple-500/30">
+                <Badge className="text-[11px] py-0 px-1 bg-purple-500/10 text-purple-700 border-purple-500/30">
                   {source.toUpperCase()}
                 </Badge>
               )}
               {feature.actionType && (
-                <Badge className={`text-[9px] py-0 px-1 ${ACTION_COLOR[feature.actionType]}`}>
+                <Badge className={`text-[11px] py-0 px-1 ${ACTION_COLOR[feature.actionType]}`}>
                   {ACTION_LABEL[feature.actionType]}
                 </Badge>
               )}
@@ -127,14 +127,14 @@ function FeatureRow({ feature, source, enhanced, characterId }: FeatureRowProps)
               {hasUses && (
                 <Badge
                   variant="outline"
-                  className={`text-[9px] py-0 px-1 ${usesRemaining === 0 ? 'opacity-40' : ''}`}
+                  className={`text-[11px] py-0 px-1 ${usesRemaining === 0 ? 'opacity-40' : ''}`}
                 >
                   {usesRemaining}/{usesMax} {feature.usesPerRest === 'short' ? 'SR' : 'LR'}
                 </Badge>
               )}
               {/* Legacy usesMax badge (for features without usesCount) */}
               {!hasUses && feature.usesMax != null && (
-                <Badge variant="outline" className="text-[9px] py-0 px-1">
+                <Badge variant="outline" className="text-[11px] py-0 px-1">
                   {feature.usesMax}/{feature.usesPerRest === 'short' ? 'SR' : 'LR'}
                 </Badge>
               )}
@@ -147,7 +147,7 @@ function FeatureRow({ feature, source, enhanced, characterId }: FeatureRowProps)
           <button
             onClick={handleUse}
             disabled={usesRemaining <= 0}
-            className={`self-start mt-1.5 mr-2 text-[9px] px-1.5 py-0.5 rounded border transition-colors flex-shrink-0 ${
+            className={`self-start mt-1.5 mr-2 text-[11px] px-1.5 py-0.5 rounded border transition-colors flex-shrink-0 ${
               usesRemaining > 0
                 ? 'border-primary/30 text-primary hover:bg-primary/10 cursor-pointer'
                 : 'border-border text-muted-foreground/30 cursor-not-allowed'
@@ -160,7 +160,7 @@ function FeatureRow({ feature, source, enhanced, characterId }: FeatureRowProps)
       </div>
 
       <CollapsibleContent>
-        <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground border-l border-border">
+        <div className="mx-3 mb-2 mt-0.5 pl-6 text-base text-muted-foreground border-l border-border">
           {renderDescription(feature.description)}
         </div>
       </CollapsibleContent>
@@ -181,7 +181,7 @@ function LevelGroup({ level, features, characterId }: LevelGroupProps) {
     <div className="space-y-0.5">
       {/* Level header */}
       <div className="flex items-center gap-2 py-1">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">
+        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground whitespace-nowrap">
           Level {level}
         </span>
         <Separator className="flex-1" />
@@ -208,7 +208,7 @@ export default function FeaturesTab({ characterId }: Props) {
     return (
       <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground/50 border border-dashed border-border rounded-lg">
         <span className="text-2xl">✦</span>
-        <span className="text-sm italic">Select a class to view features.</span>
+        <span className="text-base italic">Select a class to view features.</span>
       </div>
     )
   }
@@ -269,7 +269,7 @@ export default function FeaturesTab({ characterId }: Props) {
     return (
       <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground/50 border border-dashed border-border rounded-lg">
         <span className="text-2xl">✦</span>
-        <span className="text-sm italic">No features available yet</span>
+        <span className="text-base italic">No features available yet</span>
       </div>
     )
   }
@@ -277,7 +277,7 @@ export default function FeaturesTab({ characterId }: Props) {
   return (
     <div className="space-y-1">
       {/* Section title */}
-      <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground font-semibold px-1 pb-1">
+      <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground font-semibold px-1 pb-1">
         {tabLabel}
       </p>
 

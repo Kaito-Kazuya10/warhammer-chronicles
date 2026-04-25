@@ -40,7 +40,7 @@ export default function NotesTab({ characterId }: Props) {
       value={local}
       onChange={e => handleChange(e.target.value)}
       placeholder="Write your notes here..."
-      className="min-h-[400px] resize-y text-sm"
+      className="min-h-[400px] resize-y text-base"
     />
   )
 }

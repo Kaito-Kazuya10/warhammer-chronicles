@@ -99,20 +99,20 @@ function ItemCard({
         onClick={() => setExpanded(e => !e)}
       >
         <span
-          className="text-[10px] text-muted-foreground/50 shrink-0 transition-transform duration-150"
+          className="text-xs text-muted-foreground/50 shrink-0 transition-transform duration-150"
           style={{ transform: expanded ? 'rotate(90deg)' : undefined }}
         >▶</span>
         <span className="flex-1 min-w-0">
-          <span className="font-medium text-sm">{item.name}</span>
+          <span className="font-medium text-base">{item.name}</span>
           {statLine && (
-            <span className="ml-2 text-xs text-muted-foreground">{statLine}</span>
+            <span className="ml-2 text-sm text-muted-foreground">{statLine}</span>
           )}
         </span>
-        <Badge className={`text-[9px] py-0 px-1.5 border shrink-0 ${TIER_BADGE[effectiveTier]}`}>
+        <Badge className={`text-[11px] py-0 px-1.5 border shrink-0 ${TIER_BADGE[effectiveTier]}`}>
           {effectiveTier === 'master-crafted' ? 'MC' : effectiveTier.toUpperCase()}
         </Badge>
         {item.cost && (
-          <span className="text-[10px] text-muted-foreground shrink-0">{item.cost}</span>
+          <span className="text-xs text-muted-foreground shrink-0">{item.cost}</span>
         )}
       </button>
 
@@ -120,7 +120,7 @@ function ItemCard({
       {expanded && (
         <div className="px-3 pb-3 pt-1 border-t border-border space-y-2 bg-muted/10">
           {item.description && (
-            <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
           )}
 
           {/* Properties with tooltips */}
@@ -132,15 +132,15 @@ function ItemCard({
                   return tip ? (
                     <Tooltip key={p}>
                       <TooltipTrigger>
-                        <Badge variant="outline" className="text-[10px] cursor-help">{p}</Badge>
+                        <Badge variant="outline" className="text-xs cursor-help">{p}</Badge>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p className="font-semibold text-xs mb-0.5">{tip.name}</p>
-                        <p className="text-xs opacity-90 max-w-[220px]">{tip.shortDescription}</p>
+                        <p className="font-semibold text-sm mb-0.5">{tip.name}</p>
+                        <p className="text-sm opacity-90 max-w-[220px]">{tip.shortDescription}</p>
                       </TooltipContent>
                     </Tooltip>
                   ) : (
-                    <Badge key={p} variant="outline" className="text-[10px]">{p}</Badge>
+                    <Badge key={p} variant="outline" className="text-xs">{p}</Badge>
                   )
                 })}
               </div>
@@ -149,7 +149,7 @@ function ItemCard({
 
           {/* Ammo info */}
           {item.ammoType && item.ammoType !== 'unlimited' && item.ammoName && (
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Ammo: {item.ammoName} · {
                 item.ammoType === 'pack'
                   ? `${item.ammoCapacity} packs/session`
@@ -162,7 +162,7 @@ function ItemCard({
           {item.itemAbilities && item.itemAbilities.length > 0 && (
             <div className="space-y-1">
               {item.itemAbilities.map((ab, i) => (
-                <div key={i} className="rounded border border-border/60 px-2 py-1 text-xs">
+                <div key={i} className="rounded border border-border/60 px-2 py-1 text-sm">
                   <span className="font-semibold">{ab.name}</span>
                   <span className="text-muted-foreground ml-1.5">{ab.description}</span>
                 </div>
@@ -173,15 +173,15 @@ function ItemCard({
           {/* Add controls */}
           <div className="flex items-center gap-2 pt-1">
             <button
-              className="w-6 h-6 rounded border border-border text-sm font-bold hover:bg-muted transition-colors"
+              className="w-6 h-6 rounded border border-border text-base font-bold hover:bg-muted transition-colors"
               onClick={() => setQty(q => Math.max(1, q - 1))}
             >−</button>
-            <span className="text-sm font-mono w-6 text-center">{qty}</span>
+            <span className="text-base font-mono w-6 text-center">{qty}</span>
             <button
-              className="w-6 h-6 rounded border border-border text-sm font-bold hover:bg-muted transition-colors"
+              className="w-6 h-6 rounded border border-border text-base font-bold hover:bg-muted transition-colors"
               onClick={() => setQty(q => q + 1)}
             >+</button>
-            <Button size="sm" className="h-7 text-xs ml-2" onClick={addToInventory}>
+            <Button size="sm" className="h-7 text-sm ml-2" onClick={addToInventory}>
               ADD TO INVENTORY
             </Button>
           </div>
@@ -208,7 +208,7 @@ function FilterPills<T extends string>({
         <button
           key={o.value}
           onClick={() => onChange(o.value)}
-          className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
+          className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${
             value === o.value
               ? 'bg-foreground text-background border-foreground'
               : 'bg-transparent text-muted-foreground border-border hover:border-foreground/40'
@@ -252,7 +252,7 @@ export default function ItemBrowserModal({ characterId, open, onClose }: Props) 
               Item Browser
             </AlertDialogTitle>
             <div className="flex items-center gap-3">
-              <p className="text-[10px] text-muted-foreground">{filtered.length} items</p>
+              <p className="text-xs text-muted-foreground">{filtered.length} items</p>
               <button
                 onClick={onClose}
                 className="text-muted-foreground hover:text-foreground transition-colors text-lg leading-none"
@@ -268,7 +268,7 @@ export default function ItemBrowserModal({ characterId, open, onClose }: Props) 
             placeholder="Search by name or description…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="h-8 text-sm"
+            className="h-8 text-base"
           />
           <FilterPills options={TYPE_FILTERS}     value={typeFilter}     onChange={setTypeFilter} />
           <FilterPills options={TIER_FILTERS}     value={tierFilter}     onChange={setTierFilter} />
@@ -282,7 +282,7 @@ export default function ItemBrowserModal({ characterId, open, onClose }: Props) 
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground/50">
               <span className="text-2xl">🔍</span>
-              <span className="text-sm italic">No items match your filters.</span>
+              <span className="text-base italic">No items match your filters.</span>
             </div>
           ) : (
             filtered.map(item => (

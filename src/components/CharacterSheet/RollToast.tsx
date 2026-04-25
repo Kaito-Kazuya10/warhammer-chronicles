@@ -56,7 +56,7 @@ export default function RollToast() {
 
   return (
     <div
-      className="fixed top-16 left-1/2 -translate-x-1/2 z-50 pointer-events-auto"
+      className="fixed top-16 left-1/2 -transtone-x-1/2 z-50 pointer-events-auto"
       style={{ animation: 'toast-enter 200ms ease-out' }}
     >
       <Card
@@ -68,10 +68,10 @@ export default function RollToast() {
         <div className="p-3 space-y-1">
           {/* Header: icon + label */}
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-foreground">
+            <span className="text-base font-semibold text-foreground">
               {icon} {roll.label}
             </span>
-            <span className="text-[10px] text-muted-foreground">{fmtTime(roll.timestamp)}</span>
+            <span className="text-xs text-muted-foreground">{fmtTime(roll.timestamp)}</span>
           </div>
 
           {/* Big total */}
@@ -80,22 +80,22 @@ export default function RollToast() {
           </div>
 
           {/* Breakdown */}
-          <p className="text-[10px] text-muted-foreground text-center font-mono">{breakdown}</p>
+          <p className="text-xs text-muted-foreground text-center font-mono">{breakdown}</p>
 
           {/* Special badges */}
           <div className="flex justify-center gap-1.5">
             {roll.isNat20 && (
-              <Badge className="bg-amber-500/20 text-amber-600 border-amber-400 text-[10px] font-bold">
+              <Badge className="bg-amber-500/20 text-amber-600 border-amber-400 text-xs font-bold">
                 NAT 20!
               </Badge>
             )}
             {roll.isNat1 && (
-              <Badge className="bg-red-500/20 text-red-600 border-red-400 text-[10px]">
+              <Badge className="bg-red-500/20 text-red-600 border-red-400 text-xs">
                 NAT 1...
               </Badge>
             )}
             {roll.advantageMode && (
-              <Badge variant="outline" className="text-[10px] capitalize">
+              <Badge variant="outline" className="text-xs capitalize">
                 {roll.advantageMode}
               </Badge>
             )}

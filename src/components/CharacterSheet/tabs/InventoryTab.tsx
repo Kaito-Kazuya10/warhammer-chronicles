@@ -149,59 +149,59 @@ function UpgradeDialog({
     <AlertDialog open={open} onOpenChange={v => { if (!v) handleCancel() }}>
       <AlertDialogContent className="max-w-sm">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-sm font-bold uppercase tracking-widest">
+          <AlertDialogTitle className="text-base font-bold uppercase tracking-widest">
             Upgrade: {itemName}
           </AlertDialogTitle>
         </AlertDialogHeader>
 
-        <div className="space-y-3 text-sm">
+        <div className="space-y-3 text-base">
           <div className="flex items-center gap-3">
-            <Badge className={`text-[10px] px-2 border ${TIER_BADGE[currentTier] ?? 'bg-muted text-muted-foreground border-border'}`}>
+            <Badge className={`text-xs px-2 border ${TIER_BADGE[currentTier] ?? 'bg-muted text-muted-foreground border-border'}`}>
               {currentTier.toUpperCase()}
             </Badge>
             <span className="text-muted-foreground">→</span>
-            <Badge className={`text-[10px] px-2 border ${TIER_BADGE[nextTier] ?? 'bg-muted text-muted-foreground border-border'}`}>
+            <Badge className={`text-xs px-2 border ${TIER_BADGE[nextTier] ?? 'bg-muted text-muted-foreground border-border'}`}>
               {nextTier.toUpperCase()}
             </Badge>
           </div>
 
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Bonus: <span className="text-foreground font-medium">{bonusText}</span>
           </p>
 
           {table && !rolledTrait && (
-            <Button size="sm" variant="outline" className="h-7 text-xs w-full" onClick={handleRoll}>
+            <Button size="sm" variant="outline" className="h-7 text-sm w-full" onClick={handleRoll}>
               🎲 Roll Trait (1d{table.length})
             </Button>
           )}
 
           {rolledTrait && (
             <div className="rounded-md border border-border bg-muted/20 px-3 py-2 space-y-1">
-              <p className="text-xs font-semibold text-foreground">{rolledTrait.name}</p>
-              <p className="text-xs text-muted-foreground leading-relaxed">{rolledTrait.effect}</p>
+              <p className="text-sm font-semibold text-foreground">{rolledTrait.name}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{rolledTrait.effect}</p>
             </div>
           )}
 
           {table && rolledTrait && (
-            <Button size="sm" variant="ghost" className="h-6 text-[10px] text-muted-foreground" onClick={handleRoll}>
+            <Button size="sm" variant="ghost" className="h-6 text-xs text-muted-foreground" onClick={handleRoll}>
               Reroll
             </Button>
           )}
 
           {table && !rolledTrait && (
-            <p className="text-[10px] text-muted-foreground italic">
+            <p className="text-xs text-muted-foreground italic">
               Roll the trait table before confirming.
             </p>
           )}
         </div>
 
         <AlertDialogFooter className="gap-2">
-          <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={handleCancel}>
+          <Button size="sm" variant="ghost" className="h-7 text-sm" onClick={handleCancel}>
             Cancel
           </Button>
           <Button
             size="sm"
-            className="h-7 text-xs"
+            className="h-7 text-sm"
             onClick={handleConfirm}
             disabled={!!table && !rolledTrait}
           >
@@ -274,14 +274,14 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
             disabled={!hasDetails}
             aria-label="Expand item details"
           >
-            <span className="text-xs leading-none" style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 150ms' }}>▶</span>
+            <span className="text-sm leading-none" style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 150ms' }}>▶</span>
           </CollapsibleTrigger>
 
           {/* Name + tier badge */}
-          <span className="flex-1 min-w-0 font-medium text-sm truncate">
+          <span className="flex-1 min-w-0 font-medium text-base truncate">
             {displayName}
             {effectiveTier !== 'standard' && (
-              <Badge className={`ml-1.5 text-[9px] py-0 px-1 border ${TIER_BADGE[effectiveTier] ?? ''}`}>
+              <Badge className={`ml-1.5 text-[11px] py-0 px-1 border ${TIER_BADGE[effectiveTier] ?? ''}`}>
                 {effectiveTier === 'master-crafted' ? 'MC' : effectiveTier.toUpperCase()}
               </Badge>
             )}
@@ -292,7 +292,7 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
             <Button
               size="sm"
               variant="outline"
-              className="h-5 text-[9px] px-1.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+              className="h-5 text-[11px] px-1.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
               onClick={() => setUpgradeOpen(true)}
             >
               ↑ UPGRADE
@@ -305,12 +305,12 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
             min={1}
             value={entry.quantity}
             onChange={e => setQty(Number(e.target.value) || 1)}
-            className="w-12 text-center text-xs font-mono bg-transparent border border-border rounded-md outline-none focus:border-ring py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-12 text-center text-sm font-mono bg-transparent border border-border rounded-md outline-none focus:border-ring py-0.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
 
           {/* Weight */}
           {item?.weight != null && (
-            <span className="text-xs text-muted-foreground w-12 text-right flex-shrink-0">
+            <span className="text-sm text-muted-foreground w-12 text-right flex-shrink-0">
               {item.weight * entry.quantity} lb
             </span>
           )}
@@ -321,7 +321,7 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
               checked={entry.equipped ?? false}
               onCheckedChange={(v) => toggleEquipped(v as boolean)}
             />
-            <span className="text-[9px] text-muted-foreground uppercase tracking-wide">EQ</span>
+            <span className="text-[11px] text-muted-foreground uppercase tracking-wide">EQ</span>
           </div>
 
           {/* Remove */}
@@ -337,7 +337,7 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
 
         {/* Expanded details */}
         <CollapsibleContent>
-          <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground space-y-2 border-l border-border">
+          <div className="mx-3 mb-2 mt-0.5 pl-6 text-base text-muted-foreground space-y-2 border-l border-border">
             {item?.description && <p>{item.description}</p>}
             {item?.properties && item.properties.length > 0 && (
               <TooltipProvider>
@@ -348,16 +348,16 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
                       <Tooltip key={p}>
                         <TooltipTrigger>
                           <span>
-                            <Badge variant="outline" className="text-[10px] cursor-help">{p}</Badge>
+                            <Badge variant="outline" className="text-xs cursor-help">{p}</Badge>
                           </span>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p className="font-semibold text-xs mb-0.5">{tip.name}</p>
-                          <p className="text-xs opacity-90 max-w-[220px]">{tip.shortDescription}</p>
+                          <p className="font-semibold text-sm mb-0.5">{tip.name}</p>
+                          <p className="text-sm opacity-90 max-w-[220px]">{tip.shortDescription}</p>
                         </TooltipContent>
                       </Tooltip>
                     ) : (
-                      <Badge key={p} variant="outline" className="text-[10px]">{p}</Badge>
+                      <Badge key={p} variant="outline" className="text-xs">{p}</Badge>
                     )
                   })}
                 </div>
@@ -366,10 +366,10 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
             {/* Rolled trait */}
             {entry.rolledTrait && (
               <div className="rounded border border-border/60 bg-muted/20 px-2 py-1.5">
-                <p className="text-[10px] font-semibold text-foreground mb-0.5">
+                <p className="text-xs font-semibold text-foreground mb-0.5">
                   ✦ {entry.rolledTrait.name}
                 </p>
-                <p className="text-[10px] leading-relaxed">{entry.rolledTrait.effect}</p>
+                <p className="text-xs leading-relaxed">{entry.rolledTrait.effect}</p>
               </div>
             )}
             {item?.itemAbilities && item.itemAbilities.length > 0 && (
@@ -377,14 +377,14 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
                 {item.itemAbilities.map((ab, i) => (
                   <div key={i} className="rounded-md border border-border px-2 py-1.5">
                     <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                      <span className="text-xs font-semibold">{ab.name}</span>
+                      <span className="text-sm font-semibold">{ab.name}</span>
                       {ab.actionType && (
-                        <Badge className="text-[9px] py-0 px-1 bg-muted text-muted-foreground border-border">
+                        <Badge className="text-[11px] py-0 px-1 bg-muted text-muted-foreground border-border">
                           {ACTION_LABEL[ab.actionType]}
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">{ab.description}</p>
+                    <p className="text-sm text-muted-foreground">{ab.description}</p>
                   </div>
                 ))}
               </div>
@@ -439,14 +439,14 @@ export default function InventoryTab({ characterId }: Props) {
     <div className="space-y-3">
       {/* Toolbar */}
       <div className="flex items-center justify-between">
-        <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <span className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
           {hasItems ? `${character.inventory.length} item${character.inventory.length !== 1 ? 's' : ''}` : 'Empty'}
           {totalWeight > 0 && ` · ${totalWeight} lb`}
         </span>
         <Button
           size="sm"
           variant="outline"
-          className="h-7 text-xs"
+          className="h-7 text-sm"
           onClick={() => setBrowserOpen(true)}
         >
           + BROWSE ITEMS
@@ -457,7 +457,7 @@ export default function InventoryTab({ characterId }: Props) {
       {!hasItems && (
         <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground/50 border border-dashed border-border rounded-lg">
           <span className="text-2xl">🎒</span>
-          <span className="text-sm italic text-center px-4">Your inventory is empty. Browse items to get started.</span>
+          <span className="text-base italic text-center px-4">Your inventory is empty. Browse items to get started.</span>
         </div>
       )}
 
@@ -467,7 +467,7 @@ export default function InventoryTab({ characterId }: Props) {
         return (
           <Card key={groupName} className="overflow-hidden">
             <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-              <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+              <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
                 {groupName}
               </CardTitle>
             </CardHeader>
@@ -483,7 +483,7 @@ export default function InventoryTab({ characterId }: Props) {
       {/* Currency */}
       <Card>
         <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-          <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+          <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
             Currency
           </CardTitle>
         </CardHeader>
@@ -500,9 +500,9 @@ export default function InventoryTab({ characterId }: Props) {
                       currency: { ...character.currency, [key]: Math.max(0, Number(e.target.value) || 0) },
                     })
                   }
-                  className="text-center font-mono text-sm h-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="text-center font-mono text-base h-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
-                <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
+                <span className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
                   {key.charAt(0).toUpperCase() + key.slice(1)}
                 </span>
               </div>

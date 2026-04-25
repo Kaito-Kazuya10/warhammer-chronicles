@@ -99,6 +99,36 @@ export async function checkCampaignMembership(
   return data !== null
 }
 
+// ─── Rename a campaign (DM only) ─────────────────────────────────────────────
+
+export async function renameCampaign(campaignId: string, newName: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase
+    .from('campaigns')
+    .update({ name: newName })
+    .eq('id', campaignId)
+    .eq('dm_id', user.id)
+
+  if (error) throw new Error(`Failed to rename campaign: ${error.message}`)
+}
+
+// ─── Delete a campaign (DM only) ─────────────────────────────────────────────
+
+export async function deleteCampaign(campaignId: string): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not authenticated')
+
+  const { error } = await supabase
+    .from('campaigns')
+    .delete()
+    .eq('id', campaignId)
+    .eq('dm_id', user.id)
+
+  if (error) throw new Error(`Failed to delete campaign: ${error.message}`)
+}
+
 // ─── Fetch members of a campaign ─────────────────────────────────────────────
 
 export async function fetchCampaignMembers(campaignId: string): Promise<CampaignMember[]> {

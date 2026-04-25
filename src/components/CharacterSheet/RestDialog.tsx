@@ -219,12 +219,12 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
           </AlertDialogTitle>
         </AlertDialogHeader>
 
-        <p className="text-sm text-muted-foreground -mt-2">
+        <p className="text-base text-muted-foreground -mt-2">
           Duration: {restType === 'short' ? '1 hour' : '8 hours'}
         </p>
 
         <div className="space-y-3 py-1">
-          <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground">
+          <p className="text-xs uppercase tracking-widest font-semibold text-muted-foreground">
             The following will be refreshed:
           </p>
 
@@ -232,8 +232,8 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
           {restType === 'short' ? (
             /* Hit Dice Spender */
             <div className="border border-border rounded-md p-3 space-y-2">
-              <p className="text-sm font-medium">Hit Dice</p>
-              <div className="flex items-center justify-between text-xs">
+              <p className="text-base font-medium">Hit Dice</p>
+              <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
                   Available:{' '}
                   <span className="font-mono font-semibold text-foreground">
@@ -247,7 +247,7 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
                 )}
               </div>
               {rollLog.length > 0 && (
-                <div className="text-[10px] text-muted-foreground space-y-0.5 font-mono border-l-2 border-border pl-2">
+                <div className="text-xs text-muted-foreground space-y-0.5 font-mono border-l-2 border-border pl-2">
                   {rollLog.map((entry, i) => <div key={i}>{entry}</div>)}
                 </div>
               )}
@@ -256,7 +256,7 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
                 variant="outline"
                 onClick={spendHitDie}
                 disabled={availDice <= 0}
-                className="w-full text-xs h-7"
+                className="w-full text-sm h-7"
               >
                 Spend 1 Hit Die (d{hitDie} {conModStr} CON)
               </Button>
@@ -264,15 +264,15 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
           ) : (
             /* Long rest — HP + dice summary */
             <div className="border border-border rounded-md p-3 space-y-2">
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between text-base">
                 <span className="font-medium">Wounds (HP)</span>
-                <span className="text-[var(--wh-success)] font-mono text-xs">
+                <span className="text-[var(--wh-success)] font-mono text-sm">
                   → {character.maxHitPoints} / {character.maxHitPoints}
                 </span>
               </div>
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between text-base">
                 <span className="font-medium">Hit Dice Recovered</span>
-                <span className="text-[var(--wh-info)] font-mono text-xs">
+                <span className="text-[var(--wh-info)] font-mono text-sm">
                   +{diceToRecover} d{hitDie}
                   {' '}({hitDiceAvailNow} → {hitDiceAfterRest} / {character.level})
                 </span>
@@ -283,9 +283,9 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
           {/* ── Class Resource ────────────────────────────────────────────── */}
           {showClassResource && classResource && (
             <div className="border border-border rounded-md p-3">
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between text-base">
                 <span className="font-medium">{classResource.name}</span>
-                <span className="text-[var(--wh-info)] font-mono text-xs">
+                <span className="text-[var(--wh-info)] font-mono text-sm">
                   Reset to max{powerCellsMax !== null ? ` (${powerCellsMax})` : ''}
                 </span>
               </div>
@@ -295,9 +295,9 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
           {/* ── Spell / Prayer Slots (long rest) ──────────────────────────── */}
           {restType === 'long' && hasUsedSlots && (
             <div className="border border-border rounded-md p-3">
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex items-center justify-between text-base">
                 <span className="font-medium">Spell / Prayer Slots</span>
-                <span className="text-[var(--wh-info)] font-mono text-xs">Fully restored</span>
+                <span className="text-[var(--wh-info)] font-mono text-sm">Fully restored</span>
               </div>
             </div>
           )}
@@ -305,14 +305,14 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
           {/* ── Feature uses ──────────────────────────────────────────────── */}
           {featuresForRest.length > 0 && (
             <div className="border border-border rounded-md p-3 space-y-1.5">
-              <p className="text-sm font-medium">Features recharged:</p>
+              <p className="text-base font-medium">Features recharged:</p>
               {featuresForRest.map(f => {
                 const max = resolveUsesCount(f.usesCount, character)
                 const restLabel = f.usesPerRest === 'short' ? 'SR' : 'LR'
                 return (
                   <div key={f.name} className="flex items-center justify-between gap-2">
-                    <span className="text-xs text-muted-foreground truncate">{f.name}</span>
-                    <span className="text-[10px] font-mono text-[var(--wh-success)] whitespace-nowrap flex-shrink-0">
+                    <span className="text-sm text-muted-foreground truncate">{f.name}</span>
+                    <span className="text-xs font-mono text-[var(--wh-success)] whitespace-nowrap flex-shrink-0">
                       {max} use{max !== 1 ? 's' : ''} [{restLabel}]
                     </span>
                   </div>

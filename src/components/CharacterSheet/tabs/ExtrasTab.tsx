@@ -49,19 +49,19 @@ function DeathSaves({ characterId }: Props) {
   return (
     <Card>
       <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-        <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
           Death Saves
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-3 space-y-2">
         <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground w-16">Successes</span>
+          <span className="text-sm text-muted-foreground w-16">Successes</span>
           <div className="flex gap-1.5">
             {[0, 1, 2].map(i => circle(i < successes, 'bg-green-500', () => toggleSuccess(i), i))}
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground w-16">Failures</span>
+          <span className="text-sm text-muted-foreground w-16">Failures</span>
           <div className="flex gap-1.5">
             {[0, 1, 2].map(i => circle(i < failures, 'bg-destructive', () => toggleFailure(i), i))}
           </div>
@@ -104,7 +104,7 @@ function HitDice({ characterId }: Props) {
   return (
     <Card>
       <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-        <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
           Hit Dice
         </CardTitle>
       </CardHeader>
@@ -113,7 +113,7 @@ function HitDice({ characterId }: Props) {
           <div>
             <span className="text-2xl font-bold font-mono">{avail}</span>
             <button
-              className="text-sm text-muted-foreground hover:text-primary hover:underline transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+              className="text-base text-muted-foreground hover:text-primary hover:underline transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               title={avail > 0 ? `Click to roll hit die (d${hitDie})` : 'No hit dice remaining'}
               onClick={handleRollHitDie}
               disabled={avail === 0}
@@ -125,7 +125,7 @@ function HitDice({ characterId }: Props) {
             <Button
               size="sm"
               variant="outline"
-              className="h-7 text-xs"
+              className="h-7 text-sm"
               onClick={useOne}
               disabled={avail === 0}
             >
@@ -134,7 +134,7 @@ function HitDice({ characterId }: Props) {
             <Button
               size="sm"
               variant="outline"
-              className="h-7 text-xs"
+              className="h-7 text-sm"
               onClick={recoverOne}
               disabled={used === 0}
             >
@@ -143,7 +143,7 @@ function HitDice({ characterId }: Props) {
           </div>
         </div>
         {used > 0 && (
-          <p className="text-xs text-muted-foreground mt-1">{used} used</p>
+          <p className="text-sm text-muted-foreground mt-1">{used} used</p>
         )}
       </CardContent>
     </Card>
@@ -159,17 +159,17 @@ function Languages({ characterId }: Props) {
   return (
     <Card>
       <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-        <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
           Languages
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-3">
         {character.languages.length === 0 ? (
-          <p className="text-sm italic text-muted-foreground">None</p>
+          <p className="text-base italic text-muted-foreground">None</p>
         ) : (
           <div className="flex flex-wrap gap-1.5">
             {character.languages.map(lang => (
-              <Badge key={lang} variant="outline" className="text-xs">{lang}</Badge>
+              <Badge key={lang} variant="outline" className="text-sm">{lang}</Badge>
             ))}
           </div>
         )}
@@ -190,23 +190,23 @@ function FeatRow({ featId }: { featId: string }) {
       <CollapsibleTrigger className="w-full text-left">
         <div className="flex items-center gap-2 py-1.5 px-3 rounded-md hover:bg-muted/30 transition-colors group">
           <span
-            className="flex-shrink-0 text-xs text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
+            className="flex-shrink-0 text-sm text-muted-foreground/50 group-hover:text-muted-foreground transition-colors"
             style={{ display: 'inline-block', transform: open ? 'rotate(90deg)' : undefined, transition: 'transform 150ms' }}
           >
             ▶
           </span>
-          <span className="flex-1 font-medium text-sm">{feat.name}</span>
+          <span className="flex-1 font-medium text-base">{feat.name}</span>
           {feat.source === 'warhammer' && (
-            <Badge className="text-[9px] py-0 px-1 bg-[var(--wh-gold)]/15 text-[var(--wh-gold)] border-[var(--wh-gold)]/30">
+            <Badge className="text-[11px] py-0 px-1 bg-[var(--wh-gold)]/15 text-[var(--wh-gold)] border-[var(--wh-gold)]/30">
               40K
             </Badge>
           )}
         </div>
       </CollapsibleTrigger>
       <CollapsibleContent>
-        <div className="mx-3 mb-2 mt-0.5 pl-6 text-sm text-muted-foreground border-l border-border leading-relaxed space-y-1">
+        <div className="mx-3 mb-2 mt-0.5 pl-6 text-base text-muted-foreground border-l border-border leading-relaxed space-y-1">
           {feat.prerequisite && (
-            <p className="text-[10px] text-muted-foreground/60 italic">
+            <p className="text-xs text-muted-foreground/60 italic">
               Prerequisite: {feat.prerequisite}
             </p>
           )}
@@ -224,13 +224,13 @@ function Feats({ characterId }: Props) {
   return (
     <Card>
       <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-        <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
           Feats
         </CardTitle>
       </CardHeader>
       <CardContent className="p-1">
         {character.featIds.length === 0 ? (
-          <p className="text-sm italic text-muted-foreground px-3 py-2">No feats acquired yet.</p>
+          <p className="text-base italic text-muted-foreground px-3 py-2">No feats acquired yet.</p>
         ) : (
           character.featIds.map(id => <FeatRow key={id} featId={id} />)
         )}
@@ -249,7 +249,7 @@ function Currency({ characterId }: Props) {
   return (
     <Card>
       <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-        <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
           Currency
         </CardTitle>
       </CardHeader>
@@ -266,9 +266,9 @@ function Currency({ characterId }: Props) {
                     currency: { ...character.currency, [key]: Math.max(0, Number(e.target.value) || 0) },
                   })
                 }
-                className="text-center font-mono text-sm h-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className="text-center font-mono text-base h-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
-              <span className="text-[9px] uppercase tracking-widest text-muted-foreground font-semibold">
+              <span className="text-[11px] uppercase tracking-widest text-muted-foreground font-semibold">
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </span>
             </div>
@@ -295,21 +295,21 @@ function RestHistory({ characterId }: Props) {
   return (
     <Card>
       <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
-        <CardTitle className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
           Rest History
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-3 space-y-1.5">
         {character.lastShortRest && (
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">Last Short Rest</span>
-            <span className="text-xs font-mono text-foreground">{fmtTime(character.lastShortRest)}</span>
+            <span className="text-sm text-muted-foreground">Last Short Rest</span>
+            <span className="text-sm font-mono text-foreground">{fmtTime(character.lastShortRest)}</span>
           </div>
         )}
         {character.lastLongRest && (
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">Last Long Rest</span>
-            <span className="text-xs font-mono text-foreground">{fmtTime(character.lastLongRest)}</span>
+            <span className="text-sm text-muted-foreground">Last Long Rest</span>
+            <span className="text-sm font-mono text-foreground">{fmtTime(character.lastLongRest)}</span>
           </div>
         )}
       </CardContent>

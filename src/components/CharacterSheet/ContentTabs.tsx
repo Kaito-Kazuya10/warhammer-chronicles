@@ -53,37 +53,37 @@ export default function ContentTabs({ characterId }: Props) {
         >
           <TabsTrigger
             value="actions"
-            className="content-tabs-trigger rounded-none text-[10px] tracking-wide uppercase py-3 data-active:text-primary"
+            className="content-tabs-trigger rounded-none text-xs tracking-wide uppercase py-3 data-active:text-primary"
           >
             ACTIONS
           </TabsTrigger>
           <TabsTrigger
             value="inventory"
-            className="content-tabs-trigger rounded-none text-[10px] tracking-wide uppercase py-3 data-active:text-primary"
+            className="content-tabs-trigger rounded-none text-xs tracking-wide uppercase py-3 data-active:text-primary"
           >
             INVENTORY
           </TabsTrigger>
           <TabsTrigger
             value="features"
-            className="content-tabs-trigger rounded-none text-[10px] tracking-wide uppercase py-3 data-active:text-primary"
+            className="content-tabs-trigger rounded-none text-xs tracking-wide uppercase py-3 data-active:text-primary"
           >
             {featuresLabel}
           </TabsTrigger>
           <TabsTrigger
             value="background"
-            className="content-tabs-trigger rounded-none text-[10px] tracking-wide uppercase py-3 data-active:text-primary"
+            className="content-tabs-trigger rounded-none text-xs tracking-wide uppercase py-3 data-active:text-primary"
           >
             BACKGROUND
           </TabsTrigger>
           <TabsTrigger
             value="notes"
-            className="content-tabs-trigger rounded-none text-[10px] tracking-wide uppercase py-3 data-active:text-primary"
+            className="content-tabs-trigger rounded-none text-xs tracking-wide uppercase py-3 data-active:text-primary"
           >
             NOTES
           </TabsTrigger>
           <TabsTrigger
             value="extras"
-            className="content-tabs-trigger rounded-none text-[10px] tracking-wide uppercase py-3 data-active:text-primary"
+            className="content-tabs-trigger rounded-none text-xs tracking-wide uppercase py-3 data-active:text-primary"
           >
             EXTRAS
           </TabsTrigger>

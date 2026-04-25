@@ -51,13 +51,13 @@ export default function RollContextMenu() {
       className="rounded-lg border border-border bg-[var(--background)] shadow-xl py-1 select-none"
       onContextMenu={e => e.preventDefault()}
     >
-      <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground/60 px-3 pt-1.5 pb-1 font-semibold">
+      <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground/60 px-3 pt-1.5 pb-1 font-semibold">
         Roll Mode
       </p>
 
       <button
         onClick={() => choose(undefined)}
-        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted/50 transition-colors text-left"
+        className="w-full flex items-center gap-2 px-3 py-2 text-base text-foreground hover:bg-muted/50 transition-colors text-left"
       >
         <span className="text-base leading-none">🎲</span>
         <span>Normal</span>
@@ -65,20 +65,20 @@ export default function RollContextMenu() {
 
       <button
         onClick={() => choose('advantage')}
-        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-green-400 hover:bg-green-500/10 transition-colors text-left"
+        className="w-full flex items-center gap-2 px-3 py-2 text-base text-green-400 hover:bg-green-500/10 transition-colors text-left"
       >
         <span className="text-base leading-none">⬆</span>
         <span>Advantage</span>
-        <span className="ml-auto text-[9px] text-muted-foreground/50 font-mono">2d20kh</span>
+        <span className="ml-auto text-[11px] text-muted-foreground/50 font-mono">2d20kh</span>
       </button>
 
       <button
         onClick={() => choose('disadvantage')}
-        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors text-left"
+        className="w-full flex items-center gap-2 px-3 py-2 text-base text-red-400 hover:bg-red-500/10 transition-colors text-left"
       >
         <span className="text-base leading-none">⬇</span>
         <span>Disadvantage</span>
-        <span className="ml-auto text-[9px] text-muted-foreground/50 font-mono">2d20kl</span>
+        <span className="ml-auto text-[11px] text-muted-foreground/50 font-mono">2d20kl</span>
       </button>
     </div>
   )

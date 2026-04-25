@@ -53,25 +53,25 @@ function RollEntry({ roll }: { roll: DiceRollResult }) {
   return (
     <div className={`border-l-4 ${border} pl-3 pr-2 py-2 hover:bg-muted/30 transition-colors`}>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-medium text-foreground">
+        <span className="text-sm font-medium text-foreground">
           {icon} {roll.label}
         </span>
         <span className={`text-lg font-bold font-mono tabular-nums shrink-0 ${totalClass}`}>
           {roll.total}
         </span>
       </div>
-      <p className="text-[10px] text-muted-foreground font-mono mt-0.5">{breakdown}</p>
+      <p className="text-xs text-muted-foreground font-mono mt-0.5">{breakdown}</p>
       <div className="flex items-center gap-1.5 mt-1">
         {roll.isNat20 && (
-          <Badge className="bg-amber-500/20 text-amber-600 border-amber-400 text-[9px] h-4 px-1 font-bold">NAT 20!</Badge>
+          <Badge className="bg-amber-500/20 text-amber-600 border-amber-400 text-[11px] h-4 px-1 font-bold">NAT 20!</Badge>
         )}
         {roll.isNat1 && (
-          <Badge className="bg-red-500/20 text-red-600 border-red-400 text-[9px] h-4 px-1">NAT 1</Badge>
+          <Badge className="bg-red-500/20 text-red-600 border-red-400 text-[11px] h-4 px-1">NAT 1</Badge>
         )}
         {roll.advantageMode && (
-          <Badge variant="outline" className="text-[9px] h-4 px-1 capitalize">{roll.advantageMode}</Badge>
+          <Badge variant="outline" className="text-[11px] h-4 px-1 capitalize">{roll.advantageMode}</Badge>
         )}
-        <span className="text-[9px] text-muted-foreground/60 ml-auto">{fmtTime(roll.timestamp)}</span>
+        <span className="text-[11px] text-muted-foreground/60 ml-auto">{fmtTime(roll.timestamp)}</span>
       </div>
     </div>
   )
@@ -91,7 +91,7 @@ export default function RollHistoryPanel() {
       >
         {/* Header */}
         <SheetHeader className="border-b p-4 pb-3 flex-row items-center justify-between space-y-0">
-          <SheetTitle className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
+          <SheetTitle className="text-sm font-bold tracking-widest uppercase text-muted-foreground">
             Roll History
           </SheetTitle>
           <div className="flex items-center gap-1.5">
@@ -100,7 +100,7 @@ export default function RollHistoryPanel() {
                 variant="ghost"
                 size="sm"
                 onClick={clearHistory}
-                className="text-xs h-7 text-muted-foreground hover:text-destructive"
+                className="text-sm h-7 text-muted-foreground hover:text-destructive"
               >
                 Clear
               </Button>
@@ -126,7 +126,7 @@ export default function RollHistoryPanel() {
           {history.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground/50">
               <span className="text-2xl">🎲</span>
-              <span className="text-xs italic">No rolls yet</span>
+              <span className="text-sm italic">No rolls yet</span>
             </div>
           ) : (
             <div className="divide-y divide-border/50">

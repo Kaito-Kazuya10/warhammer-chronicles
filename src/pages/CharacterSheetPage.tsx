@@ -4,7 +4,8 @@ import CharacterSheet from '../components/CharacterSheet'
 import { Badge } from '@/components/ui/badge'
 import { useDiceStore } from '../store/diceStore'
 import { useAuth } from '@/auth/useAuth'
-import { Download, Copy, Pencil, Plus, Dice6, ChevronLeft } from 'lucide-react'
+import { Download, Copy, Pencil, Plus, Dice6, ChevronLeft, Moon, Sun } from 'lucide-react'
+import { useSettingsStore } from '../store/settingsStore'
 
 function exportCharacter(character: ReturnType<typeof useCharacterStore.getState>['characters'][number]) {
   const exportData = {
@@ -26,6 +27,7 @@ export default function CharacterSheetPage() {
   const navigate = useNavigate()
   const { characters, activeCharacterId, setActiveCharacter, createCharacter, duplicateCharacter } = useCharacterStore()
   const { history, toggleHistory } = useDiceStore()
+  const { darkMode, toggleDarkMode } = useSettingsStore()
   const { profile } = useAuth()
   const isDm = profile?.role === 'dm'
 
@@ -64,7 +66,7 @@ export default function CharacterSheetPage() {
         {/* HOME button */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-1.5 px-4 h-12 text-slate-400 hover:text-amber-300 hover:bg-white/5 transition-colors shrink-0 border-r border-white/[0.07]"
+          className="flex items-center gap-1.5 px-4 h-12 text-stone-400 hover:text-amber-300 hover:bg-white/5 transition-colors shrink-0 border-r border-white/[0.07]"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
           <span className="text-[11px] tracking-[0.15em] uppercase font-medium">Home</span>
@@ -85,11 +87,11 @@ export default function CharacterSheetPage() {
                 }`}
               >
                 <span className={`text-[13px] font-semibold leading-tight tracking-wide transition-colors ${
-                  isActive ? 'text-amber-200' : 'text-slate-400 hover:text-slate-200'
+                  isActive ? 'text-amber-200' : 'text-stone-400 hover:text-stone-200'
                 }`}>
                   {c.name}
                 </span>
-                <span className="text-[10px] text-slate-600 leading-tight tracking-wider uppercase mt-0.5">
+                <span className="text-[10px] text-stone-600 leading-tight tracking-wider uppercase mt-0.5">
                   Lvl {c.level} · {c.class}
                 </span>
                 {isActive && (
@@ -115,13 +117,23 @@ export default function CharacterSheetPage() {
             </div>
           )}
 
+          {/* Dark mode toggle */}
+          <button
+            onClick={toggleDarkMode}
+            aria-label="Toggle dark mode"
+            className="flex items-center gap-1.5 px-3 h-12 text-stone-400 hover:text-amber-300 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
+          >
+            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+
           {/* Dice roller toggle */}
           <button
             onClick={toggleHistory}
             aria-label="Open roll history"
-            className="relative flex items-center gap-2 px-3 h-12 text-slate-400 hover:text-amber-300 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
+            className="relative flex items-center gap-1.5 px-3 h-12 text-stone-400 hover:text-amber-300 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
           >
             <Dice6 className="w-4 h-4" />
+            <span className="text-[11px] tracking-wider uppercase hidden sm:inline">Dice</span>
             {history.length > 0 && (
               <Badge className="h-4 min-w-4 px-1 text-[9px] bg-amber-600/80 text-amber-100 border-0">
                 {history.length > 99 ? '99+' : history.length}
@@ -133,7 +145,7 @@ export default function CharacterSheetPage() {
           <button
             onClick={handleExport}
             title="Export character"
-            className="flex items-center gap-1.5 px-3 h-12 text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
+            className="flex items-center gap-1.5 px-3 h-12 text-stone-400 hover:text-stone-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
           >
             <Download className="w-3.5 h-3.5" />
             <span className="text-[11px] tracking-wider uppercase hidden sm:inline">Export</span>
@@ -143,7 +155,7 @@ export default function CharacterSheetPage() {
           <button
             onClick={handleDuplicate}
             title="Duplicate character"
-            className="flex items-center gap-1.5 px-3 h-12 text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
+            className="flex items-center gap-1.5 px-3 h-12 text-stone-400 hover:text-stone-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
           >
             <Copy className="w-3.5 h-3.5" />
             <span className="text-[11px] tracking-wider uppercase hidden sm:inline">Duplicate</span>
@@ -153,7 +165,7 @@ export default function CharacterSheetPage() {
           <button
             onClick={() => navigate(`/create?edit=${activeCharacterId}`)}
             title="Edit character"
-            className="flex items-center gap-1.5 px-3 h-12 text-slate-400 hover:text-slate-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
+            className="flex items-center gap-1.5 px-3 h-12 text-stone-400 hover:text-stone-100 hover:bg-white/5 transition-colors border-r border-white/[0.07]"
           >
             <Pencil className="w-3.5 h-3.5" />
             <span className="text-[11px] tracking-wider uppercase hidden sm:inline">Edit</span>
