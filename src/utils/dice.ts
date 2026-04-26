@@ -17,10 +17,37 @@ export interface DiceRollResult {
   advantageMode?: 'advantage' | 'disadvantage'
 }
 
+// ─── Streak-dampened RNG ─────────────────────────────────────────────────────
+// Tracks a "luck balance" for d20 rolls. When the player rolls consistently
+// below or above average, a small nudge (max ±2) is applied to the next roll.
+// The nudge decays each roll so it never accumulates into a guaranteed outcome.
+// Non-d20 rolls (damage, hit dice, etc.) are pure random — no pity applied.
+
+let _luckBalance = 0
+const LUCK_DECAY   = 0.85
+const LUCK_WEIGHT  = 0.35
+const MAX_NUDGE    = 2
+
+function pureRoll(sides: number): number {
+  return Math.floor(Math.random() * sides) + 1
+}
+
+function nudgedD20(): number {
+  const raw = pureRoll(20)
+  const deviation = raw - 10.5
+  _luckBalance = _luckBalance * LUCK_DECAY + deviation * LUCK_WEIGHT
+
+  const nudge = Math.round(Math.max(-MAX_NUDGE, Math.min(MAX_NUDGE, -_luckBalance * 0.3)))
+  const result = Math.max(1, Math.min(20, raw + nudge))
+
+  return result
+}
+
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
 export function rollDie(sides: number): number {
-  return Math.floor(Math.random() * sides) + 1
+  if (sides === 20) return nudgedD20()
+  return pureRoll(sides)
 }
 
 export function rollDice(count: number, sides: number): number[] {
