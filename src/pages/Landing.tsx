@@ -114,11 +114,11 @@ export default function Landing() {
       {/* ── Main content ─────────────────────────────────────────────────── */}
       <main className="flex-1 flex flex-col min-h-screen overflow-y-auto">
         {/* ── Title area ───────────────────────────────────────────────── */}
-        <header className="pt-8 pb-6 flex justify-center">
+        <header className="pt-4 pb-0 flex justify-center">
           <img
             src="/warhammer_chronicles_logo.png"
             alt="Warhammer Chronicles"
-            className="landing-logo w-72 sm:w-80 md:w-96 object-contain drop-shadow-[0_0_30px_rgba(196,164,74,0.3)]"
+            className="landing-logo w-80 sm:w-96 md:w-[28rem] object-contain drop-shadow-[0_0_30px_rgba(196,164,74,0.3)]"
           />
         </header>
 
