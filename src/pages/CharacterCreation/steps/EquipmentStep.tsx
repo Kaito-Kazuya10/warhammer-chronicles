@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { getAllClasses, getAllBackgrounds } from '../../../modules/registry'
 import { useCreation } from '../CreationContext'
 
@@ -141,6 +141,8 @@ function WealthPanel() {
 
 export default function EquipmentStep() {
   const { draft, updateDraft } = useCreation()
+  const cachedChoices = useRef<Record<string, string>>({})
+  const cachedWealth = useRef<number | null>(null)
 
   const cls = draft.classId
     ? getAllClasses().find(c => c.id === draft.classId) ?? null
@@ -160,8 +162,19 @@ export default function EquipmentStep() {
   const setChoice = (index: number, letter: string) =>
     updateDraft({ equipmentChoices: { ...draft.equipmentChoices, [String(index)]: letter } })
 
-  const switchMode = (useWealth: boolean) =>
-    updateDraft({ useStartingWealth: useWealth, startingWealth: null, equipmentChoices: {} })
+  const switchMode = (useWealth: boolean) => {
+    if (useWealth === draft.useStartingWealth) return
+    if (draft.useStartingWealth) {
+      cachedWealth.current = draft.startingWealth
+    } else {
+      cachedChoices.current = { ...draft.equipmentChoices }
+    }
+    updateDraft({
+      useStartingWealth: useWealth,
+      startingWealth: useWealth ? cachedWealth.current : null,
+      equipmentChoices: useWealth ? {} : { ...cachedChoices.current },
+    })
+  }
 
   return (
     <div>

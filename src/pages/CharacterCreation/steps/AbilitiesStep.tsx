@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { getAllRaces } from '../../../modules/registry'
 import type { AbilityScore } from '../../../types/module'
 import { useCreation } from '../CreationContext'
@@ -21,11 +22,15 @@ const SCORE_DEFAULTS: Record<CreationDraft['abilityScoreMethod'], Record<string,
 
 function MethodSelector() {
   const { draft, updateDraft } = useCreation()
+  const cachedScores = useRef<Record<string, Record<string, number>>>({})
 
   const switchMethod = (method: CreationDraft['abilityScoreMethod']) => {
+    if (method === draft.abilityScoreMethod) return
+    cachedScores.current[draft.abilityScoreMethod] = { ...draft.baseAbilityScores }
+    const restored = cachedScores.current[method]
     updateDraft({
       abilityScoreMethod: method,
-      baseAbilityScores: { ...SCORE_DEFAULTS[method] },
+      baseAbilityScores: restored ? { ...restored } : { ...SCORE_DEFAULTS[method] },
     })
   }
 
