@@ -24,6 +24,28 @@ export interface InventoryItem {
   ammoRemaining?: number                           // for 'shot'/'belt' ammo: shots left
 }
 
+// ─── Addiction Tracking ──────────────────────────────────────────────────────
+
+export interface PendingAddictionCheck {
+  id: string
+  itemId: string
+  substanceName: string
+  addictionDC: number
+  usedAt: string
+}
+
+export interface Addiction {
+  id: string
+  itemId: string
+  substanceName: string
+  addictionDC: number
+  contractedAt: string
+  status: 'active' | 'withdrawal' | 'cured'
+  withdrawalStartedAt?: string
+  curedAt?: string
+  notes?: string
+}
+
 // ─── Spell Slots ─────────────────────────────────────────────────────────────
 
 export interface SpellSlots {
@@ -127,6 +149,10 @@ export interface Character {
   // Key: slugified feature name (e.g. "aimed-shot", "second-wind")
   // Value: number of uses spent since last rest
   // Cleared on short rest (for 'short' features) or long rest (all features)
+
+  // ── Addiction ────────────────────────────────────────────────────────────────
+  pendingAddictionChecks?: PendingAddictionCheck[]
+  addictions?: Addiction[]
 
   // ── Rest History ─────────────────────────────────────────────────────────────
   lastShortRest?: number              // Unix timestamp of last short rest

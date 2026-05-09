@@ -208,6 +208,15 @@ export interface Item {
   consumableSaveAbility?: AbilityScore
   consumableDamage?: string           // "3d6", "2d6"
   consumableDamageType?: DamageType
+
+  // ── Addiction / Post-Use Fields ──────────────────────────────────────────────
+  addictionDC?: number                // CON save DC at next long rest; failure = addiction
+  postUseSaveDC?: number              // immediate save DC after use
+  postUseSaveAbility?: AbilityScore   // ability for the post-use save
+  postUseFailureEffect?: string       // human-readable consequence on failed save
+
+  // ── Use Restriction ─────────────────────────────────────────────────────────
+  restrictedToClasses?: string[]      // class IDs allowed to use; undefined = all
 }
 
 // ─── Armor Set ────────────────────────────────────────────────────────────────
