@@ -249,6 +249,27 @@ for (const item of items) {
   if (item.isNamed && item.tier === 'standard') {
     warn(`Item "${item.id}": isNamed=true but tier is "standard" — named items should be master-crafted or above`)
   }
+
+  if ((item as Record<string, unknown>)['addictionDC'] && item.type !== 'consumable') {
+    error(`Item "${item.id}" (${item.type}): addictionDC is only valid on consumables`)
+  }
+  if ((item as Record<string, unknown>)['postUseSaveDC'] && !(item as Record<string, unknown>)['postUseSaveAbility']) {
+    error(`Item "${item.id}": postUseSaveDC requires postUseSaveAbility`)
+  }
+  const restricted = (item as Record<string, unknown>)['restrictedToClasses'] as string[] | undefined
+  if (restricted?.length) {
+    for (const cls of restricted) {
+      if (!classIds.has(cls)) {
+        error(`Item "${item.id}": restrictedToClasses references unknown class "${cls}"`)
+      }
+    }
+  }
+  if (item.type === 'consumable' && item.consumableCharges && !item.consumableActionType) {
+    warn(`Item "${item.id}" (consumable): has consumableCharges but no consumableActionType`)
+  }
+  if (item.tags?.includes('flamer-fuel') && item.type !== 'consumable') {
+    warn(`Item "${item.id}": tagged as 'flamer-fuel' but type is "${item.type}" — expected consumable`)
+  }
 }
 
 // ─── 10. Feature formula and uses consistency ───────────────────────────────
