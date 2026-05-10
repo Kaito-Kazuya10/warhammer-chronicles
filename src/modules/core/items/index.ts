@@ -1,6 +1,8 @@
 import { allWeaponryItems } from './weapons'
 import { allArmorItems } from './armor'
-import { consumables } from './consumables'
+import { allConsumables } from './consumables'
+import { allGear } from './gear'
+import { allTech } from './tech'
 import { namedWeaponsMasterCrafted } from './namedWeaponsMasterCrafted'
 import { namedWeaponsArtificer } from './namedWeaponsArtificer'
 import { namedWeaponsRelic } from './namedWeaponsRelic'
@@ -14,7 +16,9 @@ import type { Item } from '../../../types/module'
 export const allItems: Item[] = [
   ...allWeaponryItems,
   ...allArmorItems,
-  ...consumables,
+  ...allConsumables,
+  ...allGear,
+  ...allTech,
   ...namedWeaponsMasterCrafted,
   ...namedWeaponsArtificer,
   ...namedWeaponsRelic,
