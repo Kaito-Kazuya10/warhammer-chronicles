@@ -1,10 +1,11 @@
 import { create } from 'zustand'
-import type { Character, AbilityScores, Skills } from '../types/character'
+import type { Character, AbilityScores, Skills, PendingAddictionCheck } from '../types/character'
 import {
   fetchMyCharacters,
   upsertCharacter,
   deleteCharacterFromDb,
 } from '../db/characterRepository'
+import { getItemById } from '../modules/registry'
 
 const defaultAbilityScores: AbilityScores = {
   strength: 10,
@@ -97,6 +98,7 @@ interface CharacterStore {
   updateAbilityScore: (id: string, ability: keyof AbilityScores, value: number) => void
   toggleSkill: (id: string, skill: keyof Skills) => void
   setHitPoints: (id: string, current: number) => void
+  useConsumable: (id: string, itemIndex: number) => { used: boolean; blocked?: string; item?: ReturnType<typeof getItemById> }
   deleteCharacter: (id: string) => void
 }
 
@@ -239,6 +241,58 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     }))
     const updated = get().characters.find(c => c.id === id)
     if (updated) debouncedSave(updated)
+  },
+
+  // ── Use Consumable ───────────────────────────────────────────────────────
+
+  useConsumable: (id, itemIndex) => {
+    const character = get().characters.find(c => c.id === id)
+    if (!character) return { used: false }
+
+    const entry = character.inventory[itemIndex]
+    if (!entry) return { used: false }
+
+    const item = getItemById(entry.itemId)
+    if (!item || item.type !== 'consumable') return { used: false }
+
+    if (item.restrictedToClasses?.length) {
+      if (!item.restrictedToClasses.includes(character.class)) {
+        return { used: false, blocked: `Restricted to: ${item.restrictedToClasses.join(', ')}`, item }
+      }
+    }
+
+    const charges = entry.packsRemaining ?? item.consumableCharges ?? 1
+    const newCharges = charges - 1
+    const patch: Partial<Character> = {}
+
+    if (newCharges <= 0) {
+      patch.inventory = character.inventory.filter((_, i) => i !== itemIndex)
+    } else {
+      patch.inventory = character.inventory.map((e, i) =>
+        i === itemIndex ? { ...e, packsRemaining: newCharges } : e
+      )
+    }
+
+    if (item.addictionDC) {
+      const check: PendingAddictionCheck = {
+        id: crypto.randomUUID(),
+        itemId: item.id,
+        substanceName: item.name,
+        addictionDC: item.addictionDC,
+        usedAt: new Date().toISOString(),
+      }
+      patch.pendingAddictionChecks = [...(character.pendingAddictionChecks ?? []), check]
+    }
+
+    set(state => ({
+      characters: state.characters.map(c =>
+        c.id === id ? { ...c, ...patch, updatedAt: Date.now() } : c
+      ),
+    }))
+    const updated = get().characters.find(c => c.id === id)
+    if (updated) debouncedSave(updated)
+
+    return { used: true, item }
   },
 
   // ── Delete (optimistic + DB sync) ─────────────────────────────────────────

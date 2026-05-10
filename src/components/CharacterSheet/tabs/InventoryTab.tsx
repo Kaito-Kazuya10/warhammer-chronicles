@@ -225,7 +225,10 @@ interface ItemRowProps {
 function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
   const [open,          setOpen         ] = useState(false)
   const [upgradeOpen,   setUpgradeOpen  ] = useState(false)
+  const [useStatus,     setUseStatus    ] = useState<string | null>(null)
   const updateCharacter = useCharacterStore(s => s.updateCharacter)
+  const useConsumable   = useCharacterStore(s => s.useConsumable)
+  const character       = useCharacterStore(s => s.characters.find(c => c.id === characterId))
   const inventory = useCharacterStore(s => s.characters.find(c => c.id === characterId)?.inventory ?? [])
 
   const displayName    = item?.name ?? entry.itemId
@@ -233,6 +236,24 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
   const effectiveTier  = getEffectiveTier(entry, item)
   const nextTier       = getNextTier(effectiveTier)
   const canUpgrade     = !!(item && (item.type === 'weapon' || item.type === 'armor' || item.type === 'gear') && !item.isNamed && nextTier)
+  const isConsumable   = item?.type === 'consumable' && (item.consumableCharges ?? 0) > 0
+  const classBlocked   = !!(item?.restrictedToClasses?.length && character && !item.restrictedToClasses.includes(character.class))
+
+  function handleUse() {
+    const result = useConsumable(characterId, index)
+    if (result.blocked) {
+      setUseStatus(result.blocked)
+      setTimeout(() => setUseStatus(null), 3000)
+      return
+    }
+    if (result.used && result.item) {
+      const msgs: string[] = ['Used!']
+      if (result.item.addictionDC) msgs.push(`Addiction save (DC ${result.item.addictionDC}) owed at long rest.`)
+      if (result.item.postUseSaveDC) msgs.push(`${result.item.postUseSaveAbility?.toUpperCase() ?? 'CON'} save DC ${result.item.postUseSaveDC} required.`)
+      setUseStatus(msgs.join(' '))
+      setTimeout(() => setUseStatus(null), 5000)
+    }
+  }
 
   function setQty(qty: number) {
     updateCharacter(characterId, {
@@ -287,6 +308,28 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
             )}
           </span>
 
+          {/* Consumable indicators */}
+          {item?.addictionDC && (
+            <span className="text-[10px] text-amber-500/70 font-medium shrink-0" title={`Addiction save DC ${item.addictionDC} at long rest`}>ADDICTIVE</span>
+          )}
+          {item?.postUseSaveDC && !item?.addictionDC && (
+            <span className="text-[10px] text-orange-400/70 font-medium shrink-0" title={`${item.postUseSaveAbility?.toUpperCase() ?? 'CON'} save DC ${item.postUseSaveDC} after use`}>SAVE</span>
+          )}
+
+          {/* Use button (consumables) */}
+          {isConsumable && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-5 text-[11px] px-1.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+              onClick={handleUse}
+              disabled={classBlocked}
+              title={classBlocked ? `Restricted to: ${item!.restrictedToClasses!.join(', ')}` : 'Use this consumable'}
+            >
+              USE
+            </Button>
+          )}
+
           {/* Upgrade button */}
           {canUpgrade && (
             <Button
@@ -334,6 +377,11 @@ function ItemRow({ entry, item, index, characterId }: ItemRowProps) {
             ×
           </Button>
         </div>
+
+        {/* Use status feedback */}
+        {useStatus && (
+          <p className="text-xs px-3 pb-1 text-amber-400/90 animate-pulse">{useStatus}</p>
+        )}
 
         {/* Expanded details */}
         <CollapsibleContent>

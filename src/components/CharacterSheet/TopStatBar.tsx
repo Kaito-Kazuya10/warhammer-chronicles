@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
 import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Toggle } from '@/components/ui/toggle'
 import { useCharacterStore, getModifier, getProficiencyBonus } from '../../store/characterStore'
+import type { Addiction } from '../../types/character'
 import { getAllRaces, getAllClasses, getItemById } from '../../modules/registry'
 import { armorTierDefinitions } from '../../modules/core/items/armor'
 import { useDiceStore } from '../../store/diceStore'
@@ -22,6 +24,66 @@ const ABILITIES: { key: keyof AbilityScores; label: string; abbr: string }[] = [
   { key: 'wisdom',       label: 'WISDOM',       abbr: 'WIS' },
   { key: 'charisma',     label: 'CHARISMA',     abbr: 'CHA' },
 ]
+
+// ─── Addiction Badge ──────────────────────────────────────────────────────────
+
+function AddictionBadgeInline({ addiction, characterId }: { addiction: Addiction; characterId: string }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const updateCharacter = useCharacterStore(s => s.updateCharacter)
+  const character = useCharacterStore(s => s.characters.find(c => c.id === characterId))
+
+  const updateAddiction = (patch: Partial<Addiction>) => {
+    if (!character) return
+    updateCharacter(characterId, {
+      addictions: (character.addictions ?? []).map(a =>
+        a.id === addiction.id ? { ...a, ...patch } : a
+      ),
+    })
+    setMenuOpen(false)
+  }
+
+  const isActive = addiction.status === 'active'
+  const badgeClass = isActive
+    ? 'bg-red-500/15 text-red-400 border-red-500/30 hover:bg-red-500/25'
+    : 'bg-amber-500/15 text-amber-400 border-amber-500/30 hover:bg-amber-500/25'
+
+  return (
+    <span className="relative inline-block">
+      <Badge
+        className={`text-[10px] py-0 px-1.5 cursor-pointer ${badgeClass}`}
+        onClick={() => setMenuOpen(v => !v)}
+      >
+        {isActive ? 'Addicted' : 'Withdrawal'}: {addiction.substanceName}
+      </Badge>
+      {menuOpen && (
+        <div className="absolute z-50 top-full left-0 mt-1 bg-popover border border-border rounded-md shadow-lg p-1 min-w-[160px]">
+          {isActive && (
+            <button
+              className="w-full text-left text-xs px-2 py-1.5 rounded hover:bg-muted transition-colors text-amber-400"
+              onClick={() => updateAddiction({ status: 'withdrawal', withdrawalStartedAt: new Date().toISOString() })}
+            >
+              Begin Withdrawal
+            </button>
+          )}
+          {!isActive && (
+            <button
+              className="w-full text-left text-xs px-2 py-1.5 rounded hover:bg-muted transition-colors text-red-400"
+              onClick={() => updateAddiction({ status: 'active', withdrawalStartedAt: undefined })}
+            >
+              Use Again (Reset)
+            </button>
+          )}
+          <button
+            className="w-full text-left text-xs px-2 py-1.5 rounded hover:bg-muted transition-colors text-green-400"
+            onClick={() => updateAddiction({ status: 'cured', curedAt: new Date().toISOString() })}
+          >
+            Mark Cured
+          </button>
+        </div>
+      )}
+    </span>
+  )
+}
 
 // ─── Character Header ─────────────────────────────────────────────────────────
 
@@ -89,6 +151,18 @@ function CharacterHeader({ characterId, onLevelUp }: { characterId: string; onLe
             {className && ` — ${className}`}
             {subclassName && ` · ${subclassName}`}
           </p>
+
+          {/* Addiction badges */}
+          {(character.addictions ?? []).filter(a => a.status !== 'cured').map(a => (
+            <AddictionBadgeInline key={a.id} addiction={a} characterId={characterId} />
+          ))}
+
+          {/* Pending addiction indicator */}
+          {(character.pendingAddictionChecks ?? []).length > 0 && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 font-medium">
+              {character.pendingAddictionChecks!.length} save{character.pendingAddictionChecks!.length > 1 ? 's' : ''} pending
+            </span>
+          )}
 
           {/* Level Down button */}
           {character.level > 1 && !showLevelDown && (

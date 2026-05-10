@@ -317,6 +317,68 @@ function RestHistory({ characterId }: Props) {
   )
 }
 
+// ─── Substance History ───────────────────────────────────────────────────────
+
+function SubstanceHistory({ characterId }: Props) {
+  const character       = useCharacterStore(s => s.characters.find(c => c.id === characterId))
+  const updateCharacter = useCharacterStore(s => s.updateCharacter)
+  if (!character) return null
+
+  const cured = (character.addictions ?? [])
+    .filter(a => a.status === 'cured')
+    .sort((a, b) => (b.curedAt ?? '').localeCompare(a.curedAt ?? ''))
+
+  const active = (character.addictions ?? []).filter(a => a.status !== 'cured')
+
+  if (cured.length === 0 && active.length === 0) return null
+
+  const clearHistory = () => {
+    if (!confirm('Remove all cured addiction history?')) return
+    updateCharacter(characterId, {
+      addictions: active,
+    })
+  }
+
+  const fmtDate = (iso?: string) => {
+    if (!iso) return '—'
+    return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
+  return (
+    <Card>
+      <CardHeader className="py-2 px-3 bg-muted/20 border-b border-border">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">
+            Substance History
+          </CardTitle>
+          {cured.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={clearHistory} className="h-5 text-[10px] text-destructive px-1.5">
+              Clear History
+            </Button>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="pt-3 space-y-2">
+        {cured.length === 0 ? (
+          <p className="text-xs text-muted-foreground">No substance history.</p>
+        ) : (
+          cured.map(a => (
+            <div key={a.id} className="flex items-center justify-between text-sm border-b border-border/50 pb-1.5 last:border-0 last:pb-0">
+              <div>
+                <span className="font-medium">{a.substanceName}</span>
+                <span className="text-xs text-muted-foreground ml-2">DC {a.addictionDC}</span>
+              </div>
+              <div className="text-xs text-muted-foreground text-right">
+                <div>{fmtDate(a.contractedAt)} → {fmtDate(a.curedAt)}</div>
+              </div>
+            </div>
+          ))
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
 // ─── ExtrasTab ────────────────────────────────────────────────────────────────
 
 export default function ExtrasTab({ characterId }: Props) {
@@ -328,6 +390,7 @@ export default function ExtrasTab({ characterId }: Props) {
       <Languages   characterId={characterId} />
       <Feats       characterId={characterId} />
       <Currency    characterId={characterId} />
+      <SubstanceHistory characterId={characterId} />
     </div>
   )
 }

@@ -10,7 +10,9 @@ import { Button } from '@/components/ui/button'
 import { useCharacterStore, getModifier } from '../../store/characterStore'
 import { getClassById, getGeneModificationById } from '../../modules/registry'
 import { resolveUsesCount } from '../../utils/resolveUsesCount'
-import type { Character, SpellSlots } from '../../types/character'
+import { rollCheck } from '../../utils/dice'
+import { useDiceStore } from '../../store/diceStore'
+import type { Character, SpellSlots, Addiction } from '../../types/character'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -41,9 +43,13 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
   const character       = useCharacterStore(s => s.characters.find(c => c.id === characterId))
   const updateCharacter = useCharacterStore(s => s.updateCharacter)
 
+  const addRoll = useDiceStore(s => s.addRoll)
+
   const [hpGained,   setHpGained]   = useState(0)
   const [diceSpent,  setDiceSpent]  = useState(0)
   const [rollLog,    setRollLog]    = useState<string[]>([])
+  const [addictionResults, setAddictionResults] = useState<{ name: string; dc: number; roll: number; passed: boolean }[]>([])
+  const [addictionRolled, setAddictionRolled] = useState(false)
 
   // Reset local state whenever the dialog opens
   useEffect(() => {
@@ -51,6 +57,8 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
       setHpGained(0)
       setDiceSpent(0)
       setRollLog([])
+      setAddictionResults([])
+      setAddictionRolled(false)
     }
   }, [open])
 
@@ -112,10 +120,30 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
     setDiceSpent(d => d + 1)
   }
 
+  const pendingChecks = character.pendingAddictionChecks ?? []
+  const hasPendingAddiction = restType === 'long' && pendingChecks.length > 0
+
+  const rollAddictionSaves = () => {
+    const results = pendingChecks.map(check => {
+      const result = rollCheck(`Addiction Save: ${check.substanceName}`, 'save', conMod, `CON ${conMod >= 0 ? '+' : ''}${conMod}`)
+      addRoll(result)
+      return {
+        name: check.substanceName,
+        dc: check.addictionDC,
+        roll: result.total,
+        passed: result.total >= check.addictionDC,
+      }
+    })
+    setAddictionResults(results)
+    setAddictionRolled(true)
+  }
+
   const handleClose = () => {
     setHpGained(0)
     setDiceSpent(0)
     setRollLog([])
+    setAddictionResults([])
+    setAddictionRolled(false)
     onClose()
   }
 
@@ -197,6 +225,34 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
       // Reset spell/prayer slots
       if (hasSpellSlots) {
         patch.spellSlots = resetSpellSlots(character.spellSlots)
+      }
+
+      // Resolve addiction saves
+      if (pendingChecks.length > 0) {
+        const newAddictions = [...(character.addictions ?? [])]
+        const results = addictionRolled ? addictionResults : pendingChecks.map(check => {
+          const result = rollCheck(`Addiction Save: ${check.substanceName}`, 'save', conMod, `CON ${conMod >= 0 ? '+' : ''}${conMod}`)
+          addRoll(result)
+          return { name: check.substanceName, dc: check.addictionDC, roll: result.total, passed: result.total >= check.addictionDC }
+        })
+        for (const r of results) {
+          if (!r.passed) {
+            const check = pendingChecks.find(c => c.substanceName === r.name)
+            if (check) {
+              const addiction: Addiction = {
+                id: crypto.randomUUID(),
+                itemId: check.itemId,
+                substanceName: check.substanceName,
+                addictionDC: check.addictionDC,
+                contractedAt: new Date().toISOString(),
+                status: 'active',
+              }
+              newAddictions.push(addiction)
+            }
+          }
+        }
+        patch.addictions = newAddictions
+        patch.pendingAddictionChecks = []
       }
 
       // Clear all feature uses
@@ -321,6 +377,39 @@ export default function RestDialog({ characterId, restType, open, onClose }: Pro
             </div>
           )}
         </div>
+
+        {/* ── Pending Addiction Saves (long rest only) ──────────────────── */}
+        {hasPendingAddiction && (
+          <div className="border border-red-500/30 bg-red-500/5 rounded-md p-3 space-y-2">
+            <p className="text-sm font-semibold text-red-400">Pending Addiction Saves</p>
+            {!addictionRolled ? (
+              <>
+                <div className="space-y-1">
+                  {pendingChecks.map(check => (
+                    <div key={check.id} className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">{check.substanceName}</span>
+                      <span className="font-mono text-xs">CON DC {check.addictionDC}</span>
+                    </div>
+                  ))}
+                </div>
+                <Button size="sm" variant="outline" onClick={rollAddictionSaves} className="w-full text-sm h-7">
+                  Roll All Addiction Saves
+                </Button>
+              </>
+            ) : (
+              <div className="space-y-1.5">
+                {addictionResults.map((r, i) => (
+                  <div key={i} className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">{r.name}</span>
+                    <span className={`font-mono text-xs font-semibold ${r.passed ? 'text-green-400' : 'text-red-400'}`}>
+                      {r.roll} vs DC {r.dc} — {r.passed ? 'RESISTED' : 'ADDICTED'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <AlertDialogFooter>
           <Button variant="outline" size="sm" onClick={handleClose}>
