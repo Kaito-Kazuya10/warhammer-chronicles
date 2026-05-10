@@ -20,9 +20,9 @@ const ABILITY_ORDER: AbilityScore[] = [
 ]
 
 function groupSpecies(race: Race): string {
-  return race.tier === 'advanced'
-    ? 'Advanced Species (GM Approval Required)'
-    : 'Standard Species'
+  if (race.tier === 'restricted') return 'Restricted Species (GM Approval Required)'
+  if (race.tier === 'advanced') return 'Advanced Species (GM Approval Required)'
+  return 'Standard Species'
 }
 
 // ─── Ability score tag row ─────────────────────────────────────────────────────
@@ -188,8 +188,8 @@ function SpeciesDetail({ race }: { race: Race }) {
         </div>
       )}
 
-      {/* Advanced warning */}
-      {race.tier === 'advanced' && (
+      {/* Advanced / Restricted warning */}
+      {(race.tier === 'advanced' || race.tier === 'restricted') && (
         <p className="species-detail__advanced-warning">
           ⚠ This species requires GM approval before use.
         </p>
